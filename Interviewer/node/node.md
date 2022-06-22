@@ -200,7 +200,7 @@ const fs = require('fs');
 
 #### 权限位mode
 
-![image-20220621125654511](node.assets\image-20220621125654511.png)
+![image-20220622124907316](node.assets/image-20220622124907316.png)
 
 针对文件所有者、文件所属组、其他用户进行权限分配，其中类型又分成读、写和执行，具备权限位4、2、1，不具备权限为0。如在linux查看文件权限位的命令如下：
 
@@ -215,7 +215,7 @@ drwxr-xr-x 1 PandaShen 197121 0 Jun 28 14:41 core
 
 标识位代表着对文件的操作方式，如可读、可写、即可读又可写等等，如下表所示：
 
-![image-20220621125823902](node.assets\image-20220621125823902.png)
+![image-20220622124845071](node.assets/image-20220622124845071.png)
 
 #### 文件描述fd
 
@@ -384,7 +384,7 @@ process.stdin、 process.stdout、 process.stderr、process.on、 process.env、
 流（Stream）是一种数据传输的手段，是一种端到端信息交换的方式，而且是有顺序的，是逐块读取数据、处理内容，用于顺序读取输入或写入输出。在Node中，Stream分成三部分：source、dest、pipe。
 
 其中，在source和dest之间有一个连接的管道pipe，它的基本语法是source.pipe(dest)，source和dest就是通过pipe连接，让数据从source流向dest，如下图所示：
-![hhh](node.assets\1460000040937013.png)
+![image-20220622125012220](node.assets/image-20220622125012220.png)
 
 ### 流的分类
 
@@ -400,7 +400,7 @@ process.stdin、 process.stdout、 process.stderr、process.on、 process.env、
 #### 双工流
 
 在Node中，比较的常见的全双工通信就是websocket，因为发送方和接受方都是各自独立的方法，发送和接收都没有任何关系。
-![在这里插入图片描述](node.assets\1460000040937014.png)
+![image-20220622125111283](node.assets/image-20220622125111283.png)
 基本的使用方法如下：
 
 ```javascript
