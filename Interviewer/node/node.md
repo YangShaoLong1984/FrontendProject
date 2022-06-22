@@ -1,10 +1,19 @@
+
+
 ## 什么是Node.js
 
-Node. js是一个基于 Chrome v8引擎的服务器端 JavaScript运行环境；
+Node. js是一个基于 Chrome v8引擎的开源与跨平台的服务器端 JavaScript运行环境；
 
-Node. js是一个事件驱动、非阻塞式I/O的模型，轻量而又高效；
+在浏览器外运行 V8 JavaScript 引擎（Google Chrome 的内核），利用事件驱动、非阻塞和异步输入输出模型等技术提高性能。
+
+Node.js 就是一个服务器端的、非阻塞式I/O的、事件驱动的JavaScript运行环境。；
 
 Node. js的包管理器npm是全球最大的开源库生态系统。
+
+理解Node，有几个基础的概念：`非阻塞异步`和`事件驱动`。
+
+- **非阻塞异步：** Nodejs采用了非阻塞型I/O机制，在做I/O操作的时候不会造成任何的阻塞，当完成之后，以时间的形式通知执行操作。例如，在执行了访问数据库的代码之后，将立即转而执行其后面的代码，把数据库返回结果的处理代码放在回调函数中，从而提高了程序的执行效率。
+- **事件驱动：** 事件驱动就是当进来一个新的请求的时，请求将会被压入一个事件队列中，然后通过一个循环来检测队列中的事件状态变化，如果检测到有状态变化的事件，那么就执行该事件对应的处理代码，一般都是回调函数。比如，读取一个文件，文件读取完毕后，就会触发对应的状态，然后通过对应的回调函数来进行处理。
 
 ## node的构架是什么样子的
 
@@ -177,6 +186,32 @@ exports.sayHello = sayHello;
 ### **require**
 
 require主要用于引入模块、 JSON、或本地文件， 可以从 node_modules 引入模块。可以使用相对路径引入本地模块或JSON文件，路径会根据__dirname定义的目录名或当前工作目录进行处理。
+
+## **对process的理解**
+
+### 基本概念
+
+我们知道，进程计算机系统进行资源分配和调度的基本单位，是操作系统结构的基础，是线程的容器。当我们启动一个js文件，实际就是开启了一个服务进程，每个进程都拥有自己的独立空间地址、数据栈，像另一个进程无法访问当前进程的变量、数据结构，只有数据通信后，进程之间才可以数据共享。
+
+process 对象是Node的一个全局变量，提供了有关当前 Node.js 进程的信息并对其进行控制。
+由于JavaScript是一个单线程语言，所以通过node xxx启动一个文件后，只有一条主线程。
+
+### 常用属性和方法
+
+process的常见属性如下：
+
+- process.env：环境变量，例如通过 `process.env.NODE_ENV 获取不同环境项目配置信息
+- process.nextTick：这个在谈及 EventLoop 时经常为会提到
+- process.pid：获取当前进程id
+- process.ppid：当前进程对应的父进程
+- process.cwd()：获取当前进程工作目录
+- process.platform：获取当前进程运行的操作系统平台
+- process.uptime()：当前进程已运行时间，例如：pm2 守护进程的 uptime 值
+  进程事件： process.on(‘uncaughtException’,cb) 捕获异常信息、 process.on(‘exit’,cb）进程推出监听
+- 三个标准流： process.stdout 标准输出、 process.stdin 标准输入、 process.stderr 标准错误输出
+- process.title：用于指定进程名称，有的时候需要给进程指定一个名称
+
+process.stdin、 process.stdout、 process.stderr、process.on、 process.env、 process.argv、 process.arch、process.platform、 process.exit
 
 ## 对fs模块的理解
 
@@ -351,32 +386,6 @@ fs.mkdir("a/b/c", err => {
 });
 ```
 
-## **对process的理解**
-
-### 基本概念
-
-我们知道，进程计算机系统进行资源分配和调度的基本单位，是操作系统结构的基础，是线程的容器。当我们启动一个js文件，实际就是开启了一个服务进程，每个进程都拥有自己的独立空间地址、数据栈，像另一个进程无法访问当前进程的变量、数据结构，只有数据通信后，进程之间才可以数据共享。
-
-process 对象是Node的一个全局变量，提供了有关当前 Node.js 进程的信息并对其进行控制。
-由于JavaScript是一个单线程语言，所以通过node xxx启动一个文件后，只有一条主线程。
-
-### 常用属性和方法
-
-process的常见属性如下：
-
-- process.env：环境变量，例如通过 `process.env.NODE_ENV 获取不同环境项目配置信息
-- process.nextTick：这个在谈及 EventLoop 时经常为会提到
-- process.pid：获取当前进程id
-- process.ppid：当前进程对应的父进程
-- process.cwd()：获取当前进程工作目录
-- process.platform：获取当前进程运行的操作系统平台
-- process.uptime()：当前进程已运行时间，例如：pm2 守护进程的 uptime 值
-  进程事件： process.on(‘uncaughtException’,cb) 捕获异常信息、 process.on(‘exit’,cb）进程推出监听
-- 三个标准流： process.stdout 标准输出、 process.stdin 标准输入、 process.stderr 标准错误输出
-- process.title：用于指定进程名称，有的时候需要给进程指定一个名称
-
-process.stdin、 process.stdout、 process.stderr、process.on、 process.env、 process.argv、 process.arch、process.platform、 process.exit
-
 ## 对Stream的理解
 
 ### 基本概念
@@ -466,7 +475,231 @@ readStream.on('end', function () {
 
 另外，一些打包工具，Webpack和Vite等都涉及很多流的操作。
 
+## 事件循环机制
 
+### 什么是浏览器事件循环
+
+Node.js 在主线程里维护了一个事件队列，当接到请求后，就将该请求作为一个事件放入这个队列中，然后继续接收其他请求。当主线程空闲时(没有请求接入时)，就开始循环事件队列，检查队列中是否有要处理的事件，这时要分两种情况：如果是非 I/O 任务，就亲自处理，并通过回调函数返回到上层调用；如果是 I/O 任务，就从 线程池 中拿出一个线程来处理这个事件，并指定回调函数，然后继续循环队列中的其他事件。
+
+当线程中的 I/O 任务完成以后，就执行指定的回调函数，并把这个完成的事件放到事件队列的尾部，等待事件循环，当主线程再次循环到该事件时，就直接处理并返回给上层调用。 这个过程就叫 事件循环 (Event Loop)，其运行原理如下图所示。
+
+![image-20220622130256118](node.assets/image-20220622130256118.png)
+
+
+
+### 事件循环的六个阶段
+
+事件循环一共可以分成了六个阶段，如下图所示。
+
+![image-20220622130356946](node.assets/image-20220622130356946.png)
+
+- timers阶段：此阶段主要执行timer（setTimeout、setInterval）的回调。
+- I/O事件回调阶段(I/O callbacks)：执行延迟到下一个循环迭代的 I/O 回调，即上一轮循环中未被执行的一些I/O回调。
+- 闲置阶段(idle、prepare)：仅系统内部使用。
+- 轮询阶段(poll)：检索新的 I/O 事件;执行与 I/O 相关的回调（几乎所有情况下，除了关闭的回调函数，那些由计时器和 setImmediate() 调度的之外），其余情况 node 将在适当的时候在此阻塞。
+- 检查阶段(check)：setImmediate() 回调函数在这里执行
+- 关闭事件回调阶段(close callback)：一些关闭的回调函数，如：socket.on('close', ...)
+
+每个阶段对应一个队列，当事件循环进入某个阶段时, 将会在该阶段内执行回调，直到队列耗尽或者回调的最大数量已执行, 那么将进入下一个处理阶段，如下图所示。
+
+![image-20220622130426908](node.assets/image-20220622130426908.png)
+
+## EventEmitter
+
+### 基本概念
+
+前文说过，Node采用了事件驱动机制，而EventEmitter 就是Node实现事件驱动的基础。在EventEmitter的基础上，Node 几乎所有的模块都继承了这个类，这些模块拥有了自己的事件，可以绑定、触发监听器，实现了异步操作。
+
+Node.js 里面的许多对象都会分发事件，比如 fs.readStream 对象会在文件被打开的时候触发一个事件，这些产生事件的对象都是 events.EventEmitter 的实例，用于将一个或多个函数绑定到命名事件上。
+
+### 基本使用
+
+Node的events模块只提供了一个EventEmitter类，这个类实现了Node异步事件驱动架构的基本模式：观察者模式。
+
+在这种模式中，被观察者(主体)维护着一组其他对象派来(注册)的观察者，有新的对象对主体感兴趣就注册观察者，不感兴趣就取消订阅，主体有更新会依次通知观察者，使用方式如下。
+
+```js
+const EventEmitter = require('events')
+
+class MyEmitter extends EventEmitter {}
+const myEmitter = new MyEmitter()
+
+function callback() {
+    console.log('触发了event事件！')
+}
+myEmitter.on('event', callback)
+myEmitter.emit('event')
+myEmitter.removeListener('event', callback);
+```
+
+在上面的代码中，我们通过实例对象的`on`方法注册一个名为event的事件，通过`emit`方法触发该事件，而`removeListener`用于取消事件的监听。
+
+除了上面介绍的一些方法外，其他常用的方法还有如下一些：
+
+- **emitter.addListener/on(eventName, listener)** ：添加类型为 eventName 的监听事件到事件数组尾部。
+- **emitter.prependListener(eventName, listener)**：添加类型为 eventName 的监听事件到事件数组头部。
+- **emitter.emit(eventName[, ...args])**：触发类型为 eventName 的监听事件。
+- **emitter.removeListener/off(eventName, listener)**：移除类型为 eventName 的监听事件。
+- **emitter.once(eventName, listener)**：添加类型为 eventName 的监听事件，以后只能执行一次并删除。
+- **emitter.removeAllListeners([eventName])**： 移除全部类型为 eventName 的监听事件。
+
+
+
+### 实现原理
+
+EventEmitter其实是一个构造函数，内部存在一个包含所有事件的对象。
+
+```javascript
+class EventEmitter {
+    constructor() {
+        this.events = {};
+    }
+}
+```
+
+其中，events存放的监听事件的函数的结构如下：
+
+```js
+{
+  "event1": [f1,f2,f3]，
+  "event2": [f4,f5]，
+  ...
+}
+```
+
+然后，开始一步步实现实例方法，首先是emit，第一个参数为事件的类型，第二个参数开始为触发事件函数的参数，实现如下：
+
+```js
+emit(type, ...args) {
+    this.events[type].forEach((item) => {
+        Reflect.apply(item, this, args);
+    });
+}
+```
+
+实现了emit方法之后，然后依次实现on、addListener、prependListener这三个实例方法，它们都是添加事件监听触发函数的。
+
+```js
+on(type, handler) {
+    if (!this.events[type]) {
+        this.events[type] = [];
+    }
+    this.events[type].push(handler);
+}
+
+addListener(type,handler){
+    this.on(type,handler)
+}
+
+prependListener(type, handler) {
+    if (!this.events[type]) {
+        this.events[type] = [];
+    }
+    this.events[type].unshift(handler);
+}
+```
+
+移除事件监听，可以使用方法removeListener/on。
+
+```js
+removeListener(type, handler) {
+    if (!this.events[type]) {
+        return;
+    }
+    this.events[type] = this.events[type].filter(item => item !== handler);
+}
+
+off(type,handler){
+    this.removeListener(type,handler)
+}
+```
+
+实现once方法， 再传入事件监听处理函数的时候进行封装，利用闭包的特性维护当前状态，通过fired属性值判断事件函数是否执行过。
+
+```js
+once(type, handler) {
+    this.on(type, this._onceWrap(type, handler, this));
+  }
+
+  _onceWrap(type, handler, target) {
+    const state = { fired: false, handler, type , target};
+    const wrapFn = this._onceWrapper.bind(state);
+    state.wrapFn = wrapFn;
+    return wrapFn;
+  }
+
+  _onceWrapper(...args) {
+    if (!this.fired) {
+      this.fired = true;
+      Reflect.apply(this.handler, this.target, args);
+      this.target.off(this.type, this.wrapFn);
+    }
+ }
+```
+
+下面是完成的测试代码：
+
+```js
+class EventEmitter {
+    constructor() {
+        this.events = {};
+    }
+
+    on(type, handler) {
+        if (!this.events[type]) {
+            this.events[type] = [];
+        }
+        this.events[type].push(handler);
+    }
+
+    addListener(type,handler){
+        this.on(type,handler)
+    }
+
+    prependListener(type, handler) {
+        if (!this.events[type]) {
+            this.events[type] = [];
+        }
+        this.events[type].unshift(handler);
+    }
+
+    removeListener(type, handler) {
+        if (!this.events[type]) {
+            return;
+        }
+        this.events[type] = this.events[type].filter(item => item !== handler);
+    }
+
+    off(type,handler){
+        this.removeListener(type,handler)
+    }
+
+    emit(type, ...args) {
+        this.events[type].forEach((item) => {
+            Reflect.apply(item, this, args);
+        });
+    }
+
+    once(type, handler) {
+        this.on(type, this._onceWrap(type, handler, this));
+    }
+
+    _onceWrap(type, handler, target) {
+        const state = { fired: false, handler, type , target};
+        const wrapFn = this._onceWrapper.bind(state);
+        state.wrapFn = wrapFn;
+        return wrapFn;
+    }
+
+    _onceWrapper(...args) {
+        if (!this.fired) {
+            this.fired = true;
+            Reflect.apply(this.handler, this.target, args);
+            this.target.off(this.type, this.wrapFn);
+        }
+    }
+}
+```
 
 
 
