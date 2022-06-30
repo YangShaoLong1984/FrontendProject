@@ -701,6 +701,91 @@ class EventEmitter {
 }
 ```
 
+## Node性能优化
+
+关于Node的性能优化的方式有如下几个：
+
+- 使用最新版本Node.js
+- 正确使用流 Stream
+- 代码层面优化
+- 内存管理优化
+
+### 使用最新版本Node.js
+
+每个版本的性能提升主要来自于两个方面：
+
+- V8 的版本更新
+- Node.js 内部代码的更新优化
+
+### 正确使用流
+
+在Node中，很多对象都实现了流，对于一个大文件可以通过流的形式发送，不需要将其完全读入内存。
+
+```js
+const http = require('http');
+const fs = require('fs');
+
+// 错误方式
+http.createServer(function (req, res) {
+    fs.readFile(__dirname + '/data.txt', function (err, data) {
+        res.end(data);
+    });
+});
+
+// 正确方式
+http.createServer(function (req, res) {
+    const stream = fs.createReadStream(__dirname + '/data.txt');
+    stream.pipe(res);
+});
+```
+
+### 代码层面优化
+
+合并查询，将多次查询合并一次，减少数据库的查询次数。
+
+```js
+// 错误方式
+for user_id in userIds 
+     let account = user_account.findOne(user_id)
+
+// 正确方式
+const user_account_map = {}  
+ // 注意这个对象将会消耗大量内存。
+user_account.find(user_id in user_ids).forEach(account){
+    user_account_map[account.user_id] =  account
+}
+for user_id in userIds 
+    var account = user_account_map[user_id]
+```
+
+### 内存管理优化
+
+在 V8 中，主要将内存分为新生代和老生代两代：
+
+- **新生代**：对象的存活时间较短。新生对象或只经过一次垃圾回收的对象。
+- **老生代**：对象存活时间较长。经历过一次或多次垃圾回收的对象。
+
+若新生代内存空间不够，直接分配到老生代。通过减少内存占用，可以提高服务器的性能。如果有内存泄露，也会导致大量的对象存储到老生代中，服务器性能会大大降低，比如下面的例子。
+
+```js
+const buffer = fs.readFileSync(__dirname + '/source/index.htm');
+
+app.use(
+    mount('/', async (ctx) => {
+        ctx.status = 200;
+        ctx.type = 'html';
+        ctx.body = buffer;
+        leak.push(fs.readFileSync(__dirname + '/source/index.htm'));
+    })
+);
+
+const leak = [];
+```
+
+当leak的内存非常大的时候，就有可能造成内存泄露，应当避免这样的操作。
+
+减少内存使用，可以明显的提高服务性能。而节省内存最好的方式是使用池，其将频用、可复用对象存储起来，减少创建和销毁操作。例如有个图片请求接口，每次请求，都需要用到类。若每次都需要重新new这些类，并不是很合适，在大量请求时，频繁创建和销毁这些类，造成内存抖动。而使用对象池的机制，对这种频繁需要创建和销毁的对象保存在一个对象池中，从而避免重读的初始化操作，从而提高框架的性能。
+
 
 
 
