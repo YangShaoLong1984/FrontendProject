@@ -20,7 +20,7 @@
 >
 > **注意：**若 `*s*` 和 `*t*` 中每个字符出现的次数都相同，则称 `*s*` 和 `*t*` 互为字母异位词。
 >
->  
+> 
 >
 > **示例 1:**
 >
@@ -33,7 +33,7 @@
 >
 > 1. 首先判断长度是否相等，不等直接false；
 > 2. Map（）存储s中所有值，map[a]为出现次数，对其++
-> 3. 对t中元素遍历，对对应的map[a]--，如果为负值了就false
+> 3. 对t中元素遍历，对对应的map[a]--，如果为 `负值/undefined` 了就false
 >
 > ```js
 > var isAnagram = function(s, t) {
@@ -43,7 +43,9 @@
 >         map[a] = (map[a] || 0) + 1;
 >     }
 >     for (const b of t) {
->         if (!map[b]) return false;
+>         if (!map[b]) {
+>             return false;
+>         }
 >         map[b]--;
 >     }
 >     return true;
@@ -65,7 +67,7 @@
 > var isAnagram = function(s, t) {
 >     if (s.length !== t.length) return false;
 >     const record = new Array(26).fill(0);
->     const base = 'a'.charCodeAt();
+>     const base = 'a'.charCodeAt(); // 97
 >     for (let a of s) {
 >         record[a.charCodeAt() - base]++;
 >     }
@@ -104,23 +106,41 @@
 >
 > ```js
 > var canConstruct = function(ransomNote, magazine) {
->  let record = new Array(26).fill(0);
->  let base = 'a'.charCodeAt();
->  for (let a of magazine) {
->      record[a.charCodeAt() - base]++;
->  }
->  for (let b of ransomNote) {
->      let index = b.charCodeAt() - base;
->      if (record[index]) {
->          record[index]--;
->      } else {
->          return false;
->      }
+>     let record = new Array(26).fill(0);
+>     let base = 'a'.charCodeAt();
+>     for (let a of magazine) {
+>         record[a.charCodeAt() - base]++;
+>     }
+>     for (let b of ransomNote) {
+>         let index = b.charCodeAt() - base;
+>         if (record[index]) {
+>             record[index]--;
+>         } else {
+>             return false;
+>         }
 > 
->  }
->  return true;
+>     }
+>     return true;
 > };
 > ```
+>
+> ```js
+> var canConstruct = function(ransomNote, magazine) {
+>     let mapM = {};
+>     for (let a of magazine) {
+>         mapM[a] = (mapM[a] || 0) + 1;
+>     }
+>     for (let a of ransomNote) {
+>         if (!mapM[a]) {
+>             return false;
+>         }
+>         mapM[a]--;
+>     }
+>     return true;
+> };
+> ```
+>
+> 
 
 #### [349. 两个数组的交集](https://leetcode-cn.com/problems/intersection-of-two-arrays/)-Set()
 
@@ -128,7 +148,7 @@
 >
 > 给定两个数组 `nums1` 和 `nums2` ，返回 *它们的交集* 。输出结果中的每个元素一定是 **唯一** 的。我们可以 **不考虑输出结果的顺序** 。
 >
->  
+> 
 >
 > **示例 1：**
 >
@@ -145,13 +165,13 @@
 >
 > ```js
 > var intersection = function(nums1, nums2) {
->     // Set（）：数组2去重
+>     // Set（）：数组1去重，遍历数组2，找在数组1中出现过得，存储下来
 >     let nums1Set = new Set(nums1);
 >     let resSet = new Set();
 >     // 将结果用set（）保存
->     for (let i = 0; i < nums2.length; i++) {
->         if (nums1Set.has(nums2[i])) {
->             resSet.add(nums2[i])
+>     for (let b of nums2) {
+>         if (nums1Set.has(b)) {
+>             resSet.add(b);
 >         }
 >     }
 >     // 返回数组
@@ -163,7 +183,7 @@
 >
 > ```js
 > var intersection = function(nums1, nums2) {
->     return Array.from(new Set(nums1.filter(ele => nums2.includes(ele))))
+>  return Array.from(new Set(nums1.filter(ele => nums2.includes(ele))))
 > };
 > ```
 
@@ -202,7 +222,6 @@
 > **还有一个难点就是求和的过程，如果对取数值各个位上的单数操作不熟悉的话，做这道题也会比较艰难。**
 >
 > ```js
-> // 每位数上平方然后求和
 > function getSum(num) {
 >     let sum = 0;
 >     while (num) {
@@ -212,7 +231,7 @@
 >     return sum;
 > }
 > var isHappy = function(n) {
->     let set = new Set();
+>     let setN = new Set();
 >     while (true) {
 >         // 必须先add，再计算，否则等一下判断的时候，永远为false
 >         setN.add(n);
@@ -295,23 +314,25 @@
 >
 > ```js
 > var fourSumCount = function(nums1, nums2, nums3, nums4) {
->     // map，key:用于存放a+b两数之和 value: 存放出现的次数
->     let map = {};
->     // 遍历n1,n2数组，统计两个数组元素之和出现的次数，放入map
->     for (const a of nums1) {
->         for (const b of nums2) {
->             map[a + b] = (map[a + b] || 0) + 1;
->         }
->     }
->     // 统计结果
->     let count = 0;
->     // 遍历n3，n4，找到0-(c+d)出现的次数，存入count
->     for (const c of nums3) {
->         for (const d of nums4) {
->             count += (map[0 - (c + d)] || 0);
->         }
->     }
->     return count;
+>  // map，key:用于存放a+b两数之和 value: 存放出现的次数
+>  let map = {};
+>  // 遍历n1,n2数组，统计两个数组元素之和出现的次数，放入map
+>  for (const a of nums1) {
+>      for (const b of nums2) {
+>          map[a + b] = (map[a + b] || 0) + 1;
+>      }
+>  }
+>  // 统计结果
+>  let count = 0;
+>  // 遍历n3，n4，找到0-(c+d)出现的次数，存入count
+>  for (const c of nums3) {
+>      for (const d of nums4) {
+>          if (map[0 - (c + d)]) {
+>              count += map[0 - (c + d)];
+>          }
+>      }
+>  }
+>  return count;
 > };
 > ```
 >
@@ -319,19 +340,19 @@
 >
 > ```js
 > var fourSumCount = function(nums1, nums2, nums3, nums4) {
->     let sumMap = new Map();
->     let count = 0;
->     for (let a of nums1) {
->         for (let b of nums2) {
->             sumMap.set((a + b), (sumMap.get(a + b) || 0) + 1);
->         }
->     }
->     for (let c of nums3) {
->         for (let d of nums4) {
->             count += sumMap.get(0 - (c + d)) || 0;
->         }
->     }
->     return count;
+>  let sumMap = new Map();
+>  let count = 0;
+>  for (let a of nums1) {
+>      for (let b of nums2) {
+>          sumMap.set((a + b), (sumMap.get(a + b) || 0) + 1);
+>      }
+>  }
+>  for (let c of nums3) {
+>      for (let d of nums4) {
+>          count += sumMap.get(0 - (c + d)) || 0;
+>      }
+>  }
+>  return count;
 > };
 > ```
 
@@ -357,6 +378,7 @@
 >             return [numbers[left], numbers[right]]
 >         }
 >     }
+>     return [];
 > };
 > ```
 
@@ -370,7 +392,7 @@
 >
 > <img src="哈希表+nSUm.assets/image-20220317171704649.png" alt="image-20220317171704649" style="zoom:50%;" />
 >
-> 如图，当找到合适的左右值后，左指针和右指针都应该跳过重复元素（`因为排序了，所以重复元素必然在一起`），用whilel来跳过，详情看注释---增加三行代码
+> 如图，当找到合适的左右值后，左指针和右指针都应该跳过重复元素（`因为排序了，所以重复元素必然在一起`），用while来跳过，详情看注释---增加三行代码
 >
 > `优化`：在前两个值不等的判断里，同样也可以跳过重复的值（这里不优化了，代码太多看着乱）
 >
@@ -397,6 +419,8 @@
 >     return res;
 > };
 > ```
+>
+> > 这个函数的时间复杂度非常容易看出来，双指针操作的部分虽然有那么多 while 循环，但是时间复杂度还是 `O(N)`，而排序的时间复杂度是 `O(NlogN)`，所以这个函数的时间复杂度是 `O(NlogN)`。
 
 #### 3sum问题 -- 一定要先排序！！！
 
@@ -491,51 +515,51 @@
 
 > ```js
 > function twoSum(nums, start, target) {
->     let res = [];
->     let left = start, right = nums.length - 1;
->     while (left < right) {
->         let res1 = nums[left], res2 = nums[right];
->         let sum = res1 + res2;
->         if (sum > target) {
->             while (left < right && res2 === nums[right]) right--;
->         } else if (sum < target) {
->             while (left < right && res1 === nums[left]) left++;
->         } else {
->             res.push([res1, res2]);
->             while (left < right && res2 === nums[right]) right--;
->             while (left < right && res1 === nums[left]) left++;
->         }
->     }
->     return res;
+>        let res = [];
+>        let left = start, right = nums.length - 1;
+>        while (left < right) {
+>            let res1 = nums[left], res2 = nums[right];
+>            let sum = res1 + res2;
+>            if (sum > target) {
+>                while (left < right && res2 === nums[right]) right--;
+>            } else if (sum < target) {
+>                while (left < right && res1 === nums[left]) left++;
+>            } else {
+>                res.push([res1, res2]);
+>                while (left < right && res2 === nums[right]) right--;
+>                while (left < right && res1 === nums[left]) left++;
+>            }
+>        }
+>        return res;
 > }
 > 
 > function threeSum(nums, start, target) {
->     let res = [];
->     let len = nums.length;
->     for (let i = start; i < len; i++) {
->         let tuples = twoSum(nums, i + 1, target - nums[i]);
->         for (let tuple of tuples) {
->             tuple.push(nums[i]);
->             res.push(tuple);
->         }
->         while (i < len - 1 && nums[i] === nums[i + 1]) i++;
->     }
->     return res;
+>        let res = [];
+>        let len = nums.length;
+>        for (let i = start; i < len; i++) {
+>            let tuples = twoSum(nums, i + 1, target - nums[i]);
+>            for (let tuple of tuples) {
+>                tuple.push(nums[i]);
+>                res.push(tuple);
+>            }
+>            while (i < len - 1 && nums[i] === nums[i + 1]) i++;
+>        }
+>        return res;
 > }
 > 
 > var fourSum = function(nums, target) {
->     nums.sort((a, b) => a - b);
->     let res = [];
->     let len = nums.length;
->     for (let i = 0; i < len; i++) {
->         let fourN = threeSum(nums, i + 1, target - nums[i])
->         for (let arr of fourN) {
->             arr.push(nums[i]);
->             res.push(arr);
->         }
->         while (i < len - 1 && nums[i] === nums[i + 1]) i++;
->     }
->     return res;
+>        nums.sort((a, b) => a - b);
+>        let res = [];
+>        let len = nums.length;
+>        for (let i = 0; i < len; i++) {
+>            let fourN = threeSum(nums, i + 1, target - nums[i])
+>            for (let arr of fourN) {
+>                arr.push(nums[i]);
+>                res.push(arr);
+>            }
+>            while (i < len - 1 && nums[i] === nums[i + 1]) i++;
+>        }
+>        return res;
 > };
 > ```
 >
