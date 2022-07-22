@@ -1,10 +1,13 @@
-let s = "We are happy."
-let arr = s.split('');
-console.log(arr);
-for (let a of arr) {
-    // console.log(a);
-    if (a === ' ') {
-        a = '2'
-    }
+function _new(constructor, params) {
+  const args = [...arguments];
+  const contruc = args.shift();
+  let newObject = Object.create(contruc.prototype);
+  let result = contruc.apply(newObject, args);
+  return (typeof result === 'object' && result !== null) ? result : newObject;
 }
-console.log(arr);
+
+function Person(name) {
+  this.name = name;
+}
+const person = _new(Person, 'zs');
+console.log(person);
