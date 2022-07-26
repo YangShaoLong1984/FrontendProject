@@ -1,4 +1,6 @@
-## 组件基础
+
+
+## .组件基础
 
 ### React 事件机制
 
@@ -34,7 +36,7 @@
 > >
 > > 这个方法比较暴力，他会同时阻止事件冒泡也会阻止默认事件；写上此代码，连接不会被打开，事件也不会传递到上一层的父元素；可以理解为return false就等于同时调用了event.stopPropagation()和event.preventDefault()
 >
-> > React `合成事件`（SyntheticEvent）是 React **模拟原生 DOM 事件所有能力的一个事件对象**，即浏览器原生事件的跨浏览器包装器。它根据 [W3C 规范](https://link.segmentfault.com/?enc=KXFOhTwb7kLAUHPdGLbNLw%3D%3D.g2M1qrTWUHRWD40C8ynvRWrTsZ0NO2vjHbFWagfinJiR9BPqiyub5%2BVAGI4B444t) 来定义合成事件，`兼容`所有浏览器，拥有与浏览器原生事件相同的`接口`。
+> > React `合成事件`（SyntheticEvent）是 React **模拟原生 DOM 事件所有能力的一个`事件对象`**，即浏览器原生事件的跨浏览器包装器。它根据 [W3C 规范](https://link.segmentfault.com/?enc=KXFOhTwb7kLAUHPdGLbNLw%3D%3D.g2M1qrTWUHRWD40C8ynvRWrTsZ0NO2vjHbFWagfinJiR9BPqiyub5%2BVAGI4B444t) 来定义合成事件，`兼容`所有浏览器，拥有与浏览器原生事件相同的`接口`。
 > >
 > > 那么 React 为什么使用合成事件？其主要有三个目的：
 > >
@@ -94,23 +96,24 @@
 > ```js
 > // hoc的定义
 > function withSubscription(WrappedComponent, selectData) {
->   return class extends React.Component {
->     constructor(props) {
->       super(props);
->       this.state = {
->         data: selectData(DataSource, props)
->       };
->     }
->     // 一些通用的逻辑处理
->     render() {
->       // ... 并使用新数据渲染被包装的组件!
->       return <WrappedComponent data={this.state.data} {...this.props} />;
->     }
->   };
+>     return class extends React.Component {
+>         constructor(props) {
+>             super(props);
+>             this.state = {
+>                 data: selectData(DataSource, props)
+>             };
+>         }
+>         // 一些通用的逻辑处理
+>         render() {
+>             // ... 并使用新数据渲染被包装的组件!
+>             return <WrappedComponent data={this.state.data} {...this.props} />;
+>         }
+>     };
 > 
 > // 使用
-> const BlogPostWithSubscription = withSubscription(BlogPost,
->   (DataSource, props) => DataSource.getBlogPost(props.id));
+> const BlogPostWithSubscription = withSubscription(BlogPost, (DataSource, props) => {
+>     DataSource.getBlogPost(props.id)
+> });
 > ```
 >
 > **1）HOC的优缺点**
@@ -128,7 +131,7 @@
 > **3）具体应用例子** 
 >
 > - **权限控制：**利用高阶组件的 **条件渲染** 特性可以对页面进行权限控制，权限控制一般分为两个维度：页面级别和 页面元素级别
-> - **组件渲染性能追踪：**借助父组件子组件生命周期规则捕获子组件的生命周期，可以方便的对某个组件的渲染时间进行记录∶
+> - **组件渲染性能追踪：**借助父组件子组件生命周期规则捕获子组件的`生命周期`，可以方便的对某个组件的渲染时间进行记录∶
 > - **页面复用**
 
 ### React 高阶组件、Render props、hooks 有什么区别，为什么要不断迭代
@@ -162,39 +165,37 @@
 >
 > 官方解释∶
 >
-> "render prop"是指一种在 React 组件之间使用一个值为函数的 prop 共享代码的简单技术
+> "render prop"是指一种在 React 组件之间使用一个值为 函数的prop 共享代码的简单技术
 >
-> 简单点讲, render props 就一种在组件间共享逻辑的技巧。 把一些渲染逻辑以prop 的形式传递给 Component, 把注意力集中在渲染逻辑上。使用场景：重复UI结构，共享某个数据源，共享某个全局事件
+> 简单点讲, render props 就一种在组件间共享逻辑的技巧。 把一些渲染逻辑以 prop 的形式传递给 Component, 把注意力集中在渲染逻辑上。使用场景：重复UI结构，共享某个数据源，共享某个全局事件
 >
-> ```js
+> ```jsx
 > // DataProvider组件内部的渲染逻辑如下
 > class DataProvider extends React.Components {
->      state = {
->     name: 'Tom'
->   }
+>     state = {
+>         name: 'Tom'
+>     }
 > 
 >     render() {
->     return (
->         <div>
->           <p>共享数据组件自己内部的渲染逻辑</p>
->           { this.props.render(this.state) }
->       </div>
->     );
->   }
+>         return (
+>             <div>
+>                 <p>共享数据组件自己内部的渲染逻辑</p>
+>                 { this.props.render(this.state) }
+>             </div>
+>         );
+>     }
 > }
 > 
 > // 调用方式
-> <DataProvider render={data => (
->   <h1>Hello {data.name}</h1>
-> )}/>
+> <DataProvider render={data => (<h1>Hello {data.name}</h1>) } />
 > 
 > ```
->
+> 
 > 由此可以看到，render props的优缺点也很明显∶
 >
 > - 优点：数据共享、代码复用，将组件内的state作为props传递给调用者，将渲染逻辑交给调用者。
-> - 缺点：`无法在 return 语句外访问数据、嵌套写法不够优雅`
->
+>- 缺点：`无法在 return 语句外访问数据、嵌套写法不够优雅`
+> 
 > 3）Hooks
 >
 > 官方解释∶
@@ -202,7 +203,7 @@
 > Hook是 React 16.8 的新增特性。它可以让你在不编写 class 的情况下使用 state 以及其他的 React 特性。通过自定义hook，可以复用代码逻辑。
 >
 > ```js
-> // 自定义一个获取订阅数据的hook
+>// 自定义一个获取订阅数据的hook
 > function useSubscription() {
 >   const data = DataSource.getComments();
 >   return [data];
@@ -216,14 +217,14 @@
 > // 使用
 > <CommentList data='hello' />
 > ```
->
+> 
 > 以上可以看出，hook解决了hoc的prop覆盖的问题，同时使用的方式解决了render props的嵌套地狱的问题。hook的优点如下∶ 
 >
 > - 使用直观；
-> - 解决hoc的prop 重名问题；
+>- 解决hoc的prop 重名问题；
 > - 解决render props 因共享数据 而出现嵌套地狱的问题；
 > - 能在return之外使用数据的问题。
->
+> 
 > 需要注意的是：hook只能在组件顶层使用，不可在分支语句中使用。
 >
 > **总结∶**
@@ -253,9 +254,9 @@
 >
 > **核心思想：**Fiber 也称协程或者纤程。它和线程并不一样，协程本身是没有并发或者并行能力的（需要配合线程），它只是一种控制流程的让出机制。让出 CPU 的执行权，让 CPU 能在这段时间执行其他的操作。渲染的过程可以被中断，可以将控制权交回浏览器，让位给高优先级的任务，浏览器空闲后再恢复渲染。
 >
-> Fiber 会将原本耗时很长的同步任务分成多个耗时短的分片。每当执行完一个分片时，渲染线程都会把主线程交回去，看看有没有优先级更高的工作要处理，确保不会出现其他任务被“饿死”的情况，进而避免同步渲染带来的卡顿。此时，渲染线程是可以被打断的，这就是所谓的“异步渲染”。
+> `Fiber 会将原本耗时很长的同步任务分成多个耗时短的分片。每当执行完一个分片时，渲染线程都会把主线程交回去，看看有没有优先级更高的工作要处理，确保不会出现其他任务被“饿死”的情况，进而避免同步渲染带来的卡顿。此时，渲染线程是可以被打断的，这就是所谓的“异步渲染”。`
 >
-> Fiber 架构的重要特征就是可以被打断的异步渲染模式。
+> `Fiber 架构的重要特征就是可以被打断的异步渲染模式。`
 
 ### 调和
 
@@ -314,6 +315,8 @@
 > #### 3.使用 React.memo
 >
 > React.memo 是 React 16.6 新的一个 API，用来缓存组件的渲染，避免不必要的更新，其实也是一个高阶组件，与 PureComponent 十分类似，但不同的是， React.memo 只能用于函数组件 。
+>
+> React.memo()是一个`高阶组件`，用于`函数组件`，通过对前后props进行**浅比较**，如果前后props不一致，该组件将重新渲染，反之，不进行渲染，使用缓存中的组件。
 >
 > #### 4.合理拆分组件
 >
@@ -381,7 +384,7 @@
 >
 > 在HTML的表单元素中，它们通常自己维护一套`state`，并随着用户的输入,自己进行`UI`上的更新，这种行为是不被我们程序所管控的。
 >
-> 在react中，使用表单来收集用户输入时，例如<input> <select> <textearea>等元素都要绑定一个change事件，当表单的状态发生变化，就会触发onChange事件，然后通过`setState()`更新组件的state。这种组件在React中被称为**受控组件**，在受控组件中，组件渲染出的状态与它的value或checked属性相对应，react通过这种方式消除了组件的局部状态，使整个状态可控。react官方推荐使用受控表单组件。
+> 在react中，使用表单来收集用户输入时，例如`<input> <select> <textearea>`等元素都要绑定一个change事件，当表单的状态发生变化，就会触发onChange事件，然后通过`setState()`更新组件的state。这种组件在React中被称为**受控组件**，在受控组件中，组件渲染出的状态与它的value或checked属性相对应，react通过这种方式消除了组件的局部状态，使整个状态可控。react官方推荐使用受控表单组件。
 >
 > 受控组件更新state的流程：
 >
@@ -439,7 +442,7 @@
 
 > 首先明确定义，在 React 中为元素添加的事件被叫做合成事件。
 
-> <img src="React常考.assets/image-20220320203035199.png" alt="image-20220320203035199" style="zoom:33%;" />
+> <img src="React常考.assets/image-20220320203035199.png" alt="image-20220320203035199" style="zoom: 80%;" />
 >
 > 具体的执行过程如下（源码级解析）：
 >
@@ -481,7 +484,9 @@
 
 ### React的生命周期有哪些？
 
-> > React 通常将组件生命周期分为三个阶段：
+> https://github.com/sisterAn/JavaScript-Algorithms/issues/153
+>
+> > React （16.3之后）通常将组件生命周期分为三个阶段：
 > >
 > > - 装载阶段（Mount），组件第一次在DOM树中被渲染的过程；
 > > - 更新过程（Update），组件状态发生变化，重新更新渲染的过程；
@@ -494,14 +499,18 @@
 > >   
 > >   ps:绑定this原因，事件触发时，会由React作为中介调用回调函数（事件机制），此时的this指向丢失，就指向了window
 > >   
-> >   * getDerivedStateFromProps，静态方法，有两个参数 `props` 和 `state`，分别指接收到的新参数和当前组件的 `state` 对象，这个函数会返回一个对象用来更新当前的 `state` 对象，如果不需要更新可以返回 `null`。该函数会在装载时，接收到新的 `props` 或者调用了 `setState` 和 `forceUpdate` 时被调用。如当接收到新的属性想修改 `state` ，就可以使用。
-> >   * render，render是React 中最核心的方法，一个组件中必须要有这个方法，它会根据状态 `state` 和属性 `props` 渲染组件。这个函数只做一件事，就是`返回需要渲染的内容`，所以不要在这个函数内做其他业务逻辑，通常调用该方法会返回以下类型中一个，**React 元素**，**字符串和数字**,**布尔值或 null**
+> >   * getDerivedStateFromProps，静态方法，有两个参数 `props` 和 `state`，分别指接收到的新参数和当前组件的 `state` 对象，这个函数会返回一个对象用来更新当前的 `state` 对象，如果不需要更新可以返回 `null`。该函数会在装载时，接收到新的 `props` 或者调用了 `setState` 和 `forceUpdate` 时被调用。如当接收到新的属性想修改 `state` ，就可以使用。 
+> >   
+> >     **在挂载阶段用来代替`componentWillMount`**；在组件更新阶段配合 `componentDidUpdate`，可以覆盖 `componentWillReceiveProps` 的所有用法。
+> >   
+> >   * render，render是React 中最核心的方法，一个组件中必须要有这个方法，它会根据状态 `state` 和属性 `props` 渲染组件。这个函数只做一件事，就是`返回需要渲染的内容`，所以不要在这个函数内做其他业务逻辑，通常调用该方法会返回以下类型中一个，**React 元素**，**字符串和数字**,**布尔值或 null**。 创建虚拟 dom，进行 diff 算法，更新 dom 树都在此进行
+> >   
 > >   * componentDidMount() ，会在`组件挂载后（插入 DOM 树中）立即调`。该阶段通常进行以下操作：执行依赖于DOM的操作，发送网络请求，添加订阅消息（会在componentWillUnmount取消订阅）
 > > * 组件`更新阶段`，当组件的 `props` 改变了，或组件内部调用了 `setState/forceUpdate`，会触发更新重新渲染，这个过程可能会发生多次。这个阶段会依次调用下面这些方法：
 > >   * getDerivedStateFromProps
 > >   * shouldComponentUpdate，用来提升速度的，它是在重新渲染组件开始前触发的，默认返回 `true`，可以比较 `this.props` 和 `nextProps` ，`this.state` 和 `nextState` 值是否变化，来确认返回 true 或者 `false`。当返回 `false` 时，组件的更新过程停止，后续的 `render`、`componentDidUpdate` 也不会被调用。
 > >   * render
-> >   * getSnapshotBeforeUpdate，两个参数 `prevProps` 和 `prevState`，表示更新之前的 `props` 和 `state`，这个函数必须要和 `componentDidUpdate` 一起使用，并且要有一个返回值，默认是 `null`，这个返回值作为第三个参数传给 `componentDidUpdate`。
+> >   * getSnapshotBeforeUpdate，两个参数 `prevProps` 和 `prevState`，表示更新之前的 `props` 和 `state`，这个函数必须要和 `componentDidUpdate` 一起使用，并且要有一个返回值，默认是 `null`，这个返回值作为第三个参数传给 `componentDidUpdate`。可以覆盖`componentWillUpdate` 的所有用法。
 > >   * componentDidUpdate，`更新后会被立即调用`，首次渲染不会执行此方法。 该阶段通常进行以下操作：当组件更新后，对 DOM 进行操作；如果对更新前后的 props 进行了比较，也可以选择在此处进行网络请求；（例如，当 props 未发生变化时，则不会执行网络请求）。 该方法三个参数，preProps: 更新前的props;prevState: 更新前的state;snapshot: getSnapshotBeforeUpdate()生命周期的返回值
 > > * 组件`卸载阶段`,
 > >   
@@ -550,39 +559,39 @@
 > ```js
 > // 子组件: Child
 > const Child = props =>{
->   return <p>{props.name}</p>
+>       return <p>{props.name}</p>
 > }
 > // 父组件 Parent
 > const Parent = ()=>{
->     return <Child name="react"></Child>
+>        return <Child name="react"></Child>
 > }
 > ```
 >
 > **子组件向父组件通信**：: props+回调的方式，父组件事`先定义好`回调函数，并将回调函数`传递`给子组件，子组件`调用`回调函数，向父组件通信。
 >
-> ```js
+> ```jsx
 > // 子组件: Child
 > const Child = props => {
->   const cb = msg => {
->       return () => {
->           console.log('child-cb');                             // 2，点击 ‘你好’按钮后，开始执行，使用了props
->           props.callback(msg)
+>       const cb = msg => {
+>            return () => {
+>                console.log('child-cb');                             // 2，点击 ‘你好’按钮后，开始执行，使用了props
+>                props.callback(msg)
+>            }
 >       }
->   }
->   return (
->       <button onClick={cb("你好!")}>你好</button>
->   )
+>       return (
+>            <button onClick={cb("你好!")}>你好</button>
+>       )
 > }
 > // 父组件 Parent
 > class Parent extends React.Component {
->     callback(msg){														
->         console.log('parent-callback');                        // 3，之后来到这里，开始打印
->         console.log(msg)									   // 4，打印’你好‘
->     }
->     render(){
->         console.log('Parent-render');                               // 1，初始化时执行
->         return <Child callback={this.callback.bind(this)}></Child>    
->     }
+>        callback(msg) {														
+>            console.log('parent-callback');                        // 3，之后来到这里，开始打印
+>            console.log(msg)									   // 4，打印’你好‘
+>        }
+>        render() {
+>            console.log('Parent-render');                               // 1，初始化时执行
+>            return <Child callback={this.callback.bind(this)}></Child>    
+>        }
 > }
 > ```
 
@@ -593,7 +602,7 @@
 > - 使用props，利用中间组件层层传递,但是如果父组件结构较深，那么中间每一层组件都要去传递props，增加了复杂度，并且这些props并不是中间组件自己需要的。
 > - 使用context，context相当于一个大容器，可以把要通信的内容放在这个容器中，这样不管嵌套多深，都可以随意取用，对于跨越多层的全局数据可以使用context实现。
 >
-> ```js
+> ```jsx
 > // context方式实现跨级组件通信 
 > // Context 设计目的是为了共享那些对于一个组件树而言是“全局”的数据
 > const BatteryContext = createContext();
@@ -617,17 +626,17 @@
 > }
 > // 父组件
 > class Parent extends Component {
->       state = {
->           color:"red"
->       }
->       render(){
->           const {color} = this.state
->           return (
->           <BatteryContext.Provider value={color}>
->               <Child></Child>
->           </BatteryContext.Provider>
->           )
->       }
+>     state = {
+>         color:"red"
+>     }
+>     render(){
+>         const {color} = this.state
+>         return (
+>             <BatteryContext.Provider value={color}>
+>                 <Child></Child>
+>             </BatteryContext.Provider>
+>         )
+>     }
 > }
 > ```
 
@@ -831,28 +840,28 @@
 >
 > **（1）类组件：**所谓类组件，就是基于 ES6 Class 这种写法，通过继承 React.Component 得来的 React 组件。以下是一个类组件：
 >
-> ```js
+> ```jsx
 > class DemoClass extends React.Component {
->   state = {
->     text: ""
->   };
->   componentDidMount() {
->     //...
->   }
->   changeText = (newText) => {
->     this.setState({
->       text: newText
->     });
->   };
+>       state = {
+>            text: ""
+>       };
+>       componentDidMount() {
+>            //...
+>       }
+>       changeText = (newText) => {
+>            this.setState({
+>                text: newText
+>            });
+>       };
 > 
->   render() {
->     return (
->       <div className="demoClass">
->         <p>{this.state.text}</p>
->         <button onClick={this.changeText}>修改</button>
->       </div>
->     );
->   }
+>       render() {
+>            return (
+>                <div className="demoClass">
+>                	<p>{this.state.text}</p>
+>        		    <button onClick={this.changeText}>修改</button>
+>    			</div>
+>    		);
+>   	}
 > }
 > 
 > ```
@@ -863,14 +872,14 @@
 >
 > **（2）函数组件**：函数组件就是以函数的形态存在的 React 组件。早期并没有 React-Hooks，函数组件内部无法定义和维护 state，因此它还有一个别名叫“无状态组件”。以下是一个函数组件：
 >
-> ```js
+> ```jsx
 > function DemoFunction(props) {
->   const { text } = props
->   return (
->     <div className="demoFunction">
->       <p>{`函数组件接收的内容：[${text}]`}</p>
->     </div>
->   );
+>       const { text } = props
+>       return (
+>            <div className="demoFunction">
+>            	<p>{`函数组件接收的内容：[${text}]`}</p>
+>    	    </div>
+>   	);
 > }
 > ```
 >
@@ -978,19 +987,21 @@
 >
 > ps:
 >
+> > https://juejin.cn/post/6844904083212468238
+>
 > 浏览器渲染过程：
 >
 > * 解析 HTML，生成 DOM 树，解析 CSS，生成 CSSOM 树
 >
 > * 将 DOM 树和 CSSOM 树结合，生成渲染树(Render Tree)
 >
-> * Layout(回流):根据生成的渲染树，进行回流(Layout)，得到节点的几何信息（位置，大小）
+> * Layout(回流/重排):根据生成的渲染树，进行回流(Layout)，得到节点的位置，大小等集合信息,将其安放在界面中的正确位置
 >
-> * Painting(重绘):根据渲染树以及回流得到的几何信息，得到节点的绝对像素
+> * Painting(重绘):根据渲染树以及回流得到的几何信息，得到节点的绝对像素，把元素外观绘制出来
 >
 > * Display:将像素发送给 GPU，展示在页面上。（这一步其实还有很多内容，比如会在 GPU 将多个合成层合并为同一个层，并展示在页面中。而 css3 硬件加速的原理则是新建合成层，这里我们不展开）
 >
-> **回流：当`render tree`（渲染树）中部分或者是全部的`元素`的`尺寸`、`结构`或者某些`属性`发生变化之后，浏览器会重新渲染部分或者全部的`文档`，就是回流。**
+> **回流/重排：当`render tree`（渲染树）中部分或者是全部的`元素`的`尺寸`、`结构`或者某些`属性`发生变化之后，浏览器会重新渲染部分或者全部的`文档`，将其安放在界面中的正确位置，就是回流。**
 >
 > **重绘：当页面中的`样式改变`而并`不`影响他在`文档流中的位置`的时候，浏览器会给元素`赋予新的样式`，然后并且重新绘制文档流，这个过程就是重绘。**
 >
@@ -1042,10 +1053,10 @@
 >
 > <img src="React常考.assets/image-20220323161749058.png" alt="image-20220323161749058" style="zoom:50%;" />
 >
-> 具体的流程如下：
+> 具体的流程如下：https://github.com/pfan123/Articles/issues/62
 >
 > - 真实的 DOM 首先会映射为虚拟 DOM；
-> - 当虚拟 DOM 发生变化后，比较新旧虚拟 DOM 树，找出最小的有变化的部分，将这个变化的部分（Patch）加入队列；
+> - 当虚拟 DOM 发生变化后，通过深优遍历（广优可能会导致组件的生命周期乱套）比较新旧虚拟 DOM 树，找出最小的有变化的部分，将这个变化的部分（Patch）加入队列；
 > - 最终批量的更新这些 (变化部分)Patch 到实际的 DOM 
 >
 > <img src="React常考.assets/image-20220323161827695.png" alt="image-20220323161827695" style="zoom:50%;" />
@@ -1078,14 +1089,14 @@
 >
 > **策略一：tree diff-基于树进行对比-忽略节点跨层级操作场景，提升比对效率。**
 >
-> 这一策略需要进行树比对，即对树进行分层比较。树比对的处理手法是非常“暴力”的，即`两棵树`只对同一层次的节点进行比较，根据对比结果，进行节点的新增和删除。这就提升了比对效率。
+> 这一策略需要进行树比对，即对树进行分层比较。树比对的处理手法是非常“暴力”的，即`两棵树`只对同一层次的节点进行比较，根据对比结果，进行节点的新增和删除。只需要对树进行一次遍历，便能完成整个 DOM 树的比较。，这就提升了比对效率。
 >
 > **策略二：component diff-基于组件进行对比-拥有相同类型的两个组件将会生成相似的树形结构，拥有不同类型的两个组件将会生成不同树形结构。**
 >
 > 在组件比对的过程中：
 >
 > - 如果组件是同一类型则遵循 tree diff，进行层级对比，（如果开发者知道这个组件的 Virtual DOM没有任何变化，就可以手动使用 `shouldComponentUpdate()` 来判断组件是否需要进行diff，进一步的提升了diff效率和性能）
-> - 如果不是同一类型则（被判定作为脏组件(dirty component)处理），直接删除或创建新组件
+> - 如果不是同一类型则（被判定作为脏组件(dirty component)处理），从而替换整个组件下的所有子节点。
 >
 > 只要父组件类型不同，就会被重新渲染。这也就是为什么 shouldComponentUpdate、PureComponent 及 React.memo 可以提高性能的原因。
 >
@@ -1095,7 +1106,7 @@
 >
 > * 对全新的节点时，执行**插入操作** —— `INSERT_MARKUP`
 > * 面对多余的节点时，执行**删除操作** —— `REMOVE_NODE`
->   * 组件新集合中有组件旧集合中的类型，但对应的element不可更新，只能执行删除
+>   * 组件新集合中有组件旧集合中的类型，但对应的element不同了不能直接复用直接更新，只能执行删除
 >   * 旧组件不在新集合里面，执行删除
 > * 面对换位的节点时，执行**移动操作** —— `MOVE_EXISTING`
 >   * 比如该层级的组件原本是 [A,B,C,D] ，新的结构为 [A,D,B,C] ，只进行了移动操作。在传统的diff算法中，只要遇见不同（B/D）就删除并重新插入，这样的做法过于粗暴，浪费了很多可以复用的节点，所以在element diff中，对新旧该层级的对比双方都添加了唯一的key值进行区分，只要对应的key值对应的元素没有改变，则只需要执行移动即可。

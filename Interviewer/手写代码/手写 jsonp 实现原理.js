@@ -1,31 +1,38 @@
-function jsonp({ url, params, callbackName }) {
-//拼接url地址
-    function getUrl() {
-    let paramsStr = ''
-    for (let item in params) {
-        if (Object.prototype.hasOwnProperty.call(params, item)) {
-        paramsStr += `${item}=${params[item]}&`
-        }
-    }
-    return `${url}?${paramsStr}callback=${callbackName}`
-    }
+// jsonp原理：因为jsonp发送的并不是ajax请求，其实是动态创建script标签
+// script标签是没有同源限制的，把script标签的src指向请求的服务端地址。
+// https://juejin.cn/post/6844903946364928008
 
+function jsonp(url, data = {}, callback = 'callback') {
+    // 处理json对象，拼接url
+    data.callback = callback;
+    let params = [];
+    for (let key in data) {
+      params.push(key + '=' + data[key]);
+    }
+    // params: [ 'data=1', 'callback=callback' ]
+    let script = document.body.createElement('script'); // 构造 script
+    script.src = url + '?' + params.join('&');
+    // script.src: http://127.0.0.1:3000?data=1&callback=callback
+    document.body.appendChild(script);  // appendChild() 方法向节点的子节点列表的末尾添加新的子节点
+    
+    // 返回Promise
     return new Promise((resolve, reject) => {
-    //创建一个script标签
-    let scriptEle = document.createElement('script')
-    //给script标签的src属性赋值。
-    scriptEle.src = getUrl()
-    //将其插入文档流中
-    document.body.appendChild(scriptEle)
-    //监听回调函数
-    window[callbackName] = (data) => {
-        resolve(data)
-        document.body.removeChild(scriptEle)
-    }
+      window[callback] = data => {
+        try {
+          resolve(data);
+        } catch (e) {
+          reject(e);
+        } finally {
+          script.parentNode.removeChild(script); // 注意这句代码，script移除,细节
+        }
+      }
     })
-}
-
-// DEMO
-jsonp({ url: 'http://127.0.0.1:3000', params: {}, callbackName: 'func' }).then(res => {
-    console.log(res)
-})
+  }
+  
+  // 请求数据
+  jsonp('http://127.0.0.1:3000', {
+    data: 1,
+  }, 'callback')
+  .then(res => {
+    console.log(res);
+  })

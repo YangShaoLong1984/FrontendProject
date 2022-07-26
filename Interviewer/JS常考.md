@@ -2193,22 +2193,22 @@ Execution Context stack(ECS)
 >
 > ```js
 > function objectCopy(obj) {
->   function Fun() { };
->   Fun.prototype = obj;
->  return new Fun();
+>     function Fun() { };
+>     Fun.prototype = obj;
+>     return new Fun();
 > }
 > 
 > function createAnother(original) {
->   let clone = objectCopy(original);
->   clone.getName = function () {
->     console.log(this.name);
->   };
->   return clone;
+>     let clone = objectCopy(original);
+>     clone.getName = function () {
+>         console.log(this.name);
+>     };
+>     return clone;
 > }
 > 
 > let person = {
->      name: "yhd",
->      friends: ["rose", "tom", "jack"]
+>     name: "yhd",
+>     friends: ["rose", "tom", "jack"]
 > }
 > 
 > let person1 = createAnother(person);
@@ -2227,34 +2227,34 @@ Execution Context stack(ECS)
 >
 > ```js
 >function objectCopy(obj) {
->   function Fun() { };
->   Fun.prototype = obj;
->  return new Fun();
+>     function Fun() { };
+>     Fun.prototype = obj;
+>     return new Fun();
 > }
 > 
 > function inheritPrototype(child, parent) {
->   let prototype = objectCopy(parent.prototype); // 创建对象
->   prototype.constructor = child; // 增强对象
->   Child.prototype = prototype; // 赋值对象
+>     let prototype = objectCopy(parent.prototype); // 创建对象
+>     prototype.constructor = child; // 增强对象
+>     Child.prototype = prototype; // 赋值对象
 > }
 > 
 > function Parent(name) {
->   this.name = name;
->   this.friends = ["rose", "lily", "tom"]
+>     this.name = name;
+>     this.friends = ["rose", "lily", "tom"]
 > }
 > 
 > Parent.prototype.sayName = function () {
->   console.log(this.name);
+>     console.log(this.name);
 > }
 > 
 > function Child(name, age) {
->   Parent.call(this, name);
->   this.age = age;
+>     Parent.call(this, name);
+>     this.age = age;
 > }
 > 
 > inheritPrototype(Child, Parent);
 > Child.prototype.sayAge = function () {
->   console.log(this.age);
+>     console.log(this.age);
 > }
 > 
 > let child1 = new Child("yhd", 23);
@@ -2386,9 +2386,9 @@ Execution Context stack(ECS)
 >
 > ```js
 > function flatten(arr){
->   return arr.reduce(function(prev, cur){
->     return prev.concat(Array.isArray(cur) ? flatten(cur) : cur)
->   }, [])
+>     return arr.reduce(function(prev, cur){
+>         return prev.concat(Array.isArray(cur) ? flatten(cur) : cur)
+>     }, [])
 > }
 > const arr = [1, [2, [3, 4]]];
 > console.log(flatten(arr)); // [1, 2, 3, 4]

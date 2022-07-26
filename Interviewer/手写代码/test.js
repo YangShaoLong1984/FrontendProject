@@ -1,13 +1,16 @@
+// 实现 new 运算
 function _new(constructor, params) {
-  const args = [...arguments];
-  const contruc = args.shift();
-  let newObject = Object.create(contruc.prototype);
-  let result = contruc.apply(newObject, args);
-  return (typeof result === 'object' && result !== null) ? result : newObject;
+    const args = [...arguments];
+    const _constructor = args.shift();
+    let newObject = Object.create(_constructor.prototype);
+    let result = _constructor.apply(newObject, args);
+    return (typeof result === 'object' && result !== null) ? result : newObject;
 }
 
+
 function Person(name) {
-  this.name = name;
+    this.name = name;
 }
-const person = _new(Person, 'zs');
-console.log(person);
+
+console.log(_new(Person, 'zs'));
+console.log(new Person('zs'));

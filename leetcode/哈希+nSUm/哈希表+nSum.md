@@ -563,4 +563,50 @@
 > };
 > ```
 >
-> 
+
+#### 3sum问题之最接近target的数
+
+> #### [16. 最接近的三数之和](https://leetcode.cn/problems/3sum-closest/)
+>
+> [思路](https://leetcode.cn/problems/3sum-closest/#)
+>
+> 给你一个长度为 `n` 的整数数组 `nums` 和 一个目标值 `target`。请你从 `nums` 中选出三个整数，使它们的和与 `target` 最接近。
+>
+> 返回这三个数的和。
+>
+> 假定每组输入只存在恰好一个解。
+>
+> **示例 1：**
+>
+> ```
+> 输入：nums = [-1,2,1,-4], target = 1
+> 输出：2
+> 解释：与 target 最接近的和是 2 (-1 + 2 + 1 = 2) 。
+> ```
+
+> 固定一个数，剩下两个数就变成了 双指针 的常规解法。
+>
+> ```js
+> var threeSumClosest = function(nums, target) {
+>     nums.sort((a, b) => a - b);
+>     let res = Infinity;
+>     for (let i = 0; i < nums.length; i++) {
+>         let left = i + 1;
+>         let right = nums.length - 1;
+>         while (left < right) {
+>             let sum = nums[i] + nums[left] + nums[right];
+>             if (Math.abs(sum - target) < Math.abs(res - target)) {
+>                 res = sum;
+>             }
+>             if (sum < target) {
+>                 left++;
+>             } else if (sum > target) {
+>                 right--;
+>             } else {
+>                 return sum;
+>             }
+>         }
+>     }
+>     return res;
+> };
+> ```
