@@ -9,11 +9,11 @@ function _new(/* 构造函数 */ constructor, /* 构造函数参数 */ params) {
     //将arguments对象转为数组
     let args = [...arguments];
     //取出构造函数
-    let construc = args.shift();
-    //创建一个空对象，继承构造函数的ptptotype属性：creat指定原型对象(第一个参数)和属性（余后参数），返回一个新的对象
-    let newObject = Object.create(construc.prototype);
+    let constructor1 = args.shift();
+    //创建一个空对象，继承构造函数的prototype属性：create指定原型对象(第一个参数)和属性（余后参数），返回一个新的对象
+    let newObject = Object.create(constructor1.prototype);
     //将this指向新建对象，执行构造函数 args是一个数组，它将作为参数传递给constructor
-    let result = construc.apply(newObject, args);
+    let result = constructor1.apply(newObject, args);
     //如果返回结果是对象，就直接返回，否则返回newObject对象
     return (typeof result === 'object' && result != null) ? result : newObject;
 }

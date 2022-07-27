@@ -36,3 +36,6 @@ function jsonp(url, data = {}, callback = 'callback') {
   .then(res => {
     console.log(res);
   })
+  .catch(err => {
+    console.log(err);
+  })

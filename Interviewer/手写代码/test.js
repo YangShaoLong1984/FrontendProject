@@ -1,16 +1,23 @@
-// 实现 new 运算
-function _new(constructor, params) {
-    const args = [...arguments];
-    const _constructor = args.shift();
-    let newObject = Object.create(_constructor.prototype);
-    let result = _constructor.apply(newObject, args);
-    return (typeof result === 'object' && result !== null) ? result : newObject;
+function deepCopy(object) {
+    if (!object && typeof object !== 'object') return;
+    let newObject = Array.isArray(object) ? [] : {};
+    for (let key in object) {
+        if (object.hasOwnProperty(key)) {
+            newObject[key] = 
+                typeof object === 'object' ? deepCopy(object[key]) : object[key];
+        }
+    }
+    return newObject;
 }
 
-
-function Person(name) {
-    this.name = name;
+let obj1 = {
+    name: 'obj1',
+    child: {
+        childName: 'child1'
+    }
 }
-
-console.log(_new(Person, 'zs'));
-console.log(new Person('zs'));
+let obj2 = deepCopy(obj1);
+obj2.name = 'obj2';
+obj2.child.childName = 'child2';
+console.log(obj1);
+console.log(obj2);
