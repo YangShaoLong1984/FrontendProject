@@ -23,7 +23,7 @@
 > 两种类型的区别在于**存储位置的不同：**
 >
 > - 基本数据类型直接存储在栈（stack）中的简单数据段，占据空间小、大小固定，属于被频繁使用数据，所以放入栈中存储；
-> - 引用数据类型存储在堆（heap）中的对象，占据空间大、大小不固定。如果存储在栈中，将会影响程序运行的性能；引用数据类型在栈中存储了指针，该指针指向堆中该实体的起始地址。当解释器寻找引用值时，会首先检索其在栈中的地址，取得地址后从堆中获得实体。
+> - 引用数据类型存储在堆（heap）中的对象，占据空间大、大小不固定。如果存储在栈中，将会影响程序运行的性能；引用数据类型在栈中存储了指针，这个指针指向堆中该实体的起始地址。当解释器寻找引用值时，会首先检索其在栈中的地址，取得地址后从堆中获得实体。
 >
 > 
 >
@@ -41,7 +41,9 @@
 
 ### 深拷贝和浅拷贝
 
-> 浅拷贝只复制指向某个对象的指针，而不复制对象本身，新旧对象还是共享同一块内存。但深拷贝会另外创造一个一模一样的对象，新对象跟原对象不共享内存，修改新对象不会改到原对象。
+> 浅拷贝只复制指向某个对象的指针，而不复制对象本身，新旧对象还是共享同一块内存。
+>
+> 深拷贝会另外创造一个一模一样的对象，新对象跟原对象不共享内存，修改新对象不会改到原对象。
 >
 > * 当我们把一个对象赋值给一个新的变量时，赋的其实是该对象的在栈中的地址，而不是堆中的数据。也就是两个对象指向的是同一个存储空间，无论哪个对象发生改变，其实都是改变的存储空间的内容，因此，两个对象是联动的。
 > * 浅拷贝是按位拷贝对象，它会创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。
@@ -89,7 +91,7 @@
 >
 > **（2）instanceof**
 >
-> `instanceof`可以正确判断对象的类型，**其内部运行机制是****判断在其原型链中能否找到该类型的原型**。
+> `instanceof`可以正确判断对象的类型，其内部运行机制是**判断在其原型链中能否找到该类型的原型**。
 >
 > ```javascript
 > console.log(2 instanceof Number);                    // false
@@ -158,7 +160,6 @@
 > obj = [0, 1, 2];
 > ```
 >
-> 
 
 > * 通过Object.prototype.toString.call()做判断
 >
@@ -201,9 +202,25 @@
 
 > 首先 Undefined 和 Null 都是基本数据类型，这两个基本数据类型分别都只有一个值，就是 undefined 和 null。
 >
-> 
->
 > undefined 代表的含义是**未定义**，null 代表的含义是**空对象**。一般变量声明了但还没有定义的时候会返回 undefined，null主要用于赋值给一些可能会返回对象的变量，作为初始化。
+>
+> **undefined表示"缺少值"，未定义，就是此处应该有一个值，但是还没有定义。**
+>
+> > （1）变量被声明了，但没有赋值时，就等于undefined。
+> >
+> > （2) 调用函数时，应该提供的参数没有提供，该参数等于undefined。
+> >
+> > （3）对象没有赋值的属性，该属性的值为undefined。
+> >
+> > （4）函数没有返回值时，默认返回undefined。
+>
+> **null表示"没有对象"，即该处不应该有值。**典型用法是：
+>
+> > （1） 作为函数的参数，表示该函数的参数不是对象。
+> >
+> > （2） 作为对象原型链的终点。
+> >
+> > 赋值给一些可能会返回对象的变量，作为初始化。
 >
 > 
 >
@@ -211,7 +228,7 @@
 >
 > 
 >
-> 当对这两种类型使用 typeof 进行判断时，Null 类型化会返回 “object”，这是一个历史遗留的问题。
+> 当对这两种类型使用 typeof 进行判断时，Null 类型化会返回 “object”，Undefined返回'undefined'，这是一个历史遗留的问题。
 
 ### typeof null 的结果是什么，为什么？
 
@@ -244,7 +261,7 @@
 
 <img src="JS常考.assets/image-20220309134842480.png" alt="image-20220309134842480" style="zoom:50%;" />
 
-> instanceof 运算符用于判断构造函数的 prototype 属性是否出现在对象的原型链中的任何位置。
+> instanceof 运算符用于判断构造函数的 prototype 属性是否出现在对象实例的原型链中的任何位置。
 >
 > **实现原理**就是只要右边变量的 prototype 在左边变量的原型链上即可
 >
@@ -254,18 +271,18 @@
 >
 > ```js
 > function myInstanceof(left, right) {
->       // 获取对象的原型
->       let proto = Object.getPrototypeOf(left)   //还可以写成 proto = left.__proto__;
->       // 获取构造函数的 prototype 对象
->       let prototype = right.prototype; 
+>        // 获取对象的原型
+>        let proto = Object.getPrototypeOf(left)   //还可以写成 proto = left.__proto__;
+>        // 获取构造函数的 prototype 对象
+>        let prototype = right.prototype; 
 >  
->       // 判断构造函数的 prototype 对象是否在对象的原型链上
->       while (true) {
->         if (!proto) return false;
->         if (proto === prototype) return true;
->         // 如果没有找到，就继续从其原型上找，Object.getPrototypeOf方法用来获取指定对象的原型
->         proto = Object.getPrototypeOf(proto);
->       }
+>        // 判断构造函数的 prototype 对象是否在对象的原型链上
+>        while (true) {
+>            if (!proto) return false;
+>            if (proto === prototype) return true;
+>            // 如果没有找到，就继续从其原型上找，Object.getPrototypeOf方法用来获取指定对象的原型
+>            proto = Object.getPrototypeOf(proto);
+>        }
 > }
 > ```
 
@@ -296,6 +313,8 @@
 > 一般我们认为数字包括整数和小数，但是在 JavaScript 中只有一种数字类型：Number，它的实现遵循`IEEE 754`标准，使用64位固定长度来表示，也就是标准的double双精度浮点数。在二进制科学表示法中，双精度浮点数的小数部分最多只能保留`52`位，再加上前面的`1`，其实就是保留`53`位有效数字，剩余的需要舍去，遵从“0舍1入”的原则。
 >
 > 根据这个原则，0.1和0.2的二进制数相加，再转化为十进制数就是：`0.30000000000000004`。
+>
+> > **`Number.MAX_SAFE_INTEGER`** 常量表示在 JavaScript 中最大的安全整数（maxinum safe integer)（`2^53 - 1）。`
 >
 > 下面看一下**双精度数是如何保存**的：
 >
@@ -374,7 +393,7 @@
 > 1 ==  1
 > ```
 >
-> 1. 判断其中一方是否为 `boolean`，是的话就会把 `boolean` 转为 `number` 再进行判断
+> 5. 判断其中一方是否为 `boolean`，是的话就会把 `boolean` 转为 `number` 再进行判断
 >
 > ```javascript
 > '1' == true
@@ -384,7 +403,7 @@
 >  1  ==  1
 > ```
 >
-> 1. 判断其中一方是否为 `object` 且另一方为 `string`、`number` 或者 `symbol`，是的话就会把 `object` 转为原始类型再进行判断
+> 6. 判断其中一方是否为 `object` 且另一方为 `string`、`number` 或者 `symbol`，是的话就会把 `object` 转为原始类型再进行判断
 >
 > ```javascript
 > '1' == { name: 'js' }
@@ -418,13 +437,31 @@
 >   - 都是 [`NaN`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/NaN)
 >   - 或都是非零而且非 [`NaN`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/NaN) 且为同一个值
 
+### [Map和ForEach的区别](https://blog.fundebug.com/2018/02/05/map_vs_foreach/)
+
+> https://blog.fundebug.com/2018/02/05/map_vs_foreach/
+>
+> #### 定义
+>
+> - `forEach()`: 针对每一个元素执行提供的函数
+> - `map()`: 创建一个新的数组，其中每一个元素由调用数组中的每一个元素执行提供的函数得来
+>
+> > 1. `forEach`是不会返回有意义的值的。
+> > 2. `forEach()`的执行速度比`map()`慢
+> > 3. 因为`forEach()`会改变原始的数组的值，而`map()`会返回一个全新的数组，原本的数组不受到影响。
+> > 4. `forEach`适合于你并不打算改变数据的时候，而只是想用数据做一些事情 – 比如存入数据库或则打印出来。
+> > 5. `map()`适用于你要改变数据值的时候。不仅仅在于它更快，而且返回一个新的数组。这样的优点在于你可以使用复合(composition)(map(), filter(), reduce()等组合使用)来玩出更多的花样。
+> > 6. 能用`forEach()`做到的，`map()`同样可以。反过来也是如此。
+> > 7. `map()`会分配内存空间存储新数组并返回，`forEach()`不会返回数据。
+> > 8. `forEach()`允许`callback`更改原始数组的元素。`map()`返回新的数组。
+
 ## ES6
 
 ### let、const、var的区别
 
 > **（1）块级作用域：**块作用域由 `{ }`包括，let和const具有块级作用域，var不存在块级作用域。块级作用域解决了ES5中的两个问题：
 >
-> - 内层变量可能覆盖外层变量
+> - 内层变量可能覆盖外层变量  
 > - 用来计数的循环变量泄露为全局变量
 >
 > **（2）变量提升：**var存在变量提升，let和const不存在变量提升，即在变量只能在声明之后使用，否在会报错。
@@ -437,7 +474,7 @@
 >
 > **（6）初始值设置：**在变量声明时，var 和 let 可以不用设置初始值。而const声明变量必须设置初始值。
 >
-> **（7）指针指向：**let和const都是ES6新增的用于创建变量的语法。 let创建的变量是可以更改指针指向（可以重新赋值）。但const声明的变量是不允许改变指针的指向。
+> **（7）指针指向：**let和const都是ES6新增的用于创建变量的语法。 let创建的变量是可以更改指针指向（可以重新赋值）。但const声明的变量是不允许改变指针的指向。ps：：对象是引用类型的，const定义的对象t中保存的是指向对象t的指针，这里的“不变”指的是指向对象的**指针**不变，而修改对象中的属性并不会让指向对象的指针发生变化
 >
 > | **区别**           | **var** | **let** | **const** |
 > | ------------------ | ------- | ------- | --------- |
@@ -486,7 +523,7 @@
 > new obj.b()  // Uncaught TypeError: obj.b is not a constructor
 > ```
 >
-> 对象obj的方法b是使用箭头函数定义的，这个函数中的this就永远指向它定义时所处的全局执行环境中的this，即便这个函数是作为对象obj的方法调用，this依旧指向Window对象。需要注意，定义对象的大括号`{}`是无法形成一个单独的执行环境的，它依旧是处于全局执行环境中。
+> 对象obj的方法b是使用箭头函数定义的，这个函数中的this就永远指向它定义时所处的全局执行环境中的this，即便这个函数是作为对象obj的方法调用，this依旧指向Window对象。需要注意，`定义对象的大括号`{}`是无法形成一个单独的执行环境的，它依旧是处于全局执行环境中`。
 >
 > **（4）call()、apply()、bind()等方法不能改变箭头函数中this的指向**
 >
@@ -527,7 +564,7 @@
 
 > **new操作符的执行过程：**
 >
-> （1）首先创建了一个新的空对象，作为将要返回的实例																		
+> （1）首先创建了一个新的空对象，作为将要返回的实例														
 >
 > （2）设置原型，将这个空对象的原型指向构造函数的 prototype 属性。
 >
@@ -539,21 +576,21 @@
 >
 > ```js
 > function _new(/* 构造函数 */ constructor, /* 构造函数参数 */ params) {
->    //将arguments对象转为数组
->    var args = [].slice.call(arguments);
->    //取出构造函数
->    var constructor = args.shift();
->    //创建一个空对象，继承构造函数的ptptotype属性：creat指定原型对象(第一个参数)和属性（余后参数），返回一个新的对象
->     var newObject = Object.create(constructor.prototype);
->     //将this指向新建对象，执行构造函数 args是一个数组，它将作为参数传递给constructor
->    var result = constructor.apply(newObject, args);
->    //如果返回结果是对象，就直接返回，否则返回newObject对象
->    return (typeof result === 'object' && result != null) ? result : newObject;
+>        //将arguments对象转为数组
+>        var args = [].slice.call(arguments);
+>        //取出构造函数
+>        var constructor = args.shift();
+>        //创建一个空对象，继承构造函数的ptptotype属性：creat指定原型对象(第一个参数)和属性（余后参数），返回一个新的对象
+>        var newObject = Object.create(constructor.prototype);
+>        //将this指向新建对象，执行构造函数 args是一个数组，它将作为参数传递给constructor
+>        var result = constructor.apply(newObject, args);
+>        //如果返回结果是对象，就直接返回，否则返回newObject对象
+>        return (typeof result === 'object' && result != null) ? result : newObject;
 > }
 > 
 > function Person(name, age) {
->    this.name = name;
->    this.age = age;
+>        this.name = name;
+>        this.age = age;
 > }
 > let actor = _new(Person, 'zs', 22);
 > console.log(actor);
@@ -565,7 +602,7 @@
 >
 > ```js
 > var Vehicle = function (){
->   this.price = 1000;
+>       this.price = 1000;
 > };
 > 
 > var v = Vehicle();
@@ -816,29 +853,29 @@
 >
 > ```js
 > var arrayLike = {
->     0: 'Java',
->     1: 'Python',
->     2: 'Scala',
->     length: 3
+>        0: 'Java',
+>        1: 'Python',
+>        2: 'Scala',
+>        length: 3
 > }
 > ```
 >
 > - 通过 `call` 调用数组的 `slice` 方法来实现转换
 >
 > ```js
-> Array.prototype.slice.call(arrayLike);
+> Array.prototype.slice.call(arrayLike); // slice()没有参数，实际上等于返回一个原数组的拷贝。
 > ```
 >
 > - 通过 `call` 调用数组的 `splice` 方法来实现转换
 >
 > ```js
-> Array.prototype.splice.call(arrayLike, 0);  // 0代表删除元素个数
+> Array.prototype.splice.call(arrayLike, 0);  // 删除的起始位置
 > ```
 >
 > * 通过 `apply` 调用数组的 `concat` 方法来实现转换
 >
 > ```js
-> Array.prototype.concat.apply([], arrayLike);
+> Array.prototype.concat.apply([], arrayLike); 
 > ```
 >
 > * 通过 Array.from 方法来实现转换
@@ -977,7 +1014,7 @@
 >
 > **（1）提高性能**
 >
-> 在JS代码执行之`前`，会进行`语法检查和预编译`，并且这一操作只进行一次。这么做就是为了提高性能，如果没有这一步，那么每次执行代码前都必须重新解析一遍该变量（函数），而这是没有必要的，因为变量（函数）的代码并不会改变，解析一遍就够了。
+> 在JS代码执行之`前`，会进行`语法检查和预编译`，并且这一操作只进行一次。这么做（指变量提升）就是为了提高性能，如果没有这一步，那么每次执行代码前都必须重新解析一遍该变量（函数），而这是没有必要的，因为变量（函数）的代码并不会改变，解析一遍就够了。
 >
 > 
 >
@@ -1245,12 +1282,12 @@ Execution Context stack(ECS)
 > ```javascript
 > let a = 'Hello World!';
 > function first() {
->   console.log('Inside first function');
->   second();
->   console.log('Again inside first function');
+>     console.log('Inside first function');
+>     second();
+>     console.log('Again inside first function');
 > }
 > function second() {
->   console.log('Inside second function');
+>     console.log('Inside second function');
 > }
 > first();
 > //执行顺序
@@ -1299,7 +1336,7 @@ Execution Context stack(ECS)
 > 执行上下文 3 个重要的属性:变量对象(Variable Object，VO)  作用域链(Scope Chain)  this
 >
 > - 第一种是**函数调用模式**，当一个函数不是一个对象的属性时，直接作为函数来调用时，this 指向全局对象。
->   - ps:，如果使用严格模式，那么全局对象无法使用默认绑定， `this` 绑定至 `undefined` 并抛错
+>   - ps:如果使用严格模式，那么全局对象无法使用默认绑定， `this` 绑定至 `undefined` 并抛错
 >- 第二种是**方法调用模式**，如果一个函数作为一个对象的方法来调用时，this 指向这个对象。
 > - 第三种是**构造器调用模式**，如果一个函数用 new 调用时，函数执行前会新创建一个对象，this 指向这个新创建的对象。
 > - 第四种是 **apply 、 call 和 bind 调用模式**，这三个方法都可以显示的指定调用函数的 this 指向。其中 apply 方法接收两个参数：一个是 this 绑定的对象，一个是参数数组。call 方法接收的参数，第一个是 this 绑定的对象，后面的其余参数是传入函数执行的参数。也就是说，在使用 call() 方法时，传递给函数的参数必须逐个列举出来。bind 方法通过传入一个对象，`返回`一个 this 绑定了传入对象的`新函数`。这个函数的 this 指向除了使用 new 时会被改变，其他情况下都不会改变。
@@ -1342,10 +1379,10 @@ Execution Context stack(ECS)
 >
 > ```js
 > let person = {
->     name: 'y'
+>        name: 'y'
 > }
 > function say(age) {
->     console.log(this.name, age);
+>        console.log(this.name, age);
 > }
 > say.myCall(person, 11); // y 11
 > say.myApply(person, [22]); // y 11
@@ -1446,32 +1483,28 @@ Execution Context stack(ECS)
 > }
 > ```
 >
-> 
->
-> 
->
 > ps:总的来说bind有如下三个功能点：
 >
 > `bind` 有如下特性：
 >
 > - 1、指定 `this`
-> - 2、传入参数
+>- 2、传入参数
 > - 3、返回一个函数
-> - 4、柯里化
+>- 4、柯里化
 > - 一个绑定函数也能使用 new 操作符创建对象：这种行为就像把原函数当成构造器，提供的 this 值被忽略，同时调用时的参数被提供给模拟函数。
->
+> 
 > - 输入：接受一个或者多个参数，第一个是要绑定的上下文，额外参数当作绑定函数的前置参数。
 > - 输出：返回原函数的拷贝，即返回一个函数，这个函数呢具备原函数的功能
->
-> ### 补充：柯里化
->
+> 
+>### 补充：柯里化
+> 
 > 在计算机科学中，柯里化（Currying）是把接受多个参数的函数变换成接受一个单一参数(最初函数的第一个参数)的函数，并且返回接受余下的参数且返回结果的新函数的技术。这个技术由 Christopher Strachey 以逻辑学家 Haskell Curry 命名的，尽管它是 Moses Schnfinkel 和 Gottlob Frege 发明的。
 >
-> ```
-> var add = function(x) {
->   return function(y) {
->     return x + y;
->   };
+> ```js
+>var add = function(x) {
+>     return function(y) {
+>        return x + y;
+>     };
 > };
 > 
 > var increment = add(1);
@@ -1486,9 +1519,9 @@ Execution Context stack(ECS)
 > add(1)(2);
 > // 3
 > ```
->
+> 
 > 这里定义了一个 `add` 函数，它接受一个参数并返回一个新的函数。调用 `add` 之后，返回的函数就通过闭包的方式记住了 `add` 的第一个参数。所以说 `bind` 本身也是闭包的一种使用场景。
->
+> 
 > **柯里化**是将 `f(a,b,c)` 可以被以 `f(a)(b)(c)` 的形式被调用的转化。JavaScript 实现版本通常保留函数被正常调用和在参数数量不够的情况下返回偏函数这两个特性。
 >
 > 
@@ -1545,12 +1578,12 @@ Execution Context stack(ECS)
 >
 > ```js
 > const promise = new Promise(function(resolve, reject) {
->   // ... some code
->   if (/* 异步操作成功 */){
->     resolve(value);
->   } else {
->     reject(error);
->   }
+>     // ... some code
+>     if (/* 异步操作成功 */){
+>         resolve(value);
+> 	} else {
+>         reject(error);
+> 	}
 > });
 > ```
 >
@@ -1624,6 +1657,8 @@ Execution Context stack(ECS)
 > >   (3) reject函数: 内部定义失败时我们调用的函数 reason => {} 
 > >   说明: executor会在Promise内部立即同步调用,异步操作在执行器中执行
 > >
+> >   --- 以下为**实例方法**
+> >   
 > > * `Promise.prototype.then`方法: (onResolved, onRejected) => {} 
 > >   (1) onResolved函数: 成功的回调函数  (value) => {} 
 > >   (2) onRejected函数: 失败的回调函数 (reason) => {} 
@@ -1640,6 +1675,8 @@ Execution Context stack(ECS)
 > >   用于指定不管 Promise 对象最后状态如何，都会执行的操作。该方法是 ES2018 引入标准的。
 > >
 > >   finally方法的回调函数不接受任何参数，这意味着没有办法知道，前面的 Promise 状态到底是fulfilled还是rejected。这表明，finally方法里面的操作，应该是与状态无关的，不依赖于 Promise 的执行结果。finally本质上是`then`方法的特例
+> >
+> >   --- 以下为**静态方法**，如果在一个方法前，加上`static`关键字，就表示该方法不会被实例继承，而是直接通过类来调用，这就称为“静态方法”。
 > >
 > > * `Promise.resolve`方法: (value) => {} 
 > >   (1) value: 成功的数据或promise对象 
@@ -2458,21 +2495,21 @@ Execution Context stack(ECS)
 >
 > ```js
 > function Array_dfor(data) {
->   const newArray = [];
->   let isRepeat;
->   for (let i = 0; i < data.length; i++) {
->     isRepeat = false;
->     for (let j = 0; j < newArray.length; j++) {
->       if (data[i] === newArray[j]) {
->         isRepeat = true;
->         break;
+>       const newArray = [];
+>       let isRepeat;
+>       for (let i = 0; i < data.length; i++) {
+>            isRepeat = false;
+>            for (let j = 0; j < newArray.length; j++) {
+>                if (data[i] === newArray[j]) {
+>                    isRepeat = true;
+>                    break;
+>                }
+>            }
+>            if (!isRepeat) {
+>                newArray.push(data[i]);
+>            }
 >       }
->     }
->     if (!isRepeat) {
->       newArray.push(data[i]);
->     }
->   }
->   return newArray;
+>       return newArray;
 > }
 > ```
 >
@@ -2484,13 +2521,13 @@ Execution Context stack(ECS)
 >
 > ```js
 > function Array_includes(data) {
->   var arr = [];
->   for (var i = 0; i < data.length; i++) {
->     if (!arr.includes(data[i])) {
->       arr.push(data[i])
+>     var arr = [];
+>     for (var i = 0; i < data.length; i++) {
+>         if (!arr.includes(data[i])) {
+>             arr.push(data[i])
+>         }
 >     }
->   }
->   return arr;
+>     return arr;
 > ```
 >
 > #### indexOf()
@@ -2501,13 +2538,13 @@ Execution Context stack(ECS)
 >
 > ```js
 > function Array_indexOf(data) {
->   var arr = [];
->   for (var i = 0; i < data.length; i++) {
->     if (arr.indexOf(data[i]) === -1){
->       arr.push(data[i])
+>     var arr = [];
+>     for (var i = 0; i < data.length; i++) {
+>         if (arr.indexOf(data[i]) === -1){
+>             arr.push(data[i])
+>         }
 >     }
->       }
->   return arr;
+>     return arr;
 > }
 > ```
 >
@@ -2517,15 +2554,15 @@ Execution Context stack(ECS)
 >
 > ```js
 > function Array_Map(data) {
->   const newArr = [];
->   const tmp = new Map();
->   for (var i = 0; i < data.length; i++) {
->     if (!tmp.has(data[i])){
->       tmp.set(data[i],1)
->       newArr.push(data[i])
+>     const newArr = [];
+>     const tmp = new Map();
+>     for (var i = 0; i < data.length; i++) {
+>         if (!tmp.has(data[i])){
+>             tmp.set(data[i],1)
+>             newArr.push(data[i])
+>         }
 >     }
->   }
->   return newArr;
+>     return newArr;
 > }
 > ```
 >
