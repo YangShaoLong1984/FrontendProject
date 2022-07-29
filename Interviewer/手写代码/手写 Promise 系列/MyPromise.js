@@ -41,7 +41,6 @@ class MyPromise {
         try {
             executor(resolve, reject);
         } catch (error) {
-            console.log('33');
             reject(error);
         }
     }
