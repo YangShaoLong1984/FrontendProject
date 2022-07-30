@@ -173,6 +173,8 @@
 > // 1 2 3
 > console.log(...[1, [2, 3, 4], 5])
 > // 1 [2, 3, 4] 5
+> const [first, ...middle, last] = [1, 2, 3, 4, 5];
+> // 报错
 > ```
 >
 > 下面是数组的扩展运算符的应用：
@@ -268,7 +270,7 @@
 >
 > **1）数组的解构**
 >
-> 在解构数组时，以元素的位置为匹配条件来提取想要的数据的：
+> `在解构数组时，以元素的位置为匹配条件来提取想要的数据的`：
 >
 > ```js
 > const [a, b, c] = [1, 2, 3]
@@ -286,12 +288,12 @@
 >
 > **2）对象的解构**
 >
-> 对象解构比数组结构稍微复杂一些，也更显强大。在解构对象时，是以属性的名称为匹配条件，来提取想要的数据的。现在定义一个对象：
+> 对象解构比数组结构稍微复杂一些，也更显强大。`在解构对象时，是以属性的名称为匹配条件，来提取想要的数据的`。现在定义一个对象：
 >
 > ```js
 > const stu = {
->   name: 'Bob',
->   age: 24
+>       name: 'Bob',
+>       age: 24
 > }
 > ```
 >
@@ -330,13 +332,13 @@
 > // NodeList对象
 > let ps = document.querySelectorAll('p');
 > Array.from(ps).filter(p => {       // 转为真正的数组，再使用filter方法。
->   return p.textContent.length > 100;
+>       return p.textContent.length > 100;
 > });
 > 
 > // arguments对象
 > function foo() {
->   var args = Array.from(arguments);
->   // ...
+>       var args = Array.from(arguments);
+>       // ...
 > }
 > 
 > ```
@@ -379,7 +381,7 @@
 >
 > ```js
 > function ArrayOf(){
->   return [].slice.call(arguments);
+>       return [].slice.call(arguments);
 > }
 > 
 > ```
@@ -410,7 +412,7 @@
 >
 > ```js
 > [1, 5, 10, 15].find(function(value, index, arr) {
->   return value > 9;
+>       return value > 9;
 > }) // 10
 > ```
 >
@@ -418,7 +420,7 @@
 >
 > ```js
 > [1, 5, 10, 15].findIndex(function(value, index, arr) {
->   return value > 9;
+>       return value > 9;
 > }) // 2
 > ```
 >
@@ -451,19 +453,19 @@
 >
 > ```js
 > for (let index of ['a', 'b'].keys()) {
->   console.log(index);
+>       console.log(index);
 > }
 > // 0
 > // 1
 > 
 > for (let elem of ['a', 'b'].values()) {
->   console.log(elem);
+>       console.log(elem);
 > }
 > // 'a'
 > // 'b'
 > 
 > for (let [index, elem] of ['a', 'b'].entries()) {
->   console.log(index, elem);
+>       console.log(index, elem);
 > }
 > // 0 "a"
 > // 1 "b"
@@ -612,7 +614,7 @@
 
 > - **优化部分**
 >
-> 1. ES6 允许在大括号里面，直接写入变量和函数，作为对象的属性和方法，比传统的键值对方式更加简洁更加方便（属性方法的简写）
+> 1. ES6 允许在大括号里面，直接写入变量和函数-简写，作为对象的属性和方法，比传统的键值对方式更加简洁更加方便（属性方法的简写）
 > 2. 对象的**解构赋值**，在解构对象时，是以属性的名称为匹配条件，来提取想要的数据的。对象的解构赋值用于从一个对象取值，相当于将目标对象自身的所有可遍历的（enumerable）、但尚未被读取的属性，分配到指定的对象上面。所有的键和它们的值，都会拷贝到新对象上面。
 > 3. 对象的**扩展运算符**，对象的扩展运算符（`...`）用于取出参数对象的所有可遍历属性，拷贝到当前对象之中。
 > 4. super关键字，`ES6`在`class`新增了类似`this`的关键词`super`。同`this`指向当前函数所在的对象不同，`super`总是指向指向当前对象的原型对象。
@@ -644,14 +646,14 @@
 
 ### 对 rest 参数的理解
 
-> > rest参数用于获取函数的多余参数，这样就不需要使用arguments对象了。rest参数搭配的变量是一个数组，该变量将多余的参数放入数组中。
+> > rest参数用于获取函数的`多余参数`，这样就不需要使用arguments对象了。rest参数搭配的变量是一个数组，该变量将多余的参数放入数组中。
 > >
 > > 下面是一个 rest 参数代替arguments变量的例子。
 > >
 > > ```js
 > > // arguments变量的写法
 > > function sortNumbers() {
-> > return Array.prototype.slice.call(arguments).sort();
+> >     return Array.prototype.slice.call(arguments).sort();
 > > }
 > > 
 > > // rest参数的写法
@@ -664,6 +666,12 @@
 > >
 > > - rest参数只包含那些没有对应形参的实参；而 arguments 对象包含了传给函数的所有实参。
 > > - arguments 对象不是一个真实的数组；而rest参数是真实的 Array 实例，也就是说你能够在它上面直接使用所有的数组方法。
+> >
+> > > ps:类数组的定义，有如下两条：
+> > >
+> > > - 具有：指向对象元素的数字索引下标以及 length 属性告诉我们对象的元素个数
+> > > - 不具有：诸如 push 、 forEach 以及 indexOf 等数组对象具有的方法
+> >
 > > - arguments 对象还有一些附加的属性 (比如callee属性,它可以用于引用该函数的函数体内当前正在执行的函数,例如匿名函数内)。
 > >
 > > 另外，使用rest参数时应注意一下两点：
@@ -688,11 +696,11 @@
 > >
 > > ```js
 > > function mutiple(...args) {
-> > let result = 1;
-> > for (var val of args) {
-> >  result *= val;
-> > }
-> > return result;
+> >     let result = 1;
+> >     for (var val of args) {
+> >          result *= val;
+> >     }
+> >     return result;
 > > }
 > > mutiple(1, 2, 3, 4) // 24
 > > ```
@@ -748,12 +756,12 @@
 >
 > ```js
 > const school = {
->    classes: {
->       stu: {
->          name: 'Bob',
->          age: 24,
->       }
->    }
+>        classes: {
+>            stu: {
+>                name: 'Bob',
+>                age: 24,
+>            }
+>        }
 > }
 > ```
 >
@@ -785,6 +793,8 @@
 ### ES6中模板语法与字符串处理
 
 > ES6 提出了“模板语法”的概念。模板字面量 是允许嵌入表达式的字符串字面量。
+>
+> `反引号()`
 >
 > 在 ES6 以前，拼接字符串是很麻烦的事情：
 >

@@ -213,6 +213,12 @@ https://jonny-wei.github.io/blog/css/
 >
 > orient:朝向，vertical：竖着的 clamp：堆
 >
+> > 在webkit浏览器或移动端（绝大部分是webkit内核的浏览器）可以直接使用webkit的css扩展属性（webkit是私有属性）-webkit-line-clamp；
+> > 注意：这是一个不规范的属性，它没有在CSS的规范草案中
+> >  -webkit-line-clamp用来限制在一个块元素显示的文本行数，为了实现效果，他要与一下webkit属性结合使用：
+> >  display:-webkit-box;（必须结合的属性，将对象作为弹性伸缩盒子模型展示）
+> >  -webkit-box-orient（必须结合的属性，设置或检索伸缩盒对象的子元素的排列方式）
+>
 > ps:
 >
 > `moz`代表firefox浏览器私有属性；
@@ -227,29 +233,31 @@ https://jonny-wei.github.io/blog/css/
 
 ###  两栏布局的实现
 
+https://juejin.cn/post/6844904062224171021#heading-14
+
 浮动，浮动+bfc，flex；1，子绝父相
 
 > 一般两栏布局指的是**左边一栏宽度固定，右边一栏宽度自适应**，两栏布局的具体实现：
 >
-> - 利用浮动，将左边元素宽度设置为200px，并且设置向左浮动。将右边元素的margin-left设置为200px，宽度设置为auto（默认为auto，撑满整个父元素）。
+> - **float + margin**：利用浮动，将左边元素宽度设置为200px，并且设置向左浮动。将右边元素的margin-left设置为200px，宽度设置为auto（默认为auto，撑满整个父元素）。
 >
 > ```css
 > .outer {
->   height: 100px;
+>     height: 100px;
 > }
 > .left {
->   float: left;
->   width: 200px;
->   background: tomato;
+>     float: left;
+>     width: 200px;
+>     background: tomato;
 > }
 > .right {
->   margin-left: 200px;
->   width: auto;
->   background: gold;
+>     margin-left: 200px;
+>     width: auto;
+>     background: gold;
 > }
 > ```
 >
-> - 利用浮动，左侧元素设置固定大小，并左浮动，右侧元素设置overflow: hidden; 这样右边就触发了`BFC`，`BFC的区域不会与浮动元素发生重叠`，所以两侧就不会发生重叠。
+> - **float + BFC**：利用浮动，左侧元素设置固定大小，并左浮动，右侧元素设置overflow: hidden; 这样右边就触发了`BFC`，`BFC的区域不会与浮动元素发生重叠`，所以两侧就不会发生重叠。
 >
 > ```css
 > .left{
@@ -300,7 +308,7 @@ https://jonny-wei.github.io/blog/css/
 > }
 > ```
 >
-> - 利用绝对定位，将父级元素设置为相对定位。左边元素设置为absolute定位，并且宽度设置为200px。将右边元素的margin-left的值设置为200px。
+> - **position**：利用绝对定位，将父级元素设置为相对定位。左边元素设置为absolute定位，并且宽度设置为200px。将右边元素的margin-left的值设置为200px。
 >
 > ```css
 > .outer {
@@ -310,7 +318,6 @@ https://jonny-wei.github.io/blog/css/
 > .left {
 >   position: absolute;
 >   width: 200px;
->   height: 100px;
 >   background: tomato;
 > }
 > .right {
@@ -318,25 +325,25 @@ https://jonny-wei.github.io/blog/css/
 >   background: gold;
 > }
 > ```
->
-> - 利用绝对定位，将父级元素设置为相对定位。左边元素宽度设置为200px，右边元素设置为绝对定位，左边定位为200px，其余方向定位为0。
->
-> ```css
+> 
+>- **position**：利用绝对定位，将父级元素设置为相对定位。左边元素宽度设置为200px，右边元素设置为绝对定位，左边定位为200px，其余方向定位为0。
+> 
+>```css
 > .outer {
->   position: relative;
->   height: 100px;
+>     position: relative;
+>     height: 100px;
 > }
 > .left {
->   width: 200px;
->   background: tomato;
+>     width: 200px;
+>     background: tomato;
 > }
 > .right {
->   position: absolute;
->   top: 0;
->   right: 0;
->   bottom: 0;
->   left: 200px;
->   background: gold;
+>     position: absolute;
+>     top: 0;
+>     right: 0;
+>     bottom: 0;
+>     left: 200px;
+>     background: gold;
 > }
 > ```
 
@@ -348,31 +355,31 @@ https://jonny-wei.github.io/blog/css/
 >
 > ```css
 > .outer {
->   position: relative;
->   height: 100px;
+>     position: relative;
+>     height: 100px;
 > }
 > 
 > .left {
->   position: absolute;
->   width: 100px;
->   height: 100px;
->   background: tomato;
+>     position: absolute;
+>     width: 100px;
+>     height: 100px;
+>     background: tomato;
 > }
 > 
 > .right {
->   position: absolute;
->   top: 0;
->   right: 0;    /* 这两行必须设置，否则会被挤到第二行 */
->   width: 200px;
->   height: 100px;
->   background: gold;
+>     position: absolute;
+>     top: 0;
+>     right: 0;    /* 这两行必须设置，否则会被挤到第二行 */
+>     width: 200px;
+>     height: 100px;
+>     background: gold;
 > }
 > 
 > .center {
->   margin-left: 100px;
->   margin-right: 200px;
->   height: 100px;
->   background: lightgreen;
+>     margin-left: 100px;
+>     margin-right: 200px;
+>     height: 100px;
+>     background: lightgreen;
 > }
 > ```
 >
@@ -422,28 +429,28 @@ https://jonny-wei.github.io/blog/css/
 >
 > ```css
 > .outer {
->   height: 100px;
+>     height: 100px;
 > }
 > 
 > .left {
->   float: left;
->   width: 100px;
->   height: 100px;
->   background: tomato;
+>     float: left;
+>     width: 100px;
+>     height: 100px;
+>     background: tomato;
 > }
 > 
 > .right {
->   float: right;
->   width: 200px;
->   height: 100px;
->   background: gold;
+>     float: right;
+>     width: 200px;
+>     height: 100px;
+>     background: gold;
 > }
 > 
 > .center {
->   height: 100px;
->   margin-left: 100px;
->   margin-right: 200px;
->   background: lightgreen;
+>     height: 100px;
+>     margin-left: 100px;
+>     margin-right: 200px;
+>     background: lightgreen;
 > }
 > ```
 >

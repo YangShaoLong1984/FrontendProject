@@ -1,0 +1,36 @@
+<!-- 参考链接：https://blog.csdn.net/qq_43000315/article/details/125313649 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .content1 {
+            width: 400px;
+            height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .content2 {
+            width: 200px;
+            /* height: 100px; */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+        }
+    </style>
+</head>
+<body>
+    <div class="content1">
+        <span>单行文本隐藏单行文本隐藏单行文本隐藏单行文本隐藏单行文本隐藏</span>
+    </div>
+    <div class="content2">
+        <span>多行文本隐藏多行文本隐藏多行文本隐藏多行文本隐藏多行文本隐藏多行文本隐藏多行文本隐藏</span>
+    </div>
+</body>
+</html>
