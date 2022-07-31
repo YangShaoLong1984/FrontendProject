@@ -44,16 +44,6 @@ let input = readline();
 print(input);
 ```
 
-
-
-### 输入
-
-```js
-const read_line = require('readline-sync')
-let input = read_line.question("")
-console.log(input);
-```
-
 ### 输入多行
 
 ```js
@@ -125,7 +115,7 @@ while (line = read_line()) {  		// 如果读到输入文件结尾，就不会再
 >
 > ### 单行
 >
-> ```
+> ```js
 > while(line=readline()){
 >     var lines = line.split(' ');    //同一行多个参数采用空格分割
 > }
@@ -133,7 +123,7 @@ while (line = read_line()) {  		// 如果读到输入文件结尾，就不会再
 >
 > ### 多行
 >
-> ```
+> ```js
 > var lines = [];
 > while (line = readline()) {   
 >     lines.push(line);
@@ -161,7 +151,7 @@ while (line = read_line()) {  		// 如果读到输入文件结尾，就不会再
 >
 > 单行没什么可说的，就是直接撸结果。
 >
-> ```
+> ```js
 > //print(rusult);
 > console.log(rusult);
 > ```
@@ -176,7 +166,7 @@ while (line = read_line()) {  		// 如果读到输入文件结尾，就不会再
 >
 > 输出多行就比较坑了，试了好几种方法，提交代码后都提示输出为空，无论是循环还是其他。终于试出来如下：
 >
-> ```
+> ```js
 > lines = ["1","2"]
 > print(main(lines).join("\n"));
 > //结果为 1 2
@@ -190,7 +180,7 @@ while (line = read_line()) {  		// 如果读到输入文件结尾，就不会再
 >
 > 总结一下，基本上实用`Javascript V8`引擎刷题的结构如下：
 >
-> ```
+> ```js
 > function main(argument){
 >     //do sth……
 >     //
@@ -209,7 +199,7 @@ while (line = read_line()) {  		// 如果读到输入文件结尾，就不会再
 
 > 输入第一行是数字n，之后跟着n行数据。
 >
-> ```
+> ```js
 > let n = readInt();
 > let arr = [];
 > while (n--) {
@@ -219,7 +209,7 @@ while (line = read_line()) {  		// 如果读到输入文件结尾，就不会再
 
 > 不限制规模，可能要接收 **多组输入**。（每一组可能是一行或者多行）
 >
-> ```
+> ```js
 > let line;
 > while (line = read_line()) {  		// 如果读到输入文件结尾，就不会再进入循环了
 >   solve(line);  					// 处理一组输入。如果一组输入有不止一行，那就在这里面再读几行。

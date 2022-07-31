@@ -6,23 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        .outer {
-            height: 100px;
+        /* position */
+        .parent {
+            position: relative;
         }
         .left {
-            float: left;
-            width: 100px;
+            position: absolute;
+            width: 200px;
+            height: 100px;
             background: red;
         }
         .right {
-            padding-left: 100px;
+            position: absolute;
+            width: 200px;
+            height: 100px;
+            top: 0;
+            right: 0;
             background: blue;
+        }
+        .center {
+            margin-left: 200px;
+            margin-right: 200px;
+            height: 100px;
+            background: green;
         }
     </style>
 </head>
 <body>
-    <div class=" outer left"></div>
-    <div class=" outer right"></div>
-    <div class=" outer center"></div>
+    <div class="parent">
+        <div class=" public left"></div>
+        <!-- float实现时，center必须放在最后，即right后面 -->
+        <div class=" public center"></div> 
+        <div class=" public right"></div>
+        <!-- <div class=" public center"></div>  -->
+    </div>
 </body>
 </html>

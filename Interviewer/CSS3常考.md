@@ -56,6 +56,8 @@ https://jonny-wei.github.io/blog/css/
 > | list-item    | 像块类型元素一样显示，并添加样式列表标记。                   |
 > | table        | 此元素会作为块级表格来显示。                                 |
 > | inherit      | 规定应该从父元素继承display属性的值。                        |
+>
+> 还可以设置成flex
 
 ###  隐藏元素的方法有哪些
 
@@ -74,7 +76,27 @@ https://jonny-wei.github.io/blog/css/
 > >
 > > **回流：当`render tree`（渲染树）中部分或者是全部的`元素`的`尺寸`、`结构`或者某些`属性`发生变化之后，浏览器会重新渲染部分或者全部的`文档`，就是回流。**
 > >
+> > > ##### 会触发回流的操作
+> > >
+> > > 如添加或删除可见的DOM元素；
+> > >
+> > > 元素的位置发生变化；
+> > >
+> > > 元素的尺寸发生变化；
+> > >
+> > > 内容发生变化（比如文本变化或图片被另一个不同尺寸的图片所替代）；
+> > >
+> > > 页面一开始渲染的时候（这个无法避免）；
+> > >
+> > > 因为回流是根据视口的大小来计算元素的位置和大小的，所以浏览器的窗口尺寸变化也会引发回流
+> >
 > > **重绘：当页面中的`样式改变`而并`不`影响他在`文档流中的位置`的时候，浏览器会给元素`赋予新的样式`，然后并且重新绘制文档流，这个过程就是重绘。**
+> >
+> > > ##### 会触发重绘的操作
+> > >
+> > > outline, visibility, color, background-color......等
+> > >
+> > > 第一次渲染页面的时候：触发一次回流和重绘（不可避免的）
 > >
 > > 回流必将引起重绘，反之不然
 > >
@@ -90,10 +112,35 @@ https://jonny-wei.github.io/blog/css/
 > >
 > > 5.绘制渲染树，调用操作系统底层API(UI Backend)进行绘图操作（这个步骤比较复杂有兴趣的同学可以去深入了解）。
 > >
+> > #### 怎样减少页面的回流和重绘
+> >
+> > 1. #### 减少对 dom 的操作 使用基于 vue/react 开始数据影响视图模式
+> >
+> >    1. 当需要进行多个 dom 的增删改查时，避免直接对单个 dom 进行操作
+> >
+> > 2. #### 进行对元素批量修改（重要）
+> >
+> > 3. #### 使元素脱离文档流
+> >
+> >    1. 用浮动( float )、绝对定位( position: absolute )可以使元素脱离文档流；
+> >
+> > 4. #### 避免访问或减少访问某些属性
+> >
+> >    1. 浏览器的渲染队列机制会通过队列将会触发回流或重绘的操作进行存储，等到一定的时间或一定的数量时再执行这些操作；但是某些操作会导致浏览器强制刷新队列，如：offsetTop（计算举例）、offsetLeft、offsetWidth、offsetHeight、scrollTop、scrollLeft、scrollWidth、scrollHeight、clientTop、clientLeft、clientWidth、clientHeight、getComputedStyle、getBoundingClientRect；
+> >
+> >       浏览器为了获取最新的页面信息，需要立即执行队列里的所有操作，如果频繁使用上述方法，就会频繁的触发回流和重绘；
+> >
+> >       所以需要尽量减少或避免使用上述方法 / 属性
+> >
+> > 5. ##### 避免对 css 进行单个修改 样式集中改变
+> >
+> > 6. ##### 动画效果应用到 position 属性为 absolute 或 fixed 的元素上（脱离文档流）
+
+![](CSS3常考.assets/17147db5c393220b_tplv-t2oaga2asx-zoom-in-crop-mark_3024_0_0_0.png)
 
 ###  display:none与visibility:hidden的区别
 
-> 这两个属性都是让元素隐藏，不可见。**两者****区别如下：**
+> 这两个属性都是让元素隐藏，不可见。两者区别如下：
 >
 > （1）**在渲染树中**
 >
@@ -216,7 +263,7 @@ https://jonny-wei.github.io/blog/css/
 > > 在webkit浏览器或移动端（绝大部分是webkit内核的浏览器）可以直接使用webkit的css扩展属性（webkit是私有属性）-webkit-line-clamp；
 > > 注意：这是一个不规范的属性，它没有在CSS的规范草案中
 > >  -webkit-line-clamp用来限制在一个块元素显示的文本行数，为了实现效果，他要与一下webkit属性结合使用：
-> >  display:-webkit-box;（必须结合的属性，将对象作为弹性伸缩盒子模型展示）
+> >  display:-webkit-box;（必须结合的属性，将对象作为`弹性伸缩盒子模型`展示）
 > >  -webkit-box-orient（必须结合的属性，设置或检索伸缩盒对象的子元素的排列方式）
 >
 > ps:
@@ -277,7 +324,7 @@ https://juejin.cn/post/6844904062224171021#heading-14
 >
 > > ## flex: 1 是什么意思
 > >
-> > `flex: 1` 可以让子元素如何占据父元素的剩余空间，可以是一个数字，也可以是 `auto`，表示子元素占据剩余空间的比例。
+> > `flex: 1` 可以让子元素如何占据父元素的剩余空间，尺寸不足时会优先最小化内容尺寸.可以是一个数字，也可以是 `auto`，表示子元素占据剩余空间的比例。
 > >
 > > flex 属性是 `flex-grow`、`flex-shrink` 和 `flex-basis` 属性的简写。
 > >
@@ -351,6 +398,77 @@ https://juejin.cn/post/6844904062224171021#heading-14
 
 > 三栏布局一般指的是页面中一共有三栏，**左右两栏宽度固定，中间自适应的布局**，三栏布局的具体实现：
 >
+> #### float
+>
+> - 利用**浮动**，左右两栏设置固定大小，并设置对应方向的浮动。中间一栏设置左右两个方向的margin值，注意这种方式**，`中间一栏必须放到最后`：**
+>
+>   ```js
+>   <div class=" outer left"></div>
+>   <div class=" outer right"></div>
+>   <div class=" outer center"></div>
+>   ```
+>
+>   ps：为什么中间一栏必须放到最后，不放到最后，right就会被撑到下一行？
+>
+>   > 浏览器解析HTML文档是从上到下按顺序解析的，如果center在right前面，right本来就是一个block，设置右浮动不会对它前面的center有影响
+>
+>   原理：
+>
+> - 元素浮动后，脱离文档流。
+>
+> - 左右栏分别浮动在窗口两边，`中间块(处于文档流中)受左右浮动影响`被`卡在中间`无法继续向左右伸展已达到自适应，最后按需设置中间块的margin值来改变快间间隙即可。
+>
+> - 基于纯float实现的三栏布局需要将中间的内容放在HTML结构的最后，DOM结构为`左-右-中`，否则右侧会沉在中间内容的下侧 
+>
+> ```css
+> .left {
+>     float: left;
+>     width: 100px;
+>     height: 100px;
+>     background: red;
+> }
+> .right {
+>     float: right;
+>     width: 200px;
+>     height: 100px;
+>     background: blue;
+> }
+> .center {
+>     margin-left: 100px;
+>     margin-right: 200px;
+>     height: 100px;
+>     background: green;
+> }
+> ```
+>
+> #### flex布局
+>
+> - 利用**flex布局**，左右两栏设置固定大小，中间一栏设置为flex:1。
+>
+> ```css
+> .outer {
+>   display: flex;
+>   height: 100px;
+> }
+> 
+> .left {
+>   width: 100px;
+>   background: tomato;
+> }
+> 
+> .right {
+>   width: 100px;
+>   background: gold;
+> }
+> 
+> .center {
+>   flex: 1;
+>   background: lightgreen;
+> }
+> ```
+>
+> #### position
+>
 > - 利用**绝对定位**，左右两栏设置为绝对定位，中间设置对应方向大小的margin的值。
 >
 > ```css
@@ -379,77 +497,6 @@ https://juejin.cn/post/6844904062224171021#heading-14
 >     margin-left: 100px;
 >     margin-right: 200px;
 >     height: 100px;
->     background: lightgreen;
-> }
-> ```
->
-> - 利用flex布局，左右两栏设置固定大小，中间一栏设置为flex:1。
->
-> ```css
-> .outer {
->   display: flex;
->   height: 100px;
-> }
-> 
-> .left {
->   width: 100px;
->   background: tomato;
-> }
-> 
-> .right {
->   width: 100px;
->   background: gold;
-> }
-> 
-> .center {
->   flex: 1;
->   background: lightgreen;
-> }
-> ```
->
-> - 利用浮动，左右两栏设置固定大小，并设置对应方向的浮动。中间一栏设置左右两个方向的margin值，注意这种方式**，`中间一栏必须放到最后`：**
->
-> - ```js
->   <div class=" outer left"></div>
->   <div class=" outer right"></div>
->   <div class=" outer center"></div>
->   ```
->
->   ps：为什么中间一栏必须放到最后，不放到最后，right就会被撑到下一行？
->
->   > ，浏览器解析HTML文档是从上到下按顺序解析的，如果center在right前面，right本来就是一个block，设置右浮动不会对它前面的center有影响
->
->   原理：
->
-> - 元素浮动后，脱离文档流。
->
-> - 左右栏分别浮动在窗口两边，`中间块(处于文档流中)受左右浮动影响`被`卡在中间`无法继续向左右伸展已达到自适应，最后按需设置中间块的margin值来改变快间间隙即可。
->
-> - 基于纯float实现的三栏布局需要将中间的内容放在HTML结构的最后，DOM结构为`左-右-中`，否则右侧会沉在中间内容的下侧 .
->
-> ```css
-> .outer {
->     height: 100px;
-> }
-> 
-> .left {
->     float: left;
->     width: 100px;
->     height: 100px;
->     background: tomato;
-> }
-> 
-> .right {
->     float: right;
->     width: 200px;
->     height: 100px;
->     background: gold;
-> }
-> 
-> .center {
->     height: 100px;
->     margin-left: 100px;
->     margin-right: 200px;
 >     background: lightgreen;
 > }
 > ```
@@ -571,7 +618,7 @@ https://juejin.cn/post/6844904062224171021#heading-14
 > }
 > ```
 >
-> - 利用绝对定位，设置四个方向的值都为0，并将margin设置为auto，由于宽高固定，因此对应方向实现平分，可以实现水平和垂直方向上的居中。该方法适用于`盒子有宽高`的情况：								**绝对定位+margin:auto**
+> - 利用绝对定位，设置四个方向的值都为0，并将margin设置为auto，由于宽高固定，因此对应方向实现平分，可以实现水平和垂直方向上的居中。该方法适用于	：								**绝对定位+margin:auto**
 >
 > ```css
 > .parent {
@@ -631,7 +678,7 @@ https://juejin.cn/post/6844904062224171021#heading-14
 
 ### 对Flex布局的理解及其使用场景
 
-> Flex是FlexibleBox的缩写，意为"弹性布局"，用来为盒状模型提供最大的灵活性。任何一个容器都可以指定为Flex布局。行内元素也可以使用Flex布局。注意，设为Flex布局以后，**子元素的float、clear和vertical-align属性将失效**。采用Flex布局的元素，称为Flex容器（flex container），简称"容器"。它的所有子元素自动成为容器成员，称为Flex项目（flex item），简称"项目"。容器默认存在两根轴：水平的主轴（main axis）和垂直的交叉轴（cross axis），项目默认沿水平主轴排列。
+> Flex是FlexibleBox的缩写，意为"弹性布局"，`用来为盒状模型提供最大的灵活性`。任何一个容器都可以指定为Flex布局。行内元素也可以使用Flex布局。注意，设为Flex布局以后，**子元素的float、clear和vertical-align属性将失效**。采用Flex布局的元素，称为Flex容器（flex container），简称"容器"。它的所有子元素自动成为容器成员，称为Flex项目（flex item），简称"项目"。容器默认存在两根轴：水平的主轴（main axis）和垂直的交叉轴（cross axis），项目默认沿水平主轴排列。
 >
 > 
 >
@@ -663,7 +710,7 @@ https://juejin.cn/post/6844904062224171021#heading-14
 >
 > **简单来说：**
 >
-> flex布局是CSS3新增的一种布局方式，可以通过将一个元素的display属性值设置为flex从而使它成为一个flex容器，它的所有子元素都会成为它的项目。一个容器默认有两条轴：一个是水平的主轴，一个是与主轴垂直的交叉轴。可以使用flex-direction来指定主轴的方向。可以使用justify-content来指定元素在主轴上的排列方式，使用align-items来指定元素在交叉轴上的排列方式。还可以使用flex-wrap来规定当一行排列不下时的换行方式。对于容器中的项目，可以使用order属性来指定项目的排列顺序，还可以使用flex-grow来指定当排列空间有剩余的时候，项目的放大比例，还可以使用flex-shrink来指定当排列空间不足时，项目的缩小比例。
+> flex布局是`CSS3新增的一种布局方式`，`可以通过将一个元素的display属性值设置为flex从而使它成为一个flex容器`，它的所有子元素都会成为它的项目。一个容器默认有两条轴：一个是水平的主轴，一个是与主轴垂直的交叉轴。可以使用flex-direction来指定主轴的方向。可以使用justify-content来指定元素在主轴上的排列方式，使用align-items来指定元素在交叉轴上的排列方式。还可以使用flex-wrap来规定当一行排列不下时的换行方式。对于容器中的项目，可以使用order属性来指定项目的排列顺序，还可以使用flex-grow来指定当排列空间有剩余的时候，项目的放大比例，还可以使用flex-shrink来指定当排列空间不足时，项目的缩小比例。
 
 ## 定位与浮动
 
@@ -785,7 +832,7 @@ https://juejin.cn/post/6844904062224171021#heading-14
 
 ### position的属性有哪些，区别是什么
 
-> position有以下属性值：
+> position-指定一个元素在文档中的定位方式，有以下属性值：
 >
 > | 属性值   | 概述                                                         |
 > | -------- | ------------------------------------------------------------ |
@@ -836,10 +883,10 @@ https://juejin.cn/post/6844904062224171021#heading-14
 >
 > ```css
 >div {
->  width: 0;
->  height: 0;
->     border: 100px solid;
->     border-color: orange blue red green;
+>      width: 0;
+>      height: 0;
+>        border: 100px solid;
+>        border-color: orange blue red green;
 >    }
 >    ```
 > 
@@ -855,11 +902,11 @@ https://juejin.cn/post/6844904062224171021#heading-14
 >
 > ```css
 >div {
->  width: 0;
->  height: 0;
->     border-top: 50px solid red;
->     border-right: 50px solid transparent;
->     border-left: 50px solid transparent;
+>      width: 0;
+>      height: 0;
+>        border-top: 50px solid red;
+>        border-right: 50px solid transparent;
+>        border-left: 50px solid transparent;
 >    }
 >    ```
 > 
@@ -869,11 +916,11 @@ https://juejin.cn/post/6844904062224171021#heading-14
 >
 > ```css
 >div {
->  width: 0;
->  height: 0;
->     border-bottom: 50px solid red;
->     border-right: 50px solid transparent;
->     border-left: 50px solid transparent;
+>      width: 0;
+>      height: 0;
+>        border-bottom: 50px solid red;
+>        border-right: 50px solid transparent;
+>        border-left: 50px solid transparent;
 >    }
 >    ```
 > 
@@ -883,11 +930,11 @@ https://juejin.cn/post/6844904062224171021#heading-14
 >
 > ```css
 >div {
->  width: 0;
->  height: 0;
->     border-left: 50px solid red;
->     border-top: 50px solid transparent;
->     border-bottom: 50px solid transparent;
+>      width: 0;
+>      height: 0;
+>        border-left: 50px solid red;
+>        border-top: 50px solid transparent;
+>        border-bottom: 50px solid transparent;
 >    }
 >    ```
 > 
@@ -897,11 +944,11 @@ https://juejin.cn/post/6844904062224171021#heading-14
 >
 > ```css
 >div {
->  width: 0;
->  height: 0;
->     border-right: 50px solid red;
->     border-top: 50px solid transparent;
->     border-bottom: 50px solid transparent;
+>      width: 0;
+>      height: 0;
+>        border-right: 50px solid red;
+>        border-top: 50px solid transparent;
+>        border-bottom: 50px solid transparent;
 >    }
 >    ```
 > 
@@ -911,10 +958,10 @@ https://juejin.cn/post/6844904062224171021#heading-14
 >
 > ```css
 >div {
->  width: 0;
->  height: 0;
->     border-top: 100px solid red;
->     border-right: 100px solid transparent;
+>      width: 0;
+>      height: 0;
+>        border-top: 100px solid red;
+>        border-right: 100px solid transparent;
 >    }
 >    ```
 > 
