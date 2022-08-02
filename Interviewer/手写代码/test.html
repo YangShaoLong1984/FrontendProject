@@ -6,39 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        /* position */
         .parent {
-            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .left {
-            position: absolute;
-            width: 200px;
+        .child {
+            width: 100px;
             height: 100px;
             background: red;
         }
-        .right {
-            position: absolute;
-            width: 200px;
-            height: 100px;
-            top: 0;
-            right: 0;
-            background: blue;
-        }
-        .center {
-            margin-left: 200px;
-            margin-right: 200px;
-            height: 100px;
-            background: green;
+
+        .tri1 {
+            width: 0;
+            height: 0;
+            border-left: 50px solid red;
+            border-top: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 50px solid transparent;
         }
     </style>
 </head>
 <body>
-    <div class="parent">
-        <div class=" public left"></div>
-        <!-- float实现时，center必须放在最后，即right后面 -->
-        <div class=" public center"></div> 
-        <div class=" public right"></div>
-        <!-- <div class=" public center"></div>  -->
-    </div>
+    <div class="tri1"></div>
 </body>
 </html>

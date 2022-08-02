@@ -57,7 +57,7 @@ https://jonny-wei.github.io/blog/css/
 > | table        | 此元素会作为块级表格来显示。                                 |
 > | inherit      | 规定应该从父元素继承display属性的值。                        |
 >
-> 还可以设置成flex
+> 还可以设置成`flex`
 
 ###  隐藏元素的方法有哪些
 
@@ -587,7 +587,7 @@ https://juejin.cn/post/6844904062224171021#heading-14
 
 > 拓展：水平居中，垂直居中的实现：https://segmentfault.com/a/1190000014116655
 
-> - 利用绝对定位，先将元素的左上角通过top:50%和left:50%定位到页面的中心，然后再通过translate(定义`2D`转换)来调整元素的中心点到页面的中心。该方法需要**考虑浏览器兼容问题。** ---`不知道宽高`的情况下		**绝对定位+transform**
+> - 利用绝对定位，先将元素的`左上角`通过top:50%和left:50%定位到页面的中心，然后再通过translate(定义`2D`转换)来调整元素的中心点到页面的中心。该方法需要**考虑浏览器兼容问题。** ---`不知道宽高`的情况下		**绝对定位+transform**
 >
 > ps:[transform详解translate](https://www.cnblogs.com/yanggeng/p/11286250.html)
 >
@@ -597,9 +597,9 @@ https://juejin.cn/post/6844904062224171021#heading-14
 >
 > **translate**：是同时设置 translateX 和 translateY， 所以里面可以填两个参数， 第一个值 X 第二个 Y
 >
-> **translate(-50%,-50%)** 作用是，往上（x轴）,左（y轴）移动自身长宽的 50%，以使其居于`中心位置`
+> **translate(-50%,-50%)** 作用是，往上（x轴）,左（y轴）移动`自身长宽`的 50%，以使其居于`中心位置`
 >
-> 与负margin-left和margin-top实现居中不同的是，margin-left必须知道自身的宽高，而translate可以在不知道宽高的情况下进行居中，tranlate（）函数中的百分比是相对于自身宽高的百分比，所以能进行居中。
+> 与负margin-left和margin-top实现居中不同的是，margin-left必须知道自身的宽高，而translate可以在不知道宽高的情况下进行居中，tranlate（）函数中的百分比是相对于`自身宽高的百分比`，所以能进行居中。
 >
 > ```css
 > .parent {
@@ -618,7 +618,7 @@ https://juejin.cn/post/6844904062224171021#heading-14
 > }
 > ```
 >
-> - 利用绝对定位，设置四个方向的值都为0，并将margin设置为auto，由于宽高固定，因此对应方向实现平分，可以实现水平和垂直方向上的居中。该方法适用于	：								**绝对定位+margin:auto**
+> - 利用绝对定位，设置四个方向的值都为0，并将margin设置为auto，由于宽高固定，因此对应方向实现平分，可以实现水平和垂直方向上的居中。该方法适用于`盒子有宽高的`情况：								**绝对定位+margin:auto**
 >
 > ```css
 > .parent {
@@ -867,7 +867,7 @@ https://juejin.cn/post/6844904062224171021#heading-14
 >
 > ![img](CSS3常考.assets/1603554694841-89472ba9-b236-4098-802f-c3c26ff49466.png)
 >
-> - **absolute：**元素的定位相对于前两者要复杂许多。如果为 absolute 设置了 top、left，浏览器会根据什么去确定它的纵向和横向的偏移量呢？答案是浏览器会递归查找该元素的所有父元素，如果找到一个设置了`position:relative/absolute/fixed`的元素，就以该元素为基准定位，如果没找到，就以浏览器边界定位。如下两个图所示：
+> - **absolute：**元素的定位相对于前两者要复杂许多。如果为 absolute 设置了 top、left，浏览器会根据什么去确定它的纵向和横向的偏移量呢？`答案是浏览器会递归查找该元素的所有父元素，如果找到一个设置了`position:relative/absolute/fixed`的元素，就以该元素为基准定位，如果没找到，就以浏览器边界定位。`如下两个图所示：
 >
 > ![img](CSS3常考.assets/1603554694882-589670e0-cd52-41d4-a3ed-4ebbdfc88f32.png)
 >
