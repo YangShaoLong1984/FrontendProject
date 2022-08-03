@@ -1,23 +1,32 @@
-// 实现数组扁平化
-function flatten1(arr) {
-    return arr.reduce((pre, cur) => {
-        return pre = pre.concat(Array.isArray(cur) ? flatten1(cur) : cur);
-    }, []);
-}
-
-function flatten2(arr) {
-    while (arr.some((ele) => Array.isArray(ele))) {
-        arr = [].concat(...arr);
+// 实现jsonp
+function jsonp(url, data, cb) {
+    data.cb = cb;
+    let params = [];
+    for (let key in data) {
+        params.push(key + "=" + data[key]);
     }
-    return arr;
+    let script = document.createElement("script");
+    script.src = url + "?" + params.join("&");
+    document.body.appendChild(script);
+
+    return new Promise((resolve, reject) => {
+        try {
+            window[cb] = data => {
+                resolve(cb);
+            }
+        } catch (e) {
+            reject(e);
+        } finally {
+            script.parentNode.removeChild(script);
+        }
+    })
 }
 
-function flatten3(arr) {
-    return arr.toString().split(',').map(ele => +ele);
-}
 
-let arr = [1, 2, [3, 4, [5, [6]]]];
-// console.log(flatten1(arr));
-// console.log(flatten2(arr));
-// console.log(arr.flat(Infinity));
-console.log(flatten3(arr));
+jsonp('http://1.1.1.1:300', {
+    data: 1,
+}, 'callback').then(res => {
+    console.log(res);
+}).catch(err => {
+    console.log(err);
+})
