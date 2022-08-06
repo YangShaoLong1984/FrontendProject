@@ -1259,6 +1259,8 @@ Execution Context
 Execution Context stack(ECS)
 
 > javaScript 引擎不是一行行执行的，而是一段段执行的。当执行一段代码的时候，会进行一个 **“准备工作”**，比如`变量提升或函数提升`，这个“准备工作”就是**构建执行上下文**。JavaScript 引擎创建执行上下文栈(ECS)来管理执行上下文。
+>
+> 执行上下文是一个对象，由js的执行引擎创建，具有三个属性：**变量对象(variable object)**，**作用域链(scope chain)**，**this指针**。
 
 > ##### 1. 执行上下文类型
 >
@@ -1296,7 +1298,9 @@ Execution Context stack(ECS)
 >
 > ##### 3. 创建执行上下文
 >
-> 创建执行上下文有两个阶段：**创建阶段**和**执行阶段**
+> 创建执行上下文有两个阶段：**创建阶段**和**执行阶段**，回收阶段
+>
+> https://blog.fundebug.com/2019/03/20/understand-javascript-context-and-stack/
 >
 > **1）创建阶段**
 >
@@ -1920,7 +1924,7 @@ Execution Context stack(ECS)
 
 > async/await其实是`Generator` 的语法糖，它能实现的效果都能用then链来实现，它是`为优化then链而开发出来的`。
 >
-> 从字面上来看，async是“异步”的简写，await则为等待，所以很好理解async 用于申明一个 function 是异步的，而 await 用于等待一个异步方法执行完成。当然语法上强制规定await只能出现在asnyc函数中，先来看看async函数返回了什么：
+> 从字面上来看，async是“异步”的简写，await则为等待，所以很好理解`async 用于申明一个 function 是异步的，而 await 用于等待一个异步方法执行完成`。当然语法上强制规定await只能出现在asnyc函数中，先来看看async函数返回了什么：
 >
 > ```js
 > async function testAsy(){
@@ -1982,8 +1986,8 @@ Execution Context stack(ECS)
 > ```js
 > // var Person={};   //等同于var Person =new Object();
 > var Person={
-> name:"Jason",
-> age:21
+>     name:"Jason",
+>     age:21
 > }
 > ```
 >
@@ -1995,14 +1999,14 @@ Execution Context stack(ECS)
 >
 > ```js
 > function createPerson(name, age, job) {
->     var o = new Object();
->     o.name = name;
->     o.age = age;
->     o.job = job;
->     o.sayName = function() {
->         console.log(this.name);
->     }
->     return o;
+>        var o = new Object();
+>        o.name = name;
+>        o.age = age;
+>        o.job = job;
+>        o.sayName = function() {
+>            console.log(this.name);
+>        }
+>        return o;
 > }
 > var p1 = createPerson('l', 2, 'techer');
 > var p2 = createPerson('l', 42, 'student');
@@ -2018,11 +2022,11 @@ Execution Context stack(ECS)
 >
 > ```js
 > function Person(name, age) {
->     this.name = name;
->     this.age = age;
->     this.sayName = function() {
->         console.log(this.name);
->     }
+>        this.name = name;
+>        this.age = age;
+>        this.sayName = function() {
+>            console.log(this.name);
+>        }
 > }
 > let p1 = new Person('l', 223);
 > p1.sayName();
@@ -2032,11 +2036,11 @@ Execution Context stack(ECS)
 >
 > ```js
 > function Person() {
->     Person.prototype.name = 'nike',
->     Person.prototype.age = 29;
->     Person.prototype.sayName = function() {
->         console.log(this.name);
->     }
+>        Person.prototype.name = 'nike',
+>            Person.prototype.age = 29;
+>        Person.prototype.sayName = function() {
+>            console.log(this.name);
+>        }
 > }
 > let p1 = new Person();
 > p1.sayName();

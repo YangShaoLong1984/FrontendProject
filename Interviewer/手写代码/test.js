@@ -1,32 +1,45 @@
-// 实现jsonp
-function jsonp(url, data, cb) {
-    data.cb = cb;
-    let params = [];
-    for (let key in data) {
-        params.push(key + "=" + data[key]);
-    }
-    let script = document.createElement("script");
-    script.src = url + "?" + params.join("&");
-    document.body.appendChild(script);
+// function mySetInterval(fn, time) {
+//     let timer = {
+//         flag: true,
+//     }
+//     function interval() {
+//         if (timer.flag) {
+//             fn();
+//             setTimeout(interval, time);
+//         }
+//     }
+//     interval();
+//     return timer;
+// }
 
-    return new Promise((resolve, reject) => {
-        try {
-            window[cb] = data => {
-                resolve(cb);
-            }
-        } catch (e) {
-            reject(e);
-        } finally {
-            script.parentNode.removeChild(script);
+// function mySetTimeout(fn, time) {
+//     let now = Date.now();
+//     let flag = true;
+//     while (flag) {
+//         if (Date.now() - now > time) {
+//             flag = false;
+//             fn();
+//         }
+//     }
+// }
+
+// // DEMO
+// let timer = mySetInterval(() => {
+//     console.log('hello');
+// }, 500);
+// mySetTimeout(() => {
+//     timer.flag = false;
+// }, 2000)
+
+
+function mySetTimeout(fn, time) {
+    let now = Date.now();
+    let flag = true;
+    while (flag) {
+        if (Date.now() - now > time) {
+            flag = false;
+            fn();
         }
-    })
+    }
 }
-
-
-jsonp('http://1.1.1.1:300', {
-    data: 1,
-}, 'callback').then(res => {
-    console.log(res);
-}).catch(err => {
-    console.log(err);
-})
+let testFn = mySetTimeout(() => console.log('hello'), 1000);

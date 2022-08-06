@@ -25,7 +25,7 @@ https://blog.csdn.net/SpringRolls/article/details/116506148
 ```js
 const read_line = require('readline-sync')
 let input = read_line.question("") // 最原始数据
-consolo.log(input);
+console.log(input);
 ```
 
 ### 赛码

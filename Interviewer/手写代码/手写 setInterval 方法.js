@@ -11,7 +11,7 @@ function mySetInterval(fn, timeout) {
         }
     }
     // 启动定时器
-    setTimeout(interval, timeout);
+    setTimeout(interval, timeout); // interval();
     // 返回控制器
     return timer
 }
