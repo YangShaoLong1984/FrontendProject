@@ -348,7 +348,7 @@ var permute = function(nums) {
 >            res.push(path.concat());
 >    
 >            // 回溯核心框架
->            for (let i = start; i <nums.length; i++) {
+>            for (let i = start; i < nums.length; i++) {
 >                // 做选择
 >                path.push(nums[i]);
 >                // 通过start参数控制树枝的遍历，避免产生重复子集
@@ -878,7 +878,7 @@ var permute = function(nums) {
 >                res.push(path.join(''));
 >                return;
 >            }
->            let arr = map[digits[start]].split('');
+>            let arr = map[digits[start]].split(''); // 也可以不用 split转成数组，没必要
 >            for (let i = 0; i < arr.length; i++) {
 >                // 做选择
 >                path.push(arr[i]);
