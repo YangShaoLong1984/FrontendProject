@@ -6,7 +6,43 @@ https://jonny-wei.github.io/blog/css/
 
 ## CSS基础
 
-### CSS选择器及其优先级
+> #### css的三大特性分别是 **继承性，层叠性，和优先级**
+
+### CSS选择器有哪些
+
+> CSS选择器是元素和其他部分组合起来告诉浏览器哪个HTML元素应当是被选为应用规则中的CSS属性值的方式
+>
+> 选择器所选择的元素，叫做“选择器的对象”
+>
+> ```html
+> <div id="box">
+>     <div class="one">
+>         <p class="one_1">
+>         </p >
+>         <p class="one_1">
+>         </p >
+>     </div>
+>     <div class="two"></div>
+>     <div class="two"></div>
+>     <div class="two"></div>
+> </div>
+> ```
+>
+> #### 常用的CSS属性选择器
+>
+> - id选择器（#box），选择id为box的元素
+> - 类选择器（.one），选择类名为one的所有元素
+> - 属性选择器 （[attribute]），选择带有attribute属性的元素
+> - 伪类选择器（E:link），择匹配的E元素，且匹配元素被定义了未被访问的超链接
+> - 标签选择器（div），选择标签为div的所有元素
+> - 伪元素选择器（::first-letter），用于选取指定选择器的首字母
+> - 相邻兄弟选择器（.one+.two），选择紧接在.one之后的所有.two元素
+> - 子选择器（.one>one_1），选择父元素为.one的所有.one_1的元素
+> - 后代选择器（#box div），选择id为box元素内部所有的div元素
+> - 群组选择器（div,p），选择div、p的所有元素
+> - 通配符选择器（*），它可以匹配任意类型的 HTML 元素
+
+### 选择器优先级
 
 > | **选择器**     | **格式**      | **优先级权重** |
 > | -------------- | ------------- | -------------- |
@@ -21,27 +57,203 @@ https://jonny-wei.github.io/blog/css/
 > | 后代选择器     | li a          | 0              |
 > | 通配符选择器   | *             | 0              |
 >
+> - **优先级计算规则**
+>
+> > > 内联 > ID选择器 > 类选择器 > 标签选择器
+> >
+> > 到具体的计算层⾯，优先级是由 A 、B、C、D 的值来决定的，其中它们的值计算规则如下：
+> >
+> > - 如果存在内联样式，那么 A = 1, 否则 A = 0
+> > - B的值等于 `ID选择器` 出现的次数
+> > - C的值等于 `类选择器` 和 `属性选择器` 和 `伪类` 出现的总次数
+> > - D 的值等于 `标签选择器` 和 `伪元素` 出现的总次数
+> >
+> > 举个例子：
+> >
+> > ```css
+> > #nav-global > ul > li > a.nav-link
+> > ```
+> >
+> > 套用上面的算法，依次求出 `A` `B` `C` `D` 的值：
+> >
+> > - 因为没有内联样式 ，所以 A = 0
+> > - ID选择器总共出现了1次， B = 1
+> > - 类选择器出现了1次， 属性选择器出现了0次，伪类选择器出现0次，所以 C = (1 + 0 + 0) = 1
+> > - 标签选择器出现了3次， 伪元素出现了0次，所以 D = (3 + 0) = 3
+> >
+> > 上面算出的`A` 、 `B`、`C`、`D` 可以简记作：`(0, 1, 1, 3)`
+> >
+> > 知道了优先级是如何计算之后，就来看看比较规则：
+> >
+> > - 从左往右依次进行比较 ，较大者优先级更高
+> > - 如果相等，则继续往右移动一位进行比较
+> > - 如果4位全部相等，则后面的会覆盖前面的
+> >
+> > 经过上面的优先级计算规则，我们知道内联样式的优先级最高，如果外部样式需要覆盖内联样式，就需要使用`!important`
+>
 > - **优先级：**
 >
 >   -   `!important`
->   -   内联样式（1000）
->   -   ID选择器（0100）
->   -   类选择器/属性选择器/伪类选择器（0010）
->   -   元素选择器/伪元素选择器（0001）
+>   -   内联样式（1000）  a=1
+>   -   ID选择器（0100）  b=1
+>   -   类选择器/属性选择器/伪类选择器（0010）  c=1
+>   -   元素选择器/伪元素选择器（0001） d=1
 >   -   关系选择器/通配符选择器（0000）
 >
 >   注意事项：
 >
->   通用选择器（*）、子选择器（>）和相邻同胞选择器（+）并不在这四个等级中，所以它们的权值都为 0 ；
+> - 通用选择器（*）、子选择器（>）和相邻同胞选择器（+）并不在这四个等级中，所以它们的权值都为 0 ；
 >
->   带!important 标记的样式属性优先级最高；
+> - 带!important 标记的样式属性优先级最高；
 >
->   样式表的来源不同时，优先级顺序为：内联样式 > 内部样式 > 外部样式 > 浏览器用户自定义样式 > 浏览器默认样式。
+> - 样式表的来源不同时，优先级顺序为：
 >
->    样式表的来源相同时：
+>   内联样式 > 内部样式 > 外部样式 > 浏览器用户自定义样式 > 浏览器默认样式。
+>
+> - 样式表的来源相同时：
 >   `!important > 行内样式>ID选择器 > 类选择器 > 标签 > 通配符 > 继承 > 浏览器默认属性`
 >
->   元素选择器就是标签选择器
+> - 元素选择器就是标签选择器
+
+### 伪类 伪元素 元素选择器
+
+> - 伪类选择器 [参考](https://www.w3school.com.cn/css/css_pseudo_classes.asp)
+>
+>   > 通过单冒号来定义，将特殊的效果添加到特定选择器上。它是已有元素上添加类别的，不会产生新的元素。
+>   >
+>   > 只是插入了一些修饰类的元素，这些元素对于用户来说是可见的，但是对于DOM来说不可见。
+>   >
+>   > css伪类选择器有六种：动态伪类选择器、目标伪类选择器、语言伪类选择器、元素状态伪类选择器、结构伪类选择器、否定伪类选择器
+>
+>   ```css
+>   /* 以下都属于动态伪类选择器 */
+>   E:link ：选择匹配的E元素，且匹配元素被定义了未被访问的超链接,常用于链接锚点上
+>   E:visited：选取匹配的E元素，且匹配元素被定义了已被访问的超链接,常用于链接锚点上
+>   E:active：选择匹配的E元素，且匹配元素被激活，常用于链接锚点和按钮上
+>   E:hover ：选择匹配的E元素，	且鼠标指针停留在E上
+>   E:focus ：选择匹配的E元素，且匹配元素获取到焦点的
+>   
+>   :first-of-type 表示一组同级元素中其类型的第一个元素
+>   :last-of-type 表示一组同级元素中其类型的最后一个元素
+>   :only-of-type 表示没有同类型兄弟元素的元素
+>   :only-child 表示没有任何兄弟的元素
+>   :nth-child(n) 根据元素在一组同级中的位置匹配元素
+>   :nth-last-of-type(n) 匹配给定类型的元素，基于它们在一组兄弟元素中的位置，从末尾开始计数
+>   :last-child 表示一组兄弟元素中的最后一个元素
+>   :root 设置HTML文档
+>   :empty 指定空的元素
+>   :enabled 选择可用元素
+>   :disabled 选择被禁用元素
+>   :checked 选择选中的元素
+>   :not(selector) 选择与 <selector> 不匹配的所有元素
+>   ```
+>
+> - 伪元素选择器 [参考](https://www.w3school.com.cn/css/css_pseudo_elements.asp)
+>
+>   > 元素，如div、p、h1等，是实实在在存在的元素。
+>   >
+>   > 伪元素：双冒号定义，在内容元素的前后插入额外的元素或样式，但是这些元素实际上`并不在文档中生成`。它们只在外部显示可见，但不会在文档的源代码中找到它们，因此，称为“伪”元素。伪元素的由两个冒号::开头，然后是伪元素的名称。
+>   >
+>   > (双冒号是在css3规范中引入的，不得不兼容IE的话，css2的单冒号比较安全)
+>   >
+>   > *简单来说，伪元素创建了一个虚拟容器，这个容器不包含任何DOM元素，但是可以包含内容。*
+>
+>   ```css
+>   p::first-letter ：用于选取指定选择器p的首字母，添加一些样式
+>   p::first-line ：选取指定选择器p的首行，添加一些样式 只能用于块级元素
+>   h1::before : 选择器在被选元素 h1 的内容前面插入内容
+>   h1::after : 选择器在被选元素 h1 的内容后面插入内容
+>   ```
+>
+> - 属性选择器 [参考](https://www.w3school.com.cn/css/css_attribute_selectors.asp)
+>
+>   > 为带有特定属性的 HTML 元素设置样式
+>
+>   ```css
+>   [attribute] 选择带有attribute属性的元素
+>   [attribute="value"] 选择所有使用attribute="value"的元素
+>   [attribute~=value] 选择attribute属性包含value的元素
+>   /* 以下是css3新增的 */
+>   [attribute|=value]：选择attribute属性以value开头的元素
+>   [attribute*=value]：选择attribute属性值包含value的所有元素
+>   [attribute^=value]：选择attribute属性开头为value的所有元素
+>   [attribute$=value]：选择attribute属性结尾为value的所有元素
+>   ```
+
+### 清除默认的内边距与外边距
+
+> 现象： 网页元素很多都带有默认的内外边距，而且不同浏览器默认的也不一致。因此我们在布局前，首先要清除下网页元素的内外边距。一般为 8像素
+>
+> 解决
+>
+> ```css
+> * {
+>     padding: 0; /* 清除内边距 */
+>     margin: 0;  /* 清除外边距 */
+> }
+> ```
+>
+> 注意：行内元素为了照顾兼容性，尽量只设置左右内外边距，不要设置上下内外边距。但是转换为块级和行内块元素就可以了
+
+### CSS中可继承与不可继承属性有哪些
+
+> 继承概念：css的继承性指的是被包在内部的标签拥有外部标签的样式性，子元素可以继承父元素的属性。但也不是所有的css属性都有继承性的。
+>
+> **一、无继承性的属性**
+>
+> 1. **display**：规定元素应该生成的框的类型
+> 2. **文本属性**：
+>
+> - vertical-align：垂直文本对齐
+> - text-decoration：规定添加到文本的装饰
+> - text-shadow：文本阴影效果
+> - white-space：空白符的处理
+> - unicode-bidi：设置文本的方向
+>
+> 3. **盒子模型的属性**：width、height、margin、border、padding
+>
+> 4. **背景属性**：background、background-color、background-image、background-repeat、background-position、background-attachment
+> 5. **定位属性**：float、clear、position、top、right、bottom、left、min-width、min-height、max-width、max-height、overflow、clip、z-index
+> 6. **生成内容属性**：content、counter-reset、counter-increment
+> 7. **轮廓样式属性**：outline-style、outline-width、outline-color、outline
+> 8. **页面样式属性**：size、page-break-before、page-break-after
+>
+> > 分页符  page-break-before: 页面开始前分页；page-break-after: 页面开始后分页
+>
+> 9. **声音样式属性**：pause-before、pause-after、pause、cue-before、cue-after、cue、play-during
+>
+> 
+>
+> **二、有继承性的属性**
+>
+> 1. **字体系列属性**
+>
+> - font-family：字体系列
+> - font-weight：字体的粗细
+> - font-size：字体的大小
+> - font-style：字体的风格
+>
+> 2. **文本系列属性**
+>
+> - text-indent：文本缩进
+> - text-align：文本水平对齐
+> - line-height：行高
+> - word-spacing：单词之间的间距
+> - letter-spacing：中文或者字母之间的间距
+> - text-transform：控制文本大小写（就是uppercase、lowercase、capitalize这三个）
+> - color：文本颜色
+>
+> 3. **元素可见性**
+>
+> - visibility：控制元素显示隐藏
+>
+> 4. **列表布局属性**
+>
+> - list-style：列表风格，包括list-style-type、list-style-image等
+>
+> 5. **光标属性**
+>
+> - cursor：光标显示为何种形态
 
 ###  display的属性值及其作用
 
@@ -289,68 +501,6 @@ https://jonny-wei.github.io/blog/css/
 > `-webkit`代表chrome、safari私有属性；
 >
 > `-o`代表Opera私有属性。
-
-### CSS中可继承与不可继承属性有哪些
-
-> css的三大特性分别是 **继承性，层叠性，和优先级**
->
-> 继承概念：css的继承性指的是被包在内部的标签拥有外部标签的样式性，子元素可以继承父元素的属性。但也不是所有的css属性都有继承性的。
->
-> **一、无继承性的属性**
->
-> 1. **display**：规定元素应该生成的框的类型
-> 2. **文本属性**：
->
-> - vertical-align：垂直文本对齐
-> - text-decoration：规定添加到文本的装饰
-> - text-shadow：文本阴影效果
-> - white-space：空白符的处理
-> - unicode-bidi：设置文本的方向
->
-> 3. **盒子模型的属性**：width、height、margin、border、padding
->
-> 4. **背景属性**：background、background-color、background-image、background-repeat、background-position、background-attachment
-> 5. **定位属性**：float、clear、position、top、right、bottom、left、min-width、min-height、max-width、max-height、overflow、clip、z-index
-> 6. **生成内容属性**：content、counter-reset、counter-increment
-> 7. **轮廓样式属性**：outline-style、outline-width、outline-color、outline
-> 8. **页面样式属性**：size、page-break-before、page-break-after
->
-> > 分页符  page-break-before: 页面开始前分页；page-break-after: 页面开始后分页
->
-> 9. **声音样式属性**：pause-before、pause-after、pause、cue-before、cue-after、cue、play-during
->
-> 
->
-> **二、有继承性的属性**
->
-> 1. **字体系列属性**
->
-> - font-family：字体系列
-> - font-weight：字体的粗细
-> - font-size：字体的大小
-> - font-style：字体的风格
->
-> 2. **文本系列属性**
->
-> - text-indent：文本缩进
-> - text-align：文本水平对齐
-> - line-height：行高
-> - word-spacing：单词之间的间距
-> - letter-spacing：中文或者字母之间的间距
-> - text-transform：控制文本大小写（就是uppercase、lowercase、capitalize这三个）
-> - color：文本颜色
->
-> 3. **元素可见性**
->
-> - visibility：控制元素显示隐藏
->
-> 4. **列表布局属性**
->
-> - list-style：列表风格，包括list-style-type、list-style-image等
->
-> 5. **光标属性**
->
-> - cursor：光标显示为何种形态
 
 ### link和@import的区别
 

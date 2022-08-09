@@ -235,6 +235,28 @@
 > - 纯表现的元素：basefont，big，center，font, s，strike，tt，u;
 > - 对可用性产生负面影响的元素：frame，frameset，noframes；
 
+### [表单元素中readonly和disabled的区别](https://segmentfault.com/a/1190000019623412)
+
+> #### readonly和disabled**作用元素的范围不同**
+>
+> disabled属性可以作用于所有的表单元素。
+> readonly属性只对<input type="text">、<input type="number">、<textarea>和<input type="password">等可以输入的表单元素有效。
+>
+> #### readonly和disabled对元素的**作用程度不同**
+>
+> readonly属性只是将元素设置为只读，其他操作正常。
+>
+> disabled属性阻止对元素的一切操作，例如获取焦点，点击事件等等。
+>
+> #### readonly和disabled对**表单提交的作用不同**
+>
+> 表单元素在使用了disabled后，当我们将表单以POST或GET的方式提交的话，这个元素的值不会被传递出去，
+>
+> 而readonly会将该值传递出去（readonly接受值更改可以回传，disable接受改但不回传数据）
+>
+> disabled属性可以让表单元素的值无法被提交。
+> readonly属性则不影响提交问题
+
 ### 2.行内元素、块级元素和空(void)元素
 
 > - 行内元素有：`a b span img input select strong`； 

@@ -2386,6 +2386,104 @@ Execution Context stack(ECS)
 >
 > `CommonJS`和`ES6 Module`都可以对引入的对象进行赋值，即对对象内部属性的值进行改变。
 
+### 异步解决方案
+
+> - 回调函数
+> - Promise 对象
+> - generator 函数
+> - async/await
+>
+> 这里通过文件读取案例，将几种解决异步的方案进行一个比较：
+>
+> ### 回调函数
+>
+> 所谓回调函数，就是把任务的第二段单独写在一个函数里面，等到重新执行这个任务的时候，再调用这个函数
+>
+> ```js
+> fs.readFile('/etc/fstab', function (err, data) {
+>   if (err) throw err;
+>   console.log(data);
+>   fs.readFile('/etc/shells', function (err, data) {
+>     if (err) throw err;
+>     console.log(data);
+>   });
+> });
+> ```
+>
+> `readFile`函数的第三个参数，就是回调函数，等到操作系统返回了`/etc/passwd`这个文件以后，回调函数才会执行
+>
+> ### Promise
+>
+> `Promise`就是为了解决回调地狱而产生的，将回调函数的嵌套，改成链式调用
+>
+> ```js
+> const fs = require('fs');
+> 
+> const readFile = function (fileName) {
+>   return new Promise(function (resolve, reject) {
+>     fs.readFile(fileName, function(error, data) {
+>       if (error) return reject(error);
+>       resolve(data);
+>     });
+>   });
+> };
+> 
+> 
+> readFile('/etc/fstab').then(data =>{
+>     console.log(data)
+>     return readFile('/etc/shells')
+> }).then(data => {
+>     console.log(data)
+> })
+> ```
+>
+> 这种链式操作形式，使异步任务的两段执行更清楚了，但是也存在了很明显的问题，代码变得冗杂了，语义化并不强
+>
+> ### generator
+>
+> `yield`表达式可以暂停函数执行，`next`方法用于恢复函数执行，这使得`Generator`函数非常适合将异步任务同步化
+>
+> ```js
+> const gen = function* () {
+>   const f1 = yield readFile('/etc/fstab');
+>   const f2 = yield readFile('/etc/shells');
+>   console.log(f1.toString());
+>   console.log(f2.toString());
+> };
+> ```
+>
+> ### async/await
+>
+> 将上面`Generator`函数改成`async/await`形式，更为简洁，语义化更强了
+>
+> ```js
+> const asyncReadFile = async function () {
+>   const f1 = await readFile('/etc/fstab');
+>   const f2 = await readFile('/etc/shells');
+>   console.log(f1.toString());
+>   console.log(f2.toString());
+> };
+> ```
+
+### 理解Generator
+
+> Generator 函数是 ES6 提供的一种异步编程解决方案，语法行为与传统函数完全不同
+>
+> 执行 `Generator` 函数会返回一个遍历器对象，可以依次遍历 `Generator` 函数内部的每一个状态
+>
+> 形式上，`Generator `函数是一个普通函数，但是有两个特征：
+>
+> - `function`关键字与函数名之间有一个星号
+> - 函数体内部使用`yield`表达式，定义不同的内部状态
+>
+> ```js
+> function* helloWorldGenerator() {
+>   yield 'hello';
+>   yield 'world';
+>   return 'ending';
+> }
+> ```
+
 ### 什么是 JavaScript 中的包装类型？
 
 > 在 JavaScript 中，基本类型是没有属性和方法的，但是为了便于操作基本类型的值，在调用基本类型的属性或方法时 JavaScript 会在后台隐式地将基本类型的值转换为对象，如：
