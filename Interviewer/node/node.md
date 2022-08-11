@@ -1,53 +1,68 @@
 
 
-## 什么是Node.js
+## 对Node.js的理解
 
-Node. js是一个基于 Chrome v8引擎的开源与跨平台的服务器端 JavaScript运行环境；
+> Node. js是一个基于 Chrome v8引擎的开源与跨平台的服务器端 JavaScript运行环境；
+>
+> 在浏览器外运行 V8 JavaScript 引擎（Google Chrome 的内核），利用`事件驱动`、`非阻塞`和`异步输入输出模型`等技术提高性能。
+>
+> > 可以理解为：Node.js 就是一个服务器端的、非阻塞式I/O的、事件驱动的JavaScript运行环境。而却Node. js的包管理器npm是全球最大的开源库生态系统。
 
-在浏览器外运行 V8 JavaScript 引擎（Google Chrome 的内核），利用事件驱动、非阻塞和异步输入输出模型等技术提高性能。
+> - **事件驱动：** 事件驱动就是当进来一个新的请求的时，请求将会被压入一个事件队列中，然后通过一个循环来检测队列中的事件状态变化，如果检测到有状态变化的事件，那么就执行该事件对应的处理代码，一般都是回调函数。
+>
+>   比如，读取一个文件，文件读取完毕后，就会触发对应的状态，然后通过对应的回调函数来进行处理。
+>
+> - **非阻塞异步：** Nodejs采用了非阻塞型I/O机制，在做I/O操作的时候不会造成任何的阻塞，当完成之后，以时间的形式通知执行操作。
+>
+>   例如，在执行了访问数据库的代码之后，将立即转而执行其后面的代码，把数据库返回结果的处理代码放在回调函数中，从而提高了程序的执行效率。
+>
+>   ![image-20220811172434009](node.assets/image-20220811172434009.png)
 
-Node.js 就是一个服务器端的、非阻塞式I/O的、事件驱动的JavaScript运行环境。；
+## Node.js优缺点
 
-Node. js的包管理器npm是全球最大的开源库生态系统。
+> 优点：
+>
+> - 处理高并发场景性能更佳
+> - 适合I/O密集型应用，值的是应用在运行极限时，CPU占用率仍然比较低，大部分时间是在做 I/O硬盘内存读写操作
+> - 轻量级， Node. js本身既是代码又是服务器，前后端使用同一语言。
+> - 可扩展，可以轻松应对多实例、多服务器架构，同时有海量的第三方应用组件。
+>
+> 因为`Nodejs`是单线程，带来的缺点有：
+>
+> - 不适合CPU密集型应用
+> - 只支持单核CPU，不能充分利用CPU
+> - 可靠性低，一旦代码某个环节崩溃，整个系统都崩溃
 
-理解Node，有几个基础的概念：`非阻塞异步`和`事件驱动`。
+## Node.js应用场景
 
-- **非阻塞异步：** Nodejs采用了非阻塞型I/O机制，在做I/O操作的时候不会造成任何的阻塞，当完成之后，以时间的形式通知执行操作。例如，在执行了访问数据库的代码之后，将立即转而执行其后面的代码，把数据库返回结果的处理代码放在回调函数中，从而提高了程序的执行效率。
-- **事件驱动：** 事件驱动就是当进来一个新的请求的时，请求将会被压入一个事件队列中，然后通过一个循环来检测队列中的事件状态变化，如果检测到有状态变化的事件，那么就执行该事件对应的处理代码，一般都是回调函数。比如，读取一个文件，文件读取完毕后，就会触发对应的状态，然后通过对应的回调函数来进行处理。
+> 借助`Nodejs`的特点和弊端，其应用场景分类如下：
+>
+> - 善于`I/O`，不善于计算。因为Nodejs是一个单线程，如果计算（同步）太多，则会阻塞这个线程
+> - 大量并发的I/O，应用程序内部并不需要进行非常复杂的处理
+> - 与 websocket 配合，开发长连接的实时交互应用程序
+> - 轻量级， Node. js本身既是代码又是服务器，前后端使用同一语言。
+>
+> 具体场景可以表现为如下：
+>
+> - 第一大类：用户表单收集系统、后台管理系统、实时交互系统、考试系统、联网软件、高并发量的web应用程序
+> - 第二大类：基于web、canvas等多人联网游戏
+> - 第三大类：基于web的多人实时聊天客户端、聊天室、图文直播
+> - 第四大类：单页面浏览器应用程序 SPA
+> - 第五大类：操作数据库、为前端和移动端提供基于`json`的API
+>
+> 其实，`Nodejs`能实现几乎一切的应用，只考虑适不适合使用它
 
 ## node的构架是什么样子的
 
-主要分为三层
-
-应用app >> V8及node内置架构 >> 操作系统. 
-
-V8是node运行的环境，可以理解为node虚拟机．
-
-node内置架构又可分为三层: 核心模块(javascript实现) >> c++绑定 >> libuv + CAes + http.
-
-<img src="node.assets\image-20220616124354392.png" alt="image-20220616124354392" style="zoom:50%;" />
-
-## 使用场景
-
-- 高并发场景
-- 实时应用程序，如聊天和提供实时更新（比如消息推送）的应用程序
-- 将视频或其他多媒体内容流式传输给大量观众的流式应用程序
-- 其他 I/O 密集型应用程序，如协作平台
-- 遵循微服务架构的网络后端
-- 客户端逻辑强大的SPA（单页面应用程序）
-- 然而，Node.js 的特性使得它对于其他类型的应用程序来说不是一个理想的选择。`执行 CPU 密集型任务的应用程序`（如复杂的数学计算）在使用 CPU 时表现不佳，因为 Node.js 是`单线程`的。
-
-## Node.js的优势
-
-（1）简单， Node. js用 JavaScript、JSON进行编码，简单好学。
-
-（2）功能强大，非阻塞式I/O，在较慢的网络环境中，可以分块传输数据，事件驱动，擅长高并发访问。
-
-（3）轻量级， Node. js本身既是代码又是服务器，前后端使用同一语言。
-
-（4）可扩展，可以轻松应对多实例、多服务器架构，同时有海量的第三方应用组件。
-
-（5）总结起来node有以下几个特点:简单强大，轻量可扩展．简单体现在node使用的是javascript,json来进行编码，人人都会；强大体现在非阻塞IO,可以适应分块传输数据，较慢的网络环境，尤其擅长高并发访问；轻量体现在node本身既是代码，又是服务器，前后端使用统一语言;可扩展体现在可以轻松应对多实例，多服务器架构，同时有海量的第三方应用组件．
+> 主要分为三层
+>
+> 应用app >> V8及node内置架构 >> 操作系统. 
+>
+> V8是node运行的环境，可以理解为node虚拟机．
+>
+> node内置架构又可分为三层: 核心模块(javascript实现) >> c++绑定 >> libuv + CAes + http.
+>
+> <img src="node.assets\image-20220616124354392.png" alt="image-20220616124354392" style="zoom:50%;" />
 
 ## Node.js与JavaScript对比
 
@@ -63,129 +78,196 @@ EventEmitter, Stream, FS, Net和全局对象
 
 ## **Node. js有哪些全局对象？**
 
-> 在NodeJS里，是不可能在最外层定义一个变量，因为所有的用户代码都是当前模块的，只在当前模块里可用，但可以通过exports对象的使用将其传递给模块外部。所以，在NodeJS中，用var声明的变量并不属于全局的变量，只在当前模块生效。像global全局对象则在全局作用域中，任何全局变量、函数、对象都是该对象的一个属性值。
-
-Node常见的全局对象有如下一些：
-
-* **global** 表示node.js的全局运行环境
-  （JavaScript 中，通常 window 是全局对象， 而 Node.js 中的全局对象是 global）
-* **process** 表示node.js的进程状态，global对象的属性
-* **console** 用于控制台的输出
-* **Class:Buffer** 可以处理二进制以及非Unicode编码的数据
-* clearInterval、setInterval
-* clearTimeout、setTimeout
-
-JavaScript 中有一个特殊的对象，称为全局对象（Global Object），它及其所有属性都可以在程序的任何地方访问，即全局变量。
-
-在浏览器 JavaScript 中，通常 window 是全局对象， 而 Node.js 中的全局对象是 global，`所有全局变量（除了 global 本身以外）都是 global 对象的属性`。
-
-在 Node.js 我们可以直接访问到 global 的属性，而不需要在应用中包含它。
-
-* golbal
-
-> global 最根本的作用是作为全局变量的宿主。按照 ECMAScript 的定义，满足以下条 件的变量是全局变量：
+> 在浏览器 `JavaScript` 中，通常`window` 是全局对象， 而 `Nodejs`中的全局对象是 `global`
 >
-> * 在最外层定义的变量；
+> 在NodeJS里，是不可能在最外层定义一个变量，因为所有的用户代码都是当前模块的，只在当前模块里可用，但可以通过exports对象的使用将其传递给模块外部。
 >
-> * 全局对象的属性；
+> 所以，在NodeJS中，用var声明的变量并不属于全局的变量，只在当前模块生效。
 >
-> * 隐式定义的变量（未定义直接赋值的变量）。
+> 像global全局对象则在全局作用域中，任何全局变量、函数、对象都是该对象的一个属性值。
 >
-> 当你定义一个全局变量时，这个变量同时也会成为全局对象的属性，反之亦然。需要注意的是，`在 Node.js 中你不可能在最外层定义变量，因为所有用户代码都是属于当前模块的， 而模块本身不是最外层上下文`。
-
-## 全局对象与全局变量
-
-### golbal
-
-> global是一个全局命名空间对象，下面讲到的process、console、setTimeout等可以放到global中，例如：
+> ### 有哪些
 >
-> ```livecodeserver
-> console.log(process === global.process)     //输出true
-> ```
-
-### setTimeout(cb, ms)
-
-> **setTimeout(cb, ms)** 全局函数在指定的毫秒(ms)数后执行指定函数(cb)。：setTimeout() 只执行一次指定函数。
+> 将全局对象分成两类：
 >
-> 返回一个代表定时器的句柄值。
-
-### clearTimeout(t)
-
-> **clearTimeout( t )** 全局函数用于停止一个之前通过 setTimeout() 创建的定时器。 参数 **t** 是通过 setTimeout() 函数创建的定时器。
-
-### setInterval(cb, ms) 
-
-> **setInterval(cb, ms)** 全局函数在指定的毫秒(ms)数后执行指定函数(cb)。
+> - 真正的全局对象
+> - 模块级别的全局变量
 >
-> 返回一个代表定时器的句柄值。可以使用 **clearInterval(t)** 函数来清除定时器。
+
+#### 真正的全局对象
+
+> - Class:Buffer
+> - process
+> - console
+> - clearInterval、setInterval
+> - clearTimeout、setTimeout
+> - global
 >
-> setInterval() 方法会不停地调用函数，直到 clearInterval() 被调用或窗口被关闭。
-
-### cleatSetInterval()
-
-### Class:Buffer
-
-> Class:Buffer可以用来处理二进制以及非Unicode编码的数据，在Buffer类实例化中存储了原始数据。Buffer类似于一个整数数组，在V8堆原始存储空间给它分配了内存，一旦创建了Buffer实例，则无法改变大小。
-
-### console
-
-> console主要用来打印stdout和stderr，最常用的比如日志输出：`console.log`。清空控制台的命令为：`console.clear`。如果需要打印函数的调用栈，可以使用命令`console.trace`。
-
-### process
-
-> process表示进程对象，提供有关当前过程的信息和控制。包括在执行node程序的过程中，如果需要传递参数，我们想要获取这个参数需要在process内置对象中。比如，我们有如下一个文件：
+> > **Class:Buffer**
+> >
+> > > 可以处理二进制以及非`Unicode`编码的数据
+> > >
+> > > 在`Buffer`类实例化中存储了原始数据。`Buffer`类似于一个整数数组，在V8堆原始存储空间给它分配了内存
+> > >
+> > > 一旦创建了`Buffer`实例，则无法改变大小
+> >
+> > #### **process**
+> >
+> > > 进程对象，提供有关当前进程的信息和控制，包括在执行`node`程序进程时，如果需要传递参数，我们想要获取这个参数需要在`process`内置对象中
+> > >
+> > > 比如写一个index.js
+> > >
+> > > ```js
+> > > process.argv.forEach((val, index) => {
+> > >     console.log(`${index}: ${val}`);
+> > > })
+> > > ```
+> > >
+> > > 执行命令 `node .\index.js 参数1 参数2`，输出如下：
+> > >
+> > > ```js
+> > > 0: E:\MySoftware\nodejs\node.exe
+> > > 1: C:\Users\DRAGON\Desktop\tmp\index.js
+> > > 2: 参数1
+> > > 3: 参数2
+> > > ```
+> >
+> > **console**
+> >
+> > > 用来打印`stdout`（标准输出）和`stderr`（标准错误）
+> > >
+> > > 最常用的输入内容的方式：console.log()
+> > >
+> > > ```js
+> > > console.log("hello"); // 控制台输出 hello
+> > > ```
+> > >
+> > > 清空控制台：console.clear(); // 控制台清空
+> > >
+> > > 打印函数的调用栈：console.trace
+> > >
+> > > ```js
+> > > function test() {
+> > >     demo();
+> > > }
+> > > function demo() {
+> > >     foo();
+> > > }
+> > > function foo() {
+> > >     console.trace();
+> > > }
+> > > test();
+> > > ```
+> > >
+> > > 控制台输出：
+> > >
+> > > ```js
+> > > Trace
+> > >     at foo (C:\Users\DRAGON\Desktop\tmp\index.js:8:13)
+> > >     at demo (C:\Users\DRAGON\Desktop\tmp\index.js:5:5)
+> > >     at test (C:\Users\DRAGON\Desktop\tmp\index.js:2:5)
+> > >     at Object.<anonymous> (C:\Users\DRAGON\Desktop\tmp\index.js:10:1)
+> > >     at Module._compile (node:internal/modules/cjs/loader:1105:14)
+> > >     at Object.Module._extensions..js (node:internal/modules/cjs/loader:1159:10)
+> > >     at Module.load (node:internal/modules/cjs/loader:981:32)
+> > >     at Function.Module._load (node:internal/modules/cjs/loader:822:12)
+> > >     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)
+> > >     at node:internal/main/run_main_module:17:47
+> > > ```
+> > >
+> >
+> > **setInterval、clearInterval**
+> >
+> > > 设置定时器与清除定时器
+> > >
+> > > `callback`每`delay`毫秒重复执行一次
+> > >
+> > > `clearInterval`则为对应发取消定时器的方法
+> >
+> > **setTimeout、clearTimeout**
+> >
+> > > 设置延时器与清除延时器
+> > >
+> > > ```js
+> > > setTimeout(callback,delay[,...args])
+> > > ```
+> > >
+> > > `callback`在`delay`毫秒后执行一次
+> > >
+> > > `clearTimeout`则为对应取消延时器的方法
+> >
+> > **global**
+> >
+> > > 全局命名空间对象，前面讲到的`process`、`console`、`setTimeout`等都有放到`global`中
+> > >
+> > > global 最根本的作用是作为全局变量的宿主。按照 ECMAScript 的定义，满足以下条件的变量是全局变量：
+> > >
+> > > * 在最外层定义的变量；
+> > >
+> > > * 全局对象的属性；
+> > >
+> > > * 隐式定义的变量（未定义直接赋值的变量）。
+> > >
+> > > 当你定义一个全局变量时，这个变量同时也会成为全局对象的属性，反之亦然。需要注意的是，`在 Node.js 中你不可能在最外层定义变量，因为所有用户代码都是属于当前模块的， 而模块本身不是最外层上下文`。
+> > >
+> > > ```js
+> > > console.log(process === global.process) // true
+> > > ```
 >
-> ```arcade
-> process.argv.forEach((val, index) => {
->    console.log(`${index}: ${val}`);
-> });
-> ```
+> ****
 >
-> 当我们需要启动一个进程时，可以使用下面的命令：
+
+#### 模块级别的全局对象
+
+> 这些全局对象是模块中的变量，只是每个模块都有，看起来就像全局变量，像在命令交互中是不可以使用，包括：
 >
-> ```crmsh
->  node index.js 参数...
-> ```
-
-## 模块中的全局对象
-
-除了系统提供的全局对象外，还有一些只是在模块中出现，看起来像全局变量，如下所示：
-
 > - __dirname
 > - __filename
 > - exports
 > - module
 > - require
-
-### __dirname
-
-> __dirname主要用于获取当前文件所在的路径，不包括后面的文件名。比如，在`/Users/mjr` 中运行 `node example.js`，打印结果如下：
 >
-> ```js
-> console.log(__dirname);         // 打印: /Users/mjr
-> ```
-
-### __filename
-
-> __filename用于获取当前文件所在的路径和文件名称，包括后面的文件名称。比如，在`/Users/mjr` 中运行 `node example.js`，打印的结果如下：
+> **__dirname**
 >
-> ```js
-> console.log(__filename);// 打印: /Users/mjr/example.js
-> ```
-
-### **exports**
-
-module.exports 用于导出一个指定模块所的内容，然后也可以使用require() 访问里面的内容。
-
-```js
-exports.name = name;
-exports.age = age;
-exports.sayHello = sayHello;
-```
-
-### **require**
-
-require主要用于引入模块、 JSON、或本地文件， 可以从 node_modules 引入模块。可以使用相对路径引入本地模块或JSON文件，路径会根据__dirname定义的目录名或当前工作目录进行处理。
+> > 获取当前文件所在的路径，不包括后面的文件名
+> >
+> > 从 `C:\Users\DRAGON\Desktop\tmp` 运行 `node index.js`：
+> >
+> > ```js
+> > console.log(__dirname);
+> > // 打印：C:\Users\DRAGON\Desktop\tmp
+> > ```
+>
+> **__filename**
+>
+> > 获取当前文件所在的路径和文件名称，**包括后面的文件名称**
+> >
+> > 从 `C:\Users\DRAGON\Desktop\tmp` 运行 `node index.js`：
+> >
+> > ```js
+> > console.log(__filename);
+> > // 打印：C:\Users\DRAGON\Desktop\tmp\index.js
+> > ```
+>
+> **exports**
+>
+> > `module.exports` 用于指定一个模块所导出的内容，即可以通过 `require()` 访问的内容
+> >
+> > ```js
+> > exports.name = name;
+> > exports.age = age;
+> > exports.sayHello = sayHello;
+> > ```
+>
+> **module**
+>
+> > 对当前模块的引用，通过`module.exports` 用于指定一个模块所导出的内容，即可以通过 `require()` 访问的内容
+>
+> **require**
+>
+> > 用于引入模块、 `JSON`、或本地文件。 可以从 `node_modules` 引入模块。
+> >
+> > 可以使用相对路径引入本地模块或`JSON`文件，路径会根据`__dirname`定义的目录名或当前工作目录进行处理
 
 ## **对process的理解**
 
