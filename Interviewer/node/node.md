@@ -273,359 +273,671 @@ EventEmitter, Stream, FS, Net和全局对象
 
 ### 基本概念
 
-我们知道，进程计算机系统进行资源分配和调度的基本单位，是操作系统结构的基础，是线程的容器。当我们启动一个js文件，实际就是开启了一个服务进程，每个进程都拥有自己的独立空间地址、数据栈，像另一个进程无法访问当前进程的变量、数据结构，只有数据通信后，进程之间才可以数据共享。
-
-process 对象是Node的一个全局变量，提供了有关当前 Node.js 进程的信息并对其进行控制。
-由于JavaScript是一个单线程语言，所以通过node xxx启动一个文件后，只有一条主线程。
+> process 对象是Node的一个全局变量，提供了有关当前 Node.js 进程的信息并对其进行控制。
+> 由于JavaScript是一个单线程语言，所以通过node xxx启动一个文件后，只有一条主线程。
+>
+> 我们知道，进程计算机系统进行资源分配和调度的基本单位，是操作系统结构的基础，是线程的容器。
+>
+> 当我们启动一个js文件，实际就是开启了一个服务进程，每个进程都拥有自己的独立空间地址、数据栈，像另一个进程无法访问当前进程的变量、数据结构，只有数据通信后，进程之间才可以数据共享。
 
 ### 常用属性和方法
 
-process的常见属性如下：
-
-- process.env：环境变量，例如通过 `process.env.NODE_ENV 获取不同环境项目配置信息
-- process.nextTick：这个在谈及 EventLoop 时经常为会提到
-- process.pid：获取当前进程id
-- process.ppid：当前进程对应的父进程
-- process.cwd()：获取当前进程工作目录
-- process.platform：获取当前进程运行的操作系统平台
-- process.uptime()：当前进程已运行时间，例如：pm2 守护进程的 uptime 值
-  进程事件： process.on(‘uncaughtException’,cb) 捕获异常信息、 process.on(‘exit’,cb）进程推出监听
-- 三个标准流： process.stdout 标准输出、 process.stdin 标准输入、 process.stderr 标准错误输出
-- process.title：用于指定进程名称，有的时候需要给进程指定一个名称
-
-process.stdin、 process.stdout、 process.stderr、process.on、 process.env、 process.argv、 process.arch、process.platform、 process.exit
+> process的常见属性如下：
+>
+> - process.env：环境变量，例如通过 process.env.NODE_ENV 获取不同环境项目配置信息
+> - process.nextTick：这个在谈及 EventLoop 时经常为会提到
+> - process.pid：获取当前进程id
+> - process.ppid：当前进程对应的父进程
+> - process.cwd()：获取当前进程工作目录
+> - process.platform：获取当前进程运行的操作系统平台
+> - process.uptime()：当前进程已运行时间，例如：pm2 守护进程的 uptime 值
+>   进程事件： process.on(‘uncaughtException’,cb) 捕获异常信息、 process.on(‘exit’,cb）进程推出监听
+> - 三个标准流： process.stdout 标准输出、 process.stdin 标准输入、 process.stderr 标准错误输出
+> - process.title：用于指定进程名称，有的时候需要给进程指定一个名称
+>
+> 简单介绍几个属性
+>
+> > ### process.argv
+> >
+> > 在终端通过 Node 执行命令的时候，通过 `process.argv` 可以获取传入的命令行参数，返回值是一个数组：
+> >
+> > - 0: Node 路径（一般用不到，直接忽略）
+> > - 1: 被执行的 JS 文件路径（一般用不到，直接忽略）
+> > - 2~n: 真实传入命令的参数
+> >
+> > 所以，我们只要从 `process.argv[2]` 开始获取就好了
+> >
+> > ```js
+> > const args = process.argv.slice(2);
+> > ```
+> >
+> > ### process.nextTick()
+> >
+> > 我们知道`NodeJs`是基于事件轮询，在这个过程中，同一时间只会处理一件事情
+> >
+> > 在这种处理模式下，`process.nextTick()`就是定义出一个动作，并且让这个动作在下一个事件轮询的时间点上执行
+> >
+> > 例如下面例子将一个`foo`函数在下一个时间点调用
+> >
+> > ```js
+> > function foo() {
+> >     console.error('foo');
+> > }
+> > 
+> > process.nextTick(foo);
+> > console.error('bar');
+> > ```
+> >
+> > 输出结果为`bar`、`foo`
+> >
+> > 虽然下述方式也能实现同样效果：
+> >
+> > ```js
+> > setTimeout(foo, 0);
+> > console.log('bar');
+> > ```
+> >
+> > 两者区别在于：
+> >
+> > - process.nextTick()会在这一次event loop的call stack清空后（下一次event loop开始前）再调用callback
+> > - setTimeout()是并不知道什么时候call stack清空的，所以何时调用callback函数是不确定的
 
 ## 对fs模块的理解
 
 ### fs是什么
 
-fs（filesystem）是文件系统模块，该模块提供本地文件的读写能力，基本上是POSIX文件操作命令的简单包装。可以说，所有与文件的操作都是通过fs核心模块来实现的。
-
-使用之前，需要先导入fs模块，如下：
-
-```js
-const fs = require('fs');
-```
+> fs（filesystem）是文件系统模块，该模块提供本地文件的读写能力，基本上是`POSIX`文件操作命令的简单包装。
+>
+> > ps：POSIX是可移植操作系统接口，并不局限于UNIX，是一组操作系统调用的规范。POSIX文件操作理解为对设备驱动操作的封装。
+>
+> 可以说，所有与文件的操作都是通过fs核心模块来实现的。
+>
+> 使用之前，需要先导入fs模块，如下：
+>
+> ```js
+> const fs = require('fs');
+> ```
+>
+> 这个模块对所有文件系统操作提供异步（不具有`sync` 后缀）和同步（具有 `sync` 后缀）两种操作方式，而供开发者选择
 
 ### 文件基础知识
 
-计算机中，有关于文件的基础知识有如下一些：
-
-- 权限位 mode
-- 标识位 flag
-- 文件描述为 fd
+> 计算机中，有关于文件的基础知识有如下一些：
+>
+> - 权限位 mode
+> - 标识位 flag
+> - 文件描述为 fd
 
 #### 权限位mode
 
-![image-20220622124907316](node.assets/image-20220622124907316.png)
-
-针对文件所有者、文件所属组、其他用户进行权限分配，其中类型又分成读、写和执行，具备权限位4、2、1，不具备权限为0。如在linux查看文件权限位的命令如下：
-
-```brainfuck
-drwxr-xr-x 1 PandaShen 197121 0 Jun 28 14:41 core
--rw-r--r-- 1 PandaShen 197121 293 Jun 23 17:44 index.md
-```
-
-在开头前十位中，d为文件夹，-为文件，后九位就代表当前用户、用户所属组和其他用户的权限位，按每三位划分，分别代表读（r）、写（w）和执行（x），- 代表没有当前位对应的权限。
+> ![image-20220622124907316](node.assets/image-20220622124907316.png)
+>
+> 针对文件所有者、文件所属组、其他用户进行权限分配，其中类型又分成读、写和执行，具备权限位4、2、1，不具备权限为0。如在linux查看文件权限位的命令如下：
+>
+> ```js
+> drwxr-xr-x 1 PandaShen 197121 0 Jun 28 14:41 core
+> -rw-r--r-- 1 PandaShen 197121 293 Jun 23 17:44 index.md
+> ```
+>
+> 在开头前十位中，d为文件夹，-为文件，后九位就代表当前用户、用户所属组和其他用户的权限位，按每三位划分，分别代表读（r）、写（w）和执行（x），- 代表没有当前位对应的权限。
 
 #### 标识位
 
-标识位代表着对文件的操作方式，如可读、可写、即可读又可写等等，如下表所示：
-
-![image-20220622124845071](node.assets/image-20220622124845071.png)
+> 标识位代表着对文件的操作方式，如可读、可写、即可读又可写等等，如下表所示：
+>
+> | 符号 | 含义                                                     |
+> | ---- | -------------------------------------------------------- |
+> | r    | 读取文件，如果文件不存在则抛出异常。                     |
+> | r+   | 读取并写入文件，如果文件不存在则抛出异常。               |
+> | rs   | 读取并写入文件，指示操作系统绕开本地文件系统缓存。       |
+> | w    | 写入文件，文件不存在会被创建，存在则清空后写入。         |
+> | wx   | 写入文件，排它方式打开。                                 |
+> | w+   | 读取并写入文件，文件不存在则创建文件，存在则清空后写入。 |
+> | wx+  | 和 w+ 类似，排他方式打开。                               |
+> | a    | 追加写入，文件不存在则创建文件。                         |
+> | ax   | 与 a 类似，排他方式打开。                                |
+> | a+   | 读取并追加写入，不存在则创建。                           |
+> | ax+  | 与 a+ 类似，排他方式打开。                               |
 
 #### 文件描述fd
 
-操作系统会为每个打开的文件分配一个名为文件描述符的数值标识，文件操作使用这些文件描述符来识别与追踪每个特定的文件。
-
-Window 系统使用了一个不同但概念类似的机制来追踪资源，为方便用户，NodeJS 抽象了不同操作系统间的差异，为所有打开的文件分配了数值的文件描述符。
-
-在 NodeJS 中，每操作一个文件，文件描述符是递增的，文件描述符一般从 3 开始，因为前面有 0、1、2三个比较特殊的描述符，分别代表 process.stdin（标准输入）、process.stdout（标准输出）和 process.stderr（错误输出）。
+> 操作系统会为每个打开的文件分配一个名为文件描述符的数值标识，文件操作使用这些文件描述符来识别与追踪每个特定的文件。
+>
+> Window 系统使用了一个不同但概念类似的机制来追踪资源，为方便用户，NodeJS 抽象了不同操作系统间的差异，为所有打开的文件分配了数值的文件描述符。
+>
+> 在 NodeJS 中，每操作一个文件，文件描述符是递增的，文件描述符一般从 3 开始，因为前面有 0、1、2三个比较特殊的描述符，分别代表 process.stdin（标准输入）、process.stdout（标准输出）和 process.stderr（错误输出）。
 
 ### 常用方法
 
-由于fs模块主要是操作文件的，所以常见的文件操作方法有如下一些：
-
-- 文件读取
-- 文件写入
-- 文件追加写入
-- 文件拷贝
-- 创建目录
+> 由于fs模块主要是操作文件的，所以常见的文件操作方法有如下一些：
+>
+> - 文件读取
+> - 文件写入
+> - 文件追加写入
+> - 文件拷贝
+> - 创建目录
 
 #### 文件读取
 
-常用的文件读取有readFileSync和readFile两个方法。
-
-`readFileSync表示同步读取`，如下：
-
-```js
-const fs = require("fs");
-
-let buf = fs.readFileSync("1.txt");
-let data = fs.readFileSync("1.txt", "utf8");
-
-console.log(buf); // <Buffer 48 65 6c 6c 6f>
-console.log(data); // Hello
-```
-
-- 第一个参数为读取文件的路径或文件描述符。
-- 第二个参数为 options，默认值为 null，其中有 encoding（编码，默认为 null）和 flag（标识位，默认为 r），也可直接传入 encoding。
-
-`readFile为异步读取方法`， readFile 与 readFileSync 的前两个参数相同，最后一个参数为回调函数，函数内有两个参数 err（错误）和 data（数据），该方法没有返回值，回调函数在读取文件成功后执行。
-
-```javascript
-const fs = require("fs");
-
-fs.readFile("1.txt", "utf8", (err, data) => {
-   if(!err){
-       console.log(data);         // Hello
-   }
-});
-```
+> 常用的文件读取有
+>
+> **`readFileSync`**：同步读取
+>
+> **`readFile`**：异步读取
+>
+> `readFileSync表示同步读取`，如下：
+>
+> ```js
+> const fs = require("fs");
+> 
+> let buf = fs.readFileSync("1.txt"); // 1.text的内容为：  abc
+> let data = fs.readFileSync("1.text", "utf-8");
+> 
+> console.log(buf); // <Buffer 61 62 63>
+> console.log(data); // abc
+> ```
+>
+> - 第一个参数为读取文件的路径或文件描述符。
+> - 第二个参数为 options，默认值为 null，其中有 encoding（编码，默认为 null）和 flag（标识位，默认为 r），也可直接传入 encoding。
+>
+> `readFile为异步读取方法`， readFile 与 readFileSync 的前两个参数相同，最后一个参数为回调函数，函数内有两个参数 err（错误）和 data（数据），该方法没有返回值，回调函数在读取文件成功后执行。
+>
+> ```javascript
+> const fs = require("fs");
+> 
+> fs.readFile("1.txt", 'utf8', (err, data) => {
+>     if (!err) {
+>         console.log(data); // abc
+>     }
+> })
+> ```
+>
+> 
 
 #### 文件写入
 
-文件写入需要用到writeFileSync和writeFile两个方法。
-
-`writeFileSync表示同步写入`，如下所示。
-
-```js
-const fs = require("fs");
-
-fs.writeFileSync("2.txt", "Hello world");
-let data = fs.readFileSync("2.txt", "utf8");
-
-console.log(data); // Hello world
-```
-
-- 第一个参数为写入文件的路径或文件描述符。
-- 第二个参数为写入的数据，类型为 String 或 Buffer。
-- 第三个参数为 options，默认值为 null，其中有 encoding（编码，默认为 utf8）、 flag（标识位，默认为 w）和 mode（权限位，默认为 0o666），也可直接传入 encoding。
-
-`writeFile表示异步写入`，writeFile 与 writeFileSync 的前三个参数相同，最后一个参数为回调函数，函数内有一个参数 err（错误），回调函数在文件写入数据成功后执行。
-
-```javascript
-const fs = require("fs");
-
-fs.writeFile("2.txt", "Hello world", err => {
-    if (!err) {
-        fs.readFile("2.txt", "utf8", (err, data) => {
-            console.log(data);       // Hello world
-        });
-    }
-});
-```
+> 文件写入需要用到
+>
+> **`writeFileSync`**：同步写入
+>
+> **`writeFile`**：异步写入
+>
+> `writeFileSync表示同步写入`，如下所示。
+>
+> ```js
+> const fs = require("fs");
+> 
+> fs.writeFileSync("2.txt", "Hello world"); // 如果没有 2.txt，会自动创建
+> let data = fs.readFileSync("2.txt", "utf8");
+> 
+> console.log(data); // Hello world
+> ```
+>
+> - 第一个参数为写入文件的路径或文件描述符。
+> - 第二个参数为写入的数据，类型为 String 或 Buffer。
+> - 第三个参数为 options，默认值为 null，其中有 encoding（编码，默认为 utf8）、 flag（标识位，默认为 w）和 mode（权限位，默认为 0o666），也可直接传入 encoding。
+>
+> `writeFile表示异步写入`，writeFile 与 writeFileSync 的前三个参数相同，最后一个参数为回调函数，函数内有一个参数 err（错误），回调函数在文件写入数据成功后执行。
+>
+> ```javascript
+> const fs = require("fs");
+> 
+> fs.writeFile("2.txt", "Hello world", err => {
+>     if (!err) {
+>         fs.readFile("2.txt", "utf8", (err, data) => {
+>             console.log(data);       // Hello world
+>         });
+>     }
+> });
+> ```
+>
+> 
 
 #### 文件追加写入
 
-文件追加写入需要用到appendFileSync和appendFile两个方法。
-
-`appendFileSync表示同步写入`，如下。
-
-```js
-const fs = require("fs");
-
-fs.appendFileSync("3.txt", " world");
-let data = fs.readFileSync("3.txt", "utf8");
-```
-
-- 第一个参数为写入文件的路径或文件描述符。
-- 第二个参数为写入的数据，类型为 String 或 Buffer。
-- 第三个参数为 options，默认值为 null，其中有 encoding（编码，默认为 utf8）、 flag（标识位，默认为 a）和 mode（权限位，默认为 0o666），也可直接传入 encoding。
-
-`appendFile表示异步追加写入`，方法 appendFile 与 appendFileSync 的前三个参数相同，最后一个参数为回调函数，函数内有一个参数 err（错误），回调函数在文件追加写入数据成功后执行，如下所示。
-
-```javascript
-const fs = require("fs");
-
-fs.appendFile("3.txt", " world", err => {
-    if (!err) {
-        fs.readFile("3.txt", "utf8", (err, data) => {
-            console.log(data); // Hello world
-        });
-    }
-});
-```
+> 文件追加写入需要用到appendFileSync和appendFile两个方法。
+>
+> `appendFileSync表示同步写入`，如下。
+>
+> ```js
+> const fs = require("fs");
+> 
+> fs.appendFileSync("3.txt", " world"); // 3.txt原本的内容是 hello
+> let data = fs.readFileSync("3.txt", "utf8");
+> console.log(data); // 现在的内容是 hello world
+> ```
+>
+> - 第一个参数为写入文件的路径或文件描述符。
+> - 第二个参数为写入的数据，类型为 String 或 Buffer。
+> - 第三个参数为 options，默认值为 null，其中有 encoding（编码，默认为 utf8）、 flag（标识位，默认为 a）和 mode（权限位，默认为 0o666），也可直接传入 encoding。
+>
+> `appendFile表示异步追加写入`，方法 appendFile 与 appendFileSync 的前三个参数相同，最后一个参数为回调函数，函数内有一个参数 err（错误），回调函数在文件追加写入数据成功后执行，如下所示。
+>
+> ```javascript
+> const fs = require("fs");
+> 
+> fs.appendFile("3.txt", " world", err => { // 3.txt 的内容是 hello word
+>     if (!err) {
+>         fs.readFile("3.txt", "utf8", (err, data) => {
+>             console.log(data); // 追加之后是： Hello world world
+>         });
+>     }
+> });
+> ```
+>
+> 
 
 #### 文件拷贝
 
+> * **`copyFileSync`** 同步拷贝
+> * **`copyFile`** 异步拷贝
+>
+> copyFileSync
+>
+> ```js
+> const fs = require("fs");
+> 
+> fs.copyFileSync("3.txt", "4.txt"); // 3.txt 原本的内容是 Hello
+> let data = fs.readFileSync("4.txt", "utf8");
+> 
+> console.log(data); // Hello world
+> ```
+>
+> copyFileSyne
+>
+> ```js
+> const fs = require("fs");
+> 
+> fs.copyFile("3.txt", "4.txt", () => {
+>     fs.readFile("4.txt", "utf8", (err, data) => {
+>         console.log(data); // Hello world
+>     });
+> });
+> ```
+>
+> 
+
 #### 创建目录
 
-创建目录主要有mkdirSync和mkdir两个方法。
+> 创建目录主要有mkdirSync和mkdir两个方法。
+>
+> `mkdirSync为同步创建`，参数为一个目录的路径，没有返回值，在创建目录的过程中，必须保证传入的路径前面的文件目录都存在，否则会抛出异常。
+>
+> ```js
+> const fs = require("fs");
+> 
+> // 假设 a 文件夹和 a 下的 b 文件夹已经存在
+> fs.mkdirSync("a/b/c"); // 执行结果：b 下会生成 c 文件夹
+> ```
+>
+> `mkdir为异步创建`，第二个参数为回调函数，如下所示。
+>
+> ```js
+> const fs = require("fs");
+> 
+> // 假设 a 文件夹和 a 下的 b 文件夹已经存在
+> fs.mkdir("a/b/c", err => {
+>     console.log(err);
+>     if (!err) {
+>         console.log("创建成功"); // err的值为 null，子文件夹 c 创建成功
+>     }
+> })
+> ```
+>
+> 
 
-`mkdirSync为同步创建`，参数为一个目录的路径，没有返回值，在创建目录的过程中，必须保证传入的路径前面的文件目录都存在，否则会抛出异常。
+## Buffer的理解
 
-```js
-// 假设已经有了 a 文件夹和 a 下的 b 文件夹
-fs.mkdirSync("a/b/c")
-```
+### 概念
 
-`mkdir为异步创建`，第二个参数为回调函数，如下所示。
+> 在`Node`应用中，需要处理网络协议、操作数据库、处理图片、接收上传文件等，在网络流和文件的操作中，要处理大量二进制数据，而`Buffer`就是在内存中开辟一片区域（初次初始化为8KB），用来存放二进制数据。
+>
+> 在上述操作中都会存在数据流动，每个数据流动的过程中，都会有一个最小或最大数据量。
+>
+> 如果数据到达的速度比进程消耗的速度快，那么少数早到达的数据会处于等待区等候被处理。
+>
+> 反之，如果数据到达的速度比进程消耗的数据慢，那么早先到达的数据需要等待一定量的数据到达之后才能被处理。
+>
+> 这里的等待区就指的缓冲区（Buffer），它是计算机中的一个小物理单位，通常位于计算机的 `RAM` 中。
+>
+> 简单来讲，`Nodejs`不能控制数据传输的速度和到达时间，只能决定何时发送数据，如果还没到发送时间，则将数据放在`Buffer`中，即在`RAM`中，直至将它们发送完毕。
+>
+> 上面讲到`Buffer`是用来存储二进制数据，形式可以理解成一个数组，数组中的每一项，都可以保存8位二进制：`00000000`，也就是一个字节
+>
+> ```js
+> const buffer = Buffer.from("why")
+> ```
+>
+> 其存储过程如下图所示：
+>
+> ![img](node.assets/20371250-c69c-11eb-ab90-d9ae814b240d.png)
 
-```js
-fs.mkdir("a/b/c", err => {
-    if (!err) console.log("创建成功");
-});
-```
+### 使用方法
 
-## 对Stream的理解
+> `Buffer` 类在全局作用域中，无须`require`导入
+>
+> 创建`Buffer`的方法有很多种，我们讲讲下面的两种常见的形式：
+>
+> - **Buffer.from()**
+>   - **Buffer.from(array)：** 返回一个被 array 的值初始化的新的 Buffer 实例（传入的 array 的元素只能是数字，不然就会自动被 0 覆盖）
+>   - **Buffer.from(buffer)：** 复制传入的 Buffer 实例的数据，并返回一个新的 Buffer 实例
+>   - **Buffer.from(string[, encoding])：** 返回一个被 string 的值初始化的新的 Buffer 实例
+> - **Buffer.alloc(size[, fill[, encoding]])**：返回一个指定大小的 Buffer 实例，如果没有设置 fill，则默认填满 0
+>
+> **Buffer.from()**
+>
+> > ```js
+> > const b1 = Buffer.from("ab"); 
+> > const b2 = Buffer.from("10", "utf-8");
+> > const b3 = Buffer.from([10]); 
+> > const b4 = Buffer.from(b3);
+> > console.log(b1, b2, b3, b4); 
+> > // <Buffer 61 62>
+> > // <Buffer 31 30> 
+> > // <Buffer 0a> 
+> > // <Buffer 0a>
+> > ```
+>
+> **Buffer.alloc()**
+>
+> > ```js
+> > const bAlloc1 = Buffer.alloc(10); // 创建一个大小为 10 个字节的缓冲区
+> > const bAlloc2 = Buffer.alloc(10, 1); // 建一个长度为 10 的 Buffer,其中全部填充了值为 `1` 的字节
+> > console.log(bAlloc1); // <Buffer 00 00 00 00 00 00 00 00 00 00>
+> > console.log(bAlloc2); // <Buffer 01 01 01 01 01 01 01 01 01 01>
+> > ```
+> >
+> > 在上面创建`buffer`后，则能够`toString`的形式进行交互，默认情况下采取`utf8`字符编码形式，如下
+> >
+> > ```js
+> > const buffer = Buffer.from("你好");
+> > console.log(buffer); // <Buffer e4 bd a0 e5 a5 bd>
+> > const str = buffer.toString();
+> > console.log(str); // 你好
+> > ```
+> >
+> > 会出现乱码的情况
+> >
+> > * 编码与解码不是相同的格式
+> >
+> >   ```js
+> >   const buffer = Buffer.from("你好", "utf-8");
+> >   console.log(buffer); // <Buffer e4 bd a0 e5 a5 bd>
+> >   const str = buffer.toString("ascii");
+> >   console.log(str); // d= e%=
+> >   ```
+> >
+> > * 设定的范围导致字符串被截断
+> >
+> >   ```js
+> >   const buf = Buffer.from("前端", "utf-8");
+> >   console.log(buf, buf.length); // <Buffer e5 89 8d e7 ab af> 6
+> >   console.log(buf.toString('utf-8', 0, 3)); // 前
+> >   console.log(buf.toString('utf-8', 0, 5)); // 前�
+> >   ```
+
+### 应用场景
+
+> `Buffer`的应用场景常常与流的概念联系在一起，例如有如下：
+>
+> - I/O操作
+> - 加密解密
+> - zlib.js
+>
+> **I/O操作**
+>
+> 通过流的形式，将一个文件的内容读取到另外一个文件
+>
+> ```js
+> const fs = require('fs');
+> 
+> const inputStream = fs.createReadStream('input.txt'); // 创建可读流
+> const outputStream = fs.createWriteStream('output.txt'); // 创建可写流
+> 
+> inputStream.pipe(outputStream); // 管道读写
+> ```
+>
+> **加解密**
+>
+> 在一些加解密算法中会遇到使用 `Buffer`，例如 `crypto.createCipheriv` 的第二个参数 `key` 为 `string` 或 `Buffer` 类型
+>
+> **zlib.js**
+>
+> `zlib.js` 为 `Node.js` 的核心库之一，其利用了缓冲区（`Buffer`）的功能来操作二进制数据流，提供了压缩或解压功能
+
+## **Node.js 目前支持的字符编码包括**：
+
+> - ascii：仅支持 7 位 ASCII 数据，如果设置去掉高位的话，这种编码是非常快的
+> - utf8：多字节编码的 Unicode 字符，许多网页和其他文档格式都使用 UTF-8
+> - utf16le：2 或 4 个字节，小字节序编码的 Unicode 字符，支持代理对（U+10000至 U+10FFFF）
+> - ucs2，utf16le 的别名
+> - base64：Base64 编码
+> - latin：一种把 Buffer 编码成一字节编码的字符串的方式
+> - binary：latin1 的别名，
+> - hex：将每个字节编码为两个十六进制字符
+
+## Stream的理解
 
 ### 基本概念
 
-流（Stream）是一种数据传输的手段，是一种端到端信息交换的方式，而且是有顺序的，是逐块读取数据、处理内容，用于顺序读取输入或写入输出。在Node中，Stream分成三部分：source、dest、pipe。
-
-其中，在source和dest之间有一个连接的管道pipe，它的基本语法是source.pipe(dest)，source和dest就是通过pipe连接，让数据从source流向dest，如下图所示：
-![image-20220622125012220](node.assets/image-20220622125012220.png)
+> 流（Stream）是一种数据传输的手段，是一种端到端信息交换的方式，而且是有顺序的，是逐块读取数据、处理内容，用于顺序读取输入或写入输出。
+>
+> `Node.js`中很多对象都实现了流，总之它是会冒数据（以 `Buffer` 为单位）
+>
+> 它的独特之处在于，它不像传统的程序那样一次将一个文件读入内存，而是逐块读取数据、处理其内容，而不是将其全部保存在内存中
+>
+> 在Node中，Stream分成三部分：source、dest、pipe。
+>
+> 在source和dest之间有一个连接的管道pipe，它的基本语法是source.pipe(dest)，source和dest就是通过pipe连接，让数据从source流向dest，如下图所示：
+> ![image-20220622125012220](node.assets/image-20220622125012220.png)
 
 ### 流的分类
 
-在Node，流可以分成四个种类：
-
-- **可写流**：可写入数据的流，例如 fs.createWriteStream() 可以使用流将数据写入文件。
-- **可读流**： 可读取数据的流，例如fs.createReadStream() 可以从文件读取内容。
-- **双工流**： 既可读又可写的流，例如 net.Socket。
-- **转换流**： 可以在数据写入和读取时修改或转换数据的流。例如，在文件压缩操作中，可以向文件写入压缩数据，并从文件中读取解压数据。
-
-在Node的HTTP服务器模块中，request 是可读流，response 是可写流。对于fs 模块来说，能同时处理可读和可写文件流可读流和可写流都是单向的，比较容易理解。而Socket是双向的，可读可写。
-
-#### 双工流
-
-在Node中，比较的常见的全双工通信就是websocket，因为发送方和接受方都是各自独立的方法，发送和接收都没有任何关系。
-![image-20220622125111283](node.assets/image-20220622125111283.png)
-基本的使用方法如下：
-
-```javascript
-const { Duplex } = require('stream');
-
-const myDuplex = new Duplex({
-  read(size) {
-    // ...
-  },
-  write(chunk, encoding, callback) {
-    // ...
-  }
-});
-```
+> 在Node，流可以分成四个种类：
+>
+> - **可写流**：可写入数据的流，例如 fs.createWriteStream() 可以使用流将数据写入文件。
+> - **可读流**： 可读取数据的流，例如fs.createReadStream() 可以从文件读取内容。
+> - **双工流**： 既可读又可写的流，例如 net.Socket。
+> - **转换流**： 可以在数据写入和读取时修改或转换数据的流。例如，在文件压缩操作中，可以向文件写入压缩数据，并从文件中读取解压数据。
+>
+> 在Node的HTTP服务器模块中，request 是可读流，response 是可写流。对于fs 模块来说，能同时处理可读和可写文件流，可读流和可写流都是单向的，比较容易理解。
+>
+> **双工流-websocket**
+>
+> 在Node中，比较的常见的全双工通信就是websocket，因为发送方和接受方都是各自独立的方法，发送和接收都没有任何关系。
+> ![image-20220622125111283](node.assets/image-20220622125111283.png)
+> 基本的使用方法如下：
+>
+> ```javascript
+> const { Duplex } = require('stream');
+> 
+> const myDuplex = new Duplex({
+>   read(size) {
+>     // ...
+>   },
+>   write(chunk, encoding, callback) {
+>     // ...
+>   }
+> });
+> ```
+>
+> 
 
 ### 使用场景
 
-流的常见使用场景有：
+> `stream`的应用场景主要就是处理`IO`操作，而`http`请求和文件操作都属于`IO`操作
+>
+> 试想一下，如果一次`IO`操作过大，硬件的开销就过大，而将此次大的`IO`操作进行分段操作，让数据像水管一样流动，直到流动完成
+>
+> 常见的场景有：
+>
+> - get请求返回文件给客户端
+> - 文件操作
+> - 一些打包工具的底层操作
 
-- get请求返回文件给客户端
-- 文件操作
-- 一些打包工具的底层操作
+####  get请求返回文件给客户端
 
-#### 网络请求
-
-流一个常见的使用场景就是网络请求，比如使用stream流返回文件，res也是一个stream对象，通过pipe管道将文件数据返回。
-
-```js
-const server = http.createServer(function (req, res) {
-    const method = req.method;  
-    // get 请求
-    if (method === 'GET') { 
-        const fileName = path.resolve(__dirname, 'data.txt');
-        let stream = fs.createReadStream(fileName);
-        stream.pipe(res);   
-    }
-});
-server.listen(8080);
-```
+> 流一个常见的使用场景就是网络请求，比如使用stream流返回文件，res也是一个stream对象，通过pipe管道将文件数据返回。
+>
+> ```js
+> const server = http.createServer(function (req, res) {
+>     const method = req.method; // 获取请求方法
+>     if (method === 'GET') { // get 请求
+>         const fileName = path.resolve(__dirname, 'data.txt');
+>         let stream = fs.createReadStream(fileName);
+>         stream.pipe(res); // 将 res 作为 stream 的 dest
+>     }
+> });
+> server.listen(8000);
+> ```
+>
+> 
 
 #### 文件操作
 
-文件的读取也是流操作，创建一个可读数据流readStream，一个可写数据流writeStream，通过pipe管道把数据流转过去。
+> 文件的读取也是流操作，创建一个可读数据流readStream，一个可写数据流writeStream，通过pipe管道把数据流转过去。
+>
+> ```javascript
+> const fs = require("fs");
+> const path = require("path");
+> 
+> // 两个文件名：一开始只有 data.txt，内容是 abc，没有 data-bak.txt 文件
+> const fileName1 = path.resolve(__dirname, "data.txt");
+> const fileName2 = path.resolve(__dirname, "data-bak.txt");
+> // 读取文件的 stream 对象
+> const readStream = fs.createReadStream(fileName1);
+> // 写入文件的 stream 对象
+> const writeStream = fs.createWriteStream(fileName2); // 生成了 data-bak，但是无数据
+> // 通过 pipe 执行拷贝，数据流转
+> readStream.pipe(writeStream); // 数据拷贝到 data-bak.txt
+> // 数据读取完成监听，即拷贝完成
+> readStream.on("end", function() {
+>     console.log("拷贝完成");
+> })
+> ```
+>
+> 
 
-```javascript
-const fs = require('fs')
-const path = require('path')
+#### 打包工具底层操作
 
-// 两个文件名
-const fileName1 = path.resolve(__dirname, 'data.txt')
-const fileName2 = path.resolve(__dirname, 'data-bak.txt')
-// 读取文件的 stream 对象
-const readStream = fs.createReadStream(fileName1)
-// 写入文件的 stream 对象
-const writeStream = fs.createWriteStream(fileName2)
-// 通过 pipe执行拷贝，数据流转
-readStream.pipe(writeStream)
-// 数据读取完成监听，即拷贝完成
-readStream.on('end', function () {
-    console.log('拷贝完成')
-})
-```
-
-另外，一些打包工具，Webpack和Vite等都涉及很多流的操作。
+> 目前一些比较火的前端打包构建工具，都是通过`node.js`编写的，打包和构建的过程肯定是文件频繁操作的过程，离不来`stream`，如`gulp` 、`webpack`。
 
 ## 事件循环机制
 
 ### 什么是浏览器事件循环
 
-Node.js 在主线程里维护了一个事件队列，当接到请求后，就将该请求作为一个事件放入这个队列中，然后继续接收其他请求。当主线程空闲时(没有请求接入时)，就开始循环事件队列，检查队列中是否有要处理的事件，这时要分两种情况：如果是非 I/O 任务，就亲自处理，并通过回调函数返回到上层调用；如果是 I/O 任务，就从 线程池 中拿出一个线程来处理这个事件，并指定回调函数，然后继续循环队列中的其他事件。
+> **事件循环**是 Node.js 处理非阻塞 I/O 操作的机制(尽管 `JavaScript` 是单线程的）
+>
+> 由于目前大多数cpu内核都是多线程的，因此它们可以处理在后台执行的多个操作。 当这些操作之一完成时，内核会告诉 `Node.js`，以便可以将适当的回调添加到轮询队列中以最终执行。
+>
+> `javascript`在浏览器中的事件循环机制，其是根据`HTML5`定义的规范来实现
+>
+> 而在`NodeJS`中，事件循环是基于`libuv`实现，`libuv`是一个多平台的专注于异步IO的库，如下图最右侧所示：
+>
+> 下图`EVENT_QUEUE` 给人看起来只有一个队列，但`EventLoop`存在6个阶段，每个阶段都有对应的一个先进先出的回调队列
 
-当线程中的 I/O 任务完成以后，就执行指定的回调函数，并把这个完成的事件放到事件队列的尾部，等待事件循环，当主线程再次循环到该事件时，就直接处理并返回给上层调用。 这个过程就叫 事件循环 (Event Loop)，其运行原理如下图所示。
+> Node.js 在主线程里维护了一个事件队列，当接到请求后，就将该请求作为一个事件放入这个队列中，然后继续接收其他请求。当主线程空闲时(没有请求接入时)，就开始循环事件队列，检查队列中是否有要处理的事件。这时要分两种情况：如果是非 I/O 任务，就亲自处理，并通过回调函数返回到上层调用；如果是 I/O 任务，就从 线程池 中拿出一个线程来处理这个事件，并指定回调函数，然后继续循环队列中的其他事件。当线程中的 I/O 任务完成以后，就执行指定的回调函数，并把这个完成的事件放到事件队列的尾部，等待事件循环，当主线程再次循环到该事件时，就直接处理并返回给上层调用。 这个过程就叫 事件循环 (Event Loop)，其运行原理如下图所示。
+>
+> ![image-20220622130256118](node.assets/image-20220622130256118.png)
 
-![image-20220622130256118](node.assets/image-20220622130256118.png)
+### 流程
 
-
-
-### 事件循环的六个阶段
-
-事件循环一共可以分成了六个阶段，如下图所示。
-
-![image-20220622130356946](node.assets/image-20220622130356946.png)
-
-- timers阶段：此阶段主要执行timer（setTimeout、setInterval）的回调。
-- I/O事件回调阶段(I/O callbacks)：执行延迟到下一个循环迭代的 I/O 回调，即上一轮循环中未被执行的一些I/O回调。
-- 闲置阶段(idle、prepare)：仅系统内部使用。
-- 轮询阶段(poll)：检索新的 I/O 事件;执行与 I/O 相关的回调（几乎所有情况下，除了关闭的回调函数，那些由计时器和 setImmediate() 调度的之外），其余情况 node 将在适当的时候在此阻塞。
-- 检查阶段(check)：setImmediate() 回调函数在这里执行
-- 关闭事件回调阶段(close callback)：一些关闭的回调函数，如：socket.on('close', ...)
-
-每个阶段对应一个队列，当事件循环进入某个阶段时, 将会在该阶段内执行回调，直到队列耗尽或者回调的最大数量已执行, 那么将进入下一个处理阶段，如下图所示。
-
-![image-20220622130426908](node.assets/image-20220622130426908.png)
+> 事件循环一共可以分成了六个阶段，如下图所示。
+>
+> ![image-20220622130356946](node.assets/image-20220622130356946.png)
+>
+> - timers阶段：此阶段主要执行timer（setTimeout、setInterval）的回调。
+> - I/O事件回调阶段(I/O callbacks)：执行延迟到下一个循环迭代的 I/O 回调，即上一轮循环中未被执行的一些I/O回调。
+> - 闲置阶段(idle、prepare)：仅系统内部使用。
+> - 轮询阶段(poll)：检索新的 I/O 事件;执行与 I/O 相关的回调（几乎所有情况下，除了关闭的回调函数，那些由计时器和 setImmediate() 调度的之外），其余情况 node 将在适当的时候在此阻塞。
+> - 检查阶段(check)：setImmediate() 回调函数在这里执行
+> - 关闭事件回调阶段(close callback)：一些关闭的回调函数，如：socket.on('close', ...)
+>
+> 每个阶段对应一个队列，当事件循环进入某个阶段时, 将会在该阶段内执行回调，直到队列耗尽或者回调的最大数量已执行, 那么将进入下一个处理阶段，如下图所示。
+>
+> ![image-20220622130426908](node.assets/image-20220622130426908.png)
+>
+> 在`Node`中，同样存在宏任务和微任务，与浏览器中的事件循环相似
+>
+> 微任务对应有：
+>
+> - next tick queue：process.nextTick
+> - other queue：Promise的then回调、queueMicrotask
+>
+> 宏任务对应有：
+>
+> - timer queue：setTimeout、setInterval
+> - poll queue：IO事件
+> - check queue：setImmediate
+> - close queue：close事件
+>
+> 其执行顺序为：
+>
+> - next tick microtask queue
+> - other microtask queue
+> - timer queue
+> - poll queue
+> - check queue
+> - close queue
+>
+> https://learnku.com/articles/38802
 
 ## EventEmitter
 
 ### 基本概念
 
-前文说过，Node采用了事件驱动机制，而EventEmitter 就是Node实现事件驱动的基础。在EventEmitter的基础上，Node 几乎所有的模块都继承了这个类，这些模块拥有了自己的事件，可以绑定、触发监听器，实现了异步操作。
-
-Node.js 里面的许多对象都会分发事件，比如 fs.readStream 对象会在文件被打开的时候触发一个事件，这些产生事件的对象都是 events.EventEmitter 的实例，用于将一个或多个函数绑定到命名事件上。
+> **Events模块**
+>
+> 在nodejs中的js层面事件核心模块是**Events**，它是node.js对“**发布/订阅**”模式（publish/subscribe）的部署。一个对象通过这个模块，向另一个对象传递消息。该模块通过EventEmitter属性，提供了一个构造函数。该构造函数的实例具有on方法，可以用来监听指定事件，并触发回调函数。任意对象都可以发布指定事件，被EventEmitter实例的on方法监听到。
+>
+> **EventEmitter类**
+>
+> 在这个模块中有一个非常重要的类 - **EventEmitter**，nodejs通过EventEmitter类实现事件的统一管理。但实际业务开发中单独引入这个模块的场景并不多，因为nodejs本身就是基于事件驱动实现的异步非阻塞I/O，从js层面来看他就是Events模块。
+>
+> 而其他核心模块，需要进行异步操作的API，就是继承这个模块的EventEmitter类实现的（例如：fs、net、http等），这些异步操作本身就具备了Events模块定义相关的事件机制和功能，所以也就不需要单独的引入和使用了，我们只需要知道nodejs是基于事件驱动的异步操作架构，內置模块是Events模块。
+>
+> Node.js 里面的许多对象都会分发事件，比如 fs.readStream 对象会在文件被打开的时候触发一个事件。
+>
+> 这些产生事件的对象都是 events.EventEmitter 的实例，这些对象有一个 eventEmitter.on() 函数，用于将一个或多个函数绑定到命名事件上。
 
 ### 基本使用
 
-Node的events模块只提供了一个EventEmitter类，这个类实现了Node异步事件驱动架构的基本模式：观察者模式。
-
-在这种模式中，被观察者(主体)维护着一组其他对象派来(注册)的观察者，有新的对象对主体感兴趣就注册观察者，不感兴趣就取消订阅，主体有更新会依次通知观察者，使用方式如下。
-
-```js
-const EventEmitter = require('events')
-
-class MyEmitter extends EventEmitter {}
-const myEmitter = new MyEmitter()
-
-function callback() {
-    console.log('触发了event事件！')
-}
-myEmitter.on('event', callback)
-myEmitter.emit('event')
-myEmitter.removeListener('event', callback);
-```
-
-在上面的代码中，我们通过实例对象的`on`方法注册一个名为event的事件，通过`emit`方法触发该事件，而`removeListener`用于取消事件的监听。
-
-除了上面介绍的一些方法外，其他常用的方法还有如下一些：
-
-- **emitter.addListener/on(eventName, listener)** ：添加类型为 eventName 的监听事件到事件数组尾部。
-- **emitter.prependListener(eventName, listener)**：添加类型为 eventName 的监听事件到事件数组头部。
-- **emitter.emit(eventName[, ...args])**：触发类型为 eventName 的监听事件。
-- **emitter.removeListener/off(eventName, listener)**：移除类型为 eventName 的监听事件。
-- **emitter.once(eventName, listener)**：添加类型为 eventName 的监听事件，以后只能执行一次并删除。
-- **emitter.removeAllListeners([eventName])**： 移除全部类型为 eventName 的监听事件。
-
-
+> Node的events模块只提供了一个EventEmitter类，这个类实现了Node异步事件驱动架构的基本模式：“发布/订阅”模式。
+>
+> > 疑问：发布订阅和观察者模式应该是有区别的，但是很多博客说是一样的？？？
+>
+> > 发布订阅：**`订阅者`**（Subscriber）把自己想订阅的事件**注册**（Subscribe）到**`调度(消息)中心`**（Event Channel），当**`发布者`**（Publisher）发布该**事件**（Publish Event）到调度中心，也就是该事件触发时，由调度中心统一调度（Fire Event）订阅者注册到调度中心的处理代码。
+>
+> **基本代码如下**
+>
+> > 先建立一个**消息中心**，然后通过on方法，为各种事件指定回调函数，从而将程序转为**事件驱动型**，各个模块之间通过事件联系。在加载events模块后，通过EventEmitter属性建立了一个EventEmitter对象实例，这个**实例就是消息中心**。然后，通过**on方法**为someEvent事件**指定回调函数**。最后，通过**emit方法触发**someEvent事件。
+>
+> ```js
+> const EventEmitter = require("events");
+> class MyEmitter extends EventEmitter {};
+> // 上面两行也可以写成一行：
+> // const MyEmitter = require("events").EventEmitter;
+> 
+> const myEmitter = new MyEmitter();
+> 
+> function callback() {
+>     console.log("触发了 event 事件");
+> }
+> myEmitter.on("event", callback);
+> myEmitter.emit("event"); // 会打印：触发了 event 事件
+> myEmitter.removeListener("event", callback);
+> ```
+>
+> 在上面的代码中，我们通过实例对象的`on`方法注册一个名为event的事件，通过`emit`方法触发该事件，而`removeListener`用于取消事件的监听。
+>
+> 常用的方法：
+>
+> - **emitter.addListener/on(eventName, listener)** ：添加类型为 eventName 的监听事件到事件数组尾部。
+> - **emitter.prependListener(eventName, listener)**：添加类型为 eventName 的监听事件到事件数组头部。
+> - **emitter.emit(eventName[, ...args])**：触发类型为 eventName 的监听事件。
+> - **emitter.removeListener/off(eventName, listener)**：移除类型为 eventName 的监听事件。
+> - **emitter.once(eventName, listener)**：添加类型为 eventName 的监听事件，以后只能执行一次并删除。
+> - **emitter.removeAllListeners([eventName])**： 移除全部类型为 eventName 的监听事件。
 
 ### 实现原理
 
