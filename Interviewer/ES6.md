@@ -37,6 +37,208 @@
 > | 是否必须设置初始值 | ×       | ×       | ✔️         |
 > | 能否改变指针指向   | ✔️       | ✔️       | ×         |
 
+### Symbol
+
+> ES6中引入了一个新的基本数据类型Symbol，表示独一无二的值，属于 JavaScript 语言的原生数据类型之一。它是一种类似于字符串的数据类型，它的特点如下:
+>
+> * Symbol 值通过`Symbol()`函数生成，这就是说，对象的属性名现在可以有两种类型，一种是原来就有的字符串，另一种就是新增的 Symbol 类型，凡是属性名属于 Symbol 类型，就都是独一无二的，可以保证不会与其他属性名产生冲突。
+> * Symbol的值是唯一的，用来解决命名冲突的问题
+> * Symbol值不能与其他类型数据进行运算
+> * Symbol定义的对象属性不能使用for...in遍历循环，但是可以使用Reflect.ownKeys来获取对象的所有键名
+> * `Symbol()`函数前不能使用`new`命令，否则会报错，因为生成的 Symbol 是一个原始类型的值，不是对象
+>
+> ```js
+> let s1 = Symbol('foo');
+> let s2 = Symbol('foo');
+> let s3 = Symbol();
+> 
+> console.log(s1); // Symbol(foo)
+> console.log(typeof s1); // symbol
+> console.log(s1 === s2); // false
+> console.log(s3); // Symbol()
+> ```
+>
+> > 上述代码，如果不加参数，它们在控制台的输出都是`Symbol()`，不利于区分。有了参数以后，就等于为它们加上了描述，输出的时候就能够分清，到底是哪一个值。
+>
+> #### 使用场景：
+>
+> * 常量值，避免常量值重复
+> * 对象属性，避免对象属性覆盖
+>
+> > 基于以上特性，Symbol属性类型比较适合用于两类场景中:常量值和对象属性。
+> >
+> > **1 避免常量值重复**
+> >
+> > ```js
+> > const KEY = {
+> >     alibaba: 'A',
+> >     baidu: 'B',
+> >     tencent: 'B'
+> > }
+> > // 这样会出现问题，重复值导致相等
+> > console.log(KEY.baidu === KEY.tencent);  // true
+> > ```
+> >
+> > 所以在这种场景下更适合使用Symbol，`不需要关心值本身，只关心值的唯一性`:
+> >
+> > ```js
+> > const KEY = {
+> >     alibaba: Symbol(),
+> >     baidu: Symbol(),
+> >     tencent: Symbol()
+> > }
+> > console.log(KEY.baidu === KEY.tencent); // false
+> > ```
+> >
+> > **2 避免对象属性覆盖**
+> >
+> > 如果往对象 KEY 添加一个临时属性，可能该对象参数中已经有这个属性了，如果直接赋值就会覆盖之前的值。
+> >
+> > ```js
+> > const KEY = {
+> >     alibaba: 'A',
+> > }
+> > KEY[alibaba] = 'B';
+> > console.log(KEY); // 发生覆盖 { alibaba: 'B' }
+> > ```
+> >
+> > 此时就可以使用Symbol来避免这个问题，如下，创建一个 Symbol 数据类型的变量，然后将该变量作为对象参数的属性进行赋值和读取，这样就能避免覆盖的情况：
+> >
+> > ```js
+> > const KEY = {
+> >     alibaba: 'A',
+> > }
+> > 
+> > const s = Symbol();
+> > KEY[s] = 'B';
+> > console.log(KEY); // { alibaba: 'A', [Symbol()]: 'B' }
+> > console.log(KEY[s]); // B
+> > ```
+
+### BigInt
+
+> 引入原因：在JavaScript 中，数值类型Number是64位浮点数，所以计算精度和表示范围都有一定限制。ES2020新增了BigInt数据类型，这也是JavaScript引入的第八种基本类型。BigInt可以表示任意大的整数。
+>
+> 定义：**`BigInt`** 是一种内置对象，它提供了一种方法来表示大于 `2^53 - 1` 的整数。这原本是 Javascript 中可以用 [`Number`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number) 表示的最大数字。**`BigInt`** 可以表示任意大的整数。ps:JavaScript 中最小的安全整数 (`-(2^53 - 1)`).
+>
+> #### **定义方法**
+>
+> **可以用在一个整数字面量后面加 `n` 的方式定义一个 `BigInt`**
+>
+> **或者 BigInt(value);**  **value是创建对象的数值。可以是字符串或者整数。**
+>
+> 在JavaScript 中，Number基本类型可以精确表示的最大整数是23。因此早期会有这样的问题:
+>
+> ```js
+> let max = Number.MAX_SAFE_INTEGER;    // 最大安全整数
+> 
+> let max1 = max + 1
+> let max2 = max + 2
+> 
+> console.log(max1 === max2); // true，不相等的值却判定相等了
+> ```
+>
+> * 有了Biglnt之后，这个问题就不复存在了:
+>
+> ```js
+> let max = BigInt(Number.MAX_SAFE_INTEGER);
+> 
+> let max1 = max + 1n
+> let max2 = max + 2n
+> 
+> max1 === max2   // false
+> ```
+>
+> * 判断 BigInt 的类型：typeof 或者 Object.prototype.toString()
+>
+> ```js
+> typeof 1n === 'bigint'; // true 
+> typeof BigInt('1') === 'bigint'; // true 
+> Object.prototype.toString.call(10n) === '[object BigInt]';    // true
+> ```
+>
+> * 注意，BigInt 和 Number 不是严格相等的，但是宽松相等
+>
+> ```js
+> 10n === 10 // false 
+> 10n == 10  // true 
+> ```
+>
+> * Number 和 BigInt 进行比较
+>
+> ```js
+> 1n < 2;    // true 
+> 2n > 1;    // true 
+> 2 > 2;     // false 
+> 2n > 2;    // false 
+> 2n >= 2;   // true
+> ```
+
+### 可选链操作符 ?. 
+
+> ES11(2020)
+>
+> 在开发过程中，我们经常需要获取深层次属性，例如a.b.c.name。但在获取 name这个属性前需要一步步的判断前面的属性是否存在，否则并会报错:
+>
+> ```js
+> const a = {};
+> const name = (a && a.b && a.b.c && a.b.c.name) || 'x';
+> console.log(name); // x
+> ```
+>
+> 为了简化上述过程，ES2020引入了「链判断运算符」 ?.
+>
+> **可选链操作符( ?.)**允许读取位于连接对象链深处的属性的值，而不必明确验证链中的每个引用是否有效。?.操作符的功能类似于．链式操作符，不同之处在于，在引用为null或undefined 的情况下不会引起错误，该表达式短路返回值是undefined。与函数调用一起使用时，如果给定的函数不存在，则返回undefined。
+>
+> ```js
+> const a = {};
+> const name = a?.b?.c?.name;
+> console.log(name); // undefined
+> ```
+>
+> 当尝试访问可能不存在的对象属性时，可选链操作符将会使表达式更短、更简明。在探索一个对象的内容时，如果不能确定哪些属性必定存在，可选链操作符也是很有帮助的。
+>
+> 可选链有以下三种形式
+>
+> ```js
+> a?.[x]
+> // 等同于
+> a == null ? undefined : a[x]
+> 
+> a?.b()
+> // 等同于
+> a == null ? undefined : a.b()
+> 
+> a?.()
+> // 等同于
+> a == null ? undefined : a()
+> ```
+>
+> 在使用TypeScript开发时，这个操作符可以解决很多问题
+
+### 空值合并运算符 ??
+
+> ES11(2020)
+>
+> 在编写代码时，如果某个属性不为null和undefined，那么就获取该属性，如果该属性为null或undefined，则取一个默认值:
+>
+> ```js
+> const name = a ? a : 'default';
+> // 可以通过 || 来简化
+> const name = a || 'default';
+> ```
+>
+> 但是 || 的写法存在一定的缺陷，**当 a 为 0 或false 的时候也会走到default的逻辑**。所以ES2020引入了??运算符。只有??左边为null 或undefined时才返回右边的值:
+>
+> ```js
+> const dogName = false; 
+> const name =  dogName ?? 'default';
+> console.log(name); // false
+> // 而如果用 || 的话，name的值就是 default 了
+> ```
+>
+> 
+
 ### 箭头函数与普通函数的区别
 
 > **（1）箭头函数比普通函数更加简洁**
@@ -1334,6 +1536,140 @@
 > ```
 >
 > 使用者无法在外部创建出一个相同的 `speak`，所以就无法调用该方法
+
+### ES6模块化
+
+> 历史上，JavaScript 一直没有模块（module）体系，无法将一个大程序拆分成互相依赖的小文件，再用简单的方法拼装起来。
+>
+> ES6中首次引入模块化开发规范ES Module，让Javascript首次支持原生模块化开发。ES Module把一个文件当作一个模块，每个模块有自己的独立作用域，那如何把每个模块联系起来呢?核心点就是模块的导入与导出。
+>
+> #### 1 export导出模块
+>
+> * **正常导出**
+>
+> ```js
+> // 方式一
+> export var first = 'test';
+> export function func() {
+>     return true;
+> }
+> 
+> // 方式二
+> var first = 'test';
+> var second = 'test';
+> function func() {
+>     return true;
+> }
+> export {first, second, func};
+> ```
+>
+> * **as关键字**
+>
+> ```js
+> var first = 'test';
+> export {first as second};
+> ```
+>
+> as关键字可以重命名暴露出的变量或方法，经过重命名后同一变量可以多次暴露出去。
+>
+> * **export default**
+>
+> export default会导出默认输出，即用户不需要知道模块中输出的名字，在导入的时候为其指定任意名字。
+>
+> ```js
+> // 导出
+> export default function () {
+>   console.log('foo');
+> }
+> // 导入
+> import customName from './export-default';
+> ```
+>
+> 注意:导入默认模块时**不需要大括号**，导出默认的**变量或方法可以有名字**，但是**对外无效**。export default**只能使用一次**。
+>
+> #### 2 import 导入模块
+>
+> * **正常导入**
+>
+> ```js
+> import {firstName, lastName, year} from './profile';
+> ```
+>
+> 导入模块位置可以是相对路径也可以是绝对路径，,js可以省略，如果不带路径只是模块名，则需要通过配置文件告诉引擎查找的位置。
+>
+> * **as关键字**
+>
+> ```js
+> import { lastName as surname } from './profile';
+> ```
+>
+> import命令会被提升到模块头部，所以写的位置不是那么重要，但是不能使用表达式和变量来进行导入。
+>
+> * **加载整个模块（无输出）**
+>
+> ```js
+> import 'lodash'; //仅仅是加载而已，无法使用
+> ```
+>
+> * **加载整个模块（有输出）**
+>
+> ```js
+> import * as circle from './circle';
+> console.log('圆面积：' + circle.area(4));
+> console.log('圆周长：' + circle.circumference(14));
+> ```
+>
+> 注意: import*会忽略default输出
+>
+> #### 3 导入导出复合用法
+>
+> * **先导入后导出**
+>
+> ```js
+> export { foo, bar } from 'my_module';
+> // 等同于
+> import { foo, bar } from 'my_module';
+> export { foo, boo};
+> ```
+>
+> * **整体先导入再输出以及default**
+>
+> ```js
+> // 整体输出
+> export * from 'my_module';
+> // 导出default，正如前面所说，export default 其实导出的是default变量
+> export { default } from 'foo';
+> // 具名接口改default
+> export { es6 as default } from './someModule';
+> ```
+>
+> #### 4 模块的继承
+>
+> ```js
+> export * from 'circle';
+> export var e = 2.71828182846;
+> export default function(x) {
+>   return Math.exp(x);
+> }
+> ```
+>
+> 上面代码中的`export *`，表示再输出`circle`模块的所有属性和方法。注意，`export *`命令会忽略`circle`模块的`default`方法。然后，上面代码又输出了自定义的`e`变量和默认方法。
+
+
+
+### ES6模块与CommonJS模块有什么区别
+
+> 在 ES6 之前，社区制定了一些模块加载方案，最主要的有 CommonJS 和 AMD 两种。前者用于服务器，后者用于浏览器。
+>
+> 1、`ES6 Module`和`CommonJS`模块的区别：
+>
+> - `CommonJS` 是对模块的浅拷贝，`ES6 Module` 是对模块的引用，即`ES6 Module`只存只读，不能改变其值，具体点就是指针指向不能变，类似 `const`
+> - `import` 的接口是 `read-only`（只读状态），不能修改其变量值。 即不能修改其变量的指针指向，但可以改变变量内部指针指向，可以对 `commonJS` 对重新赋值（改变指针指向），但是对 `ES6 Module` 赋值会编译报错。
+> - ES6 模块的设计思想是尽量的静态化，使得编译时就能确定模块的依赖关系，以及输入和输出的变量。CommonJS 和 AMD 模块，都只能在运行时确定这些东西。比如，CommonJS 模块就是对象，输入时必须查找对象属性。
+>
+> 2、`ES6 Module`和`CommonJS`模块的共同点：
+>
+> `CommonJS`和`ES6 Module`都可以对引入的对象进行赋值，即对对象内部属性的值进行改变。
 
 ### for...in 和for...of有什么区别
 

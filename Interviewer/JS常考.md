@@ -370,6 +370,8 @@
 >
 > 对于这个问题，一个直接的`解决方法`就是设置一个`误差范围`，通常称为“`机器精度`”。对JavaScript来说，这个值通常为2-52，在ES6中，提供了`Number.EPSILON`属性，而它的值就是2-52，只要判断`0.1+0.2-0.3`是否小于`Number.EPSILON`，如果小于，就可以判断为0.1+0.2 ===0.3
 >
+> > ps：`Number.EPSILON`实际上是 JavaScript 能够表示的最小精度。误差如果小于这个值，就可以认为已经没有意义了，即不存在误差了。 Number.EPSILON === Math.pow(2, -52);
+>
 > ```js
 > function numberepsilon(arg1,arg2){                   
 >   return Math.abs(arg1 - arg2) < Number.EPSILON;        
@@ -2369,22 +2371,6 @@ Execution Context stack(ECS)
 > > 在 JS 中，常见的内存泄露主要有 4 种,全局变量、闭包、DOM 元素的引用、定时器
 
 ## 其它
-
-### ES6模块与CommonJS模块有什么区别
-
-> 历史上，JavaScript 一直没有模块（module）体系，无法将一个大程序拆分成互相依赖的小文件，再用简单的方法拼装起来。
->
-> 在 ES6 之前，社区制定了一些模块加载方案，最主要的有 CommonJS 和 AMD 两种。前者用于服务器，后者用于浏览器。
->
-> 1、`ES6 Module`和`CommonJS`模块的区别：
->
-> - `CommonJS` 是对模块的浅拷贝，`ES6 Module` 是对模块的引用，即`ES6 Module`只存只读，不能改变其值，具体点就是指针指向不能变，类似 `const`
-> - `import` 的接口是 `read-only`（只读状态），不能修改其变量值。 即不能修改其变量的指针指向，但可以改变变量内部指针指向，可以对 `commonJS` 对重新赋值（改变指针指向），但是对 `ES6 Module` 赋值会编译报错。
-> - ES6 模块的设计思想是尽量的静态化，使得编译时就能确定模块的依赖关系，以及输入和输出的变量。CommonJS 和 AMD 模块，都只能在运行时确定这些东西。比如，CommonJS 模块就是对象，输入时必须查找对象属性。
->
-> 2、`ES6 Module`和`CommonJS`模块的共同点：
->
-> `CommonJS`和`ES6 Module`都可以对引入的对象进行赋值，即对对象内部属性的值进行改变。
 
 ### 异步解决方案
 
