@@ -8,11 +8,11 @@
 >
 > > 可以理解为：Node.js 就是一个服务器端的、非阻塞式I/O的、事件驱动的JavaScript运行环境。而却Node. js的包管理器npm是全球最大的开源库生态系统。
 
-> - **事件驱动：** 事件驱动就是当进来一个新的请求的时，请求将会被压入一个事件队列中，然后通过一个循环来检测队列中的事件状态变化，如果检测到有状态变化的事件，那么就执行该事件对应的处理代码，一般都是回调函数。
+> - **事件驱动：** 事件驱动就是当进来一个新的请求的时候，请求将会被压入一个事件队列中，然后通过一个循环来检测队列中的事件状态变化，如果检测到有状态变化的事件，那么就执行该事件对应的处理代码，一般都是回调函数。
 >
 >   比如，读取一个文件，文件读取完毕后，就会触发对应的状态，然后通过对应的回调函数来进行处理。
 >
-> - **非阻塞异步：** Nodejs采用了非阻塞型I/O机制，在做I/O操作的时候不会造成任何的阻塞，当完成之后，以时间的形式通知执行操作。
+> - **非阻塞异步：** Nodejs采用了非阻塞型I/O机制，在`做I/O操作的时候`不会造成任何的阻塞，当完成之后，以时间的形式通知执行操作。
 >
 >   例如，在执行了访问数据库的代码之后，将立即转而执行其后面的代码，把数据库返回结果的处理代码放在回调函数中，从而提高了程序的执行效率。
 >
@@ -23,13 +23,13 @@
 > 优点：
 >
 > - 处理高并发场景性能更佳
-> - 适合I/O密集型应用，值的是应用在运行极限时，CPU占用率仍然比较低，大部分时间是在做 I/O硬盘内存读写操作
+> - 适合`I/O密集型应用`，值的是应用在运行极限时，CPU占用率仍然比较低，大部分时间是在做 I/O硬盘内存读写操作
 > - 轻量级， Node. js本身既是代码又是服务器，前后端使用同一语言。
 > - 可扩展，可以轻松应对多实例、多服务器架构，同时有海量的第三方应用组件。
 >
 > 因为`Nodejs`是单线程，带来的缺点有：
 >
-> - 不适合CPU密集型应用
+> - 不适合`CPU密集型应用`
 > - 只支持单核CPU，不能充分利用CPU
 > - 可靠性低，一旦代码某个环节崩溃，整个系统都崩溃
 
@@ -37,7 +37,7 @@
 
 > 借助`Nodejs`的特点和弊端，其应用场景分类如下：
 >
-> - 善于`I/O`，不善于计算。因为Nodejs是一个单线程，如果计算（同步）太多，则会阻塞这个线程
+> - 善于`I/O`，`不善于`计算。因为Nodejs是一个单线程，如果计算（同步）太多，则会阻塞这个线程
 > - 大量并发的I/O，应用程序内部并不需要进行非常复杂的处理
 > - 与 websocket 配合，开发长连接的实时交互应用程序
 > - 轻量级， Node. js本身既是代码又是服务器，前后端使用同一语言。
@@ -66,11 +66,11 @@
 
 ## Node.js与JavaScript对比
 
-| JavaScript                                                   | Node.js                                                      |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| JavaScript是—种编程语言,可以在任何具有合适浏览器引擎的网络浏览器中运行。 | Node.js是一个为JavaScript设计的解释器和运行时环境。Node.js内置了一些增强JavaScript编程功能模块。 |
-| 除了Node.js，JavaScript用于网络应用程序的客户端,特别是用于开发动态特性。 | Node.js 可以在任何操作系统上用于开发与系统硬件交互的应用程序，特别是对于web 后端。 |
-| JavaScript可以在不同的浏览器引擎上运行，比如v8 (Google Chrome) . Spider Monkey(Firefox)和JavaScript Core(Safari) | Node.js 仅在Chrome 使用的V8引擎上运行                        |
+> | JavaScript                                                   | Node.js                                                      |
+> | ------------------------------------------------------------ | ------------------------------------------------------------ |
+> | JavaScript是—种编程语言,可以在任何具有合适浏览器引擎的网络浏览器中运行。 | Node.js是一个为JavaScript设计的解释器和运行时环境。Node.js内置了一些增强JavaScript编程功能模块。 |
+> | 除了Node.js，JavaScript用于网络应用程序的客户端,特别是用于开发动态特性。 | Node.js 可以在任何操作系统上用于开发与系统硬件交互的应用程序，特别是对于web 后端。 |
+> | JavaScript可以在不同的浏览器引擎上运行，比如v8 (Google Chrome) . Spider Monkey(Firefox)和JavaScript Core(Safari) | Node.js 仅在Chrome 使用的V8引擎上运行                        |
 
 ## node有哪些核心模块
 
@@ -136,7 +136,7 @@ EventEmitter, Stream, FS, Net和全局对象
 > >
 > > > 用来打印`stdout`（标准输出）和`stderr`（标准错误）
 > > >
-> > > 最常用的输入内容的方式：console.log()
+> > > 最常用的输出内容的方式：console.log()
 > > >
 > > > ```js
 > > > console.log("hello"); // 控制台输出 hello
@@ -276,7 +276,7 @@ EventEmitter, Stream, FS, Net和全局对象
 > process 对象是Node的一个全局变量，提供了有关当前 Node.js 进程的信息并对其进行控制。
 > 由于JavaScript是一个单线程语言，所以通过node xxx启动一个文件后，只有一条主线程。
 >
-> 我们知道，进程计算机系统进行资源分配和调度的基本单位，是操作系统结构的基础，是线程的容器。
+> 我们知道，进程是计算机系统进行资源分配和调度的基本单位，是操作系统结构的基础，是线程的容器。
 >
 > 当我们启动一个js文件，实际就是开启了一个服务进程，每个进程都拥有自己的独立空间地址、数据栈，像另一个进程无法访问当前进程的变量、数据结构，只有数据通信后，进程之间才可以数据共享。
 
@@ -720,7 +720,7 @@ EventEmitter, Stream, FS, Net和全局对象
 
 ### 基本概念
 
-> 流（Stream）是一种数据传输的手段，是一种端到端信息交换的方式，而且是有顺序的，是逐块读取数据、处理内容，用于顺序读取输入或写入输出。
+> 流（Stream）是一种数据传输的手段，是一种端到端信息交换的方式，而且是`有顺序的，是逐块读取数据、处理内容`，用于顺序读取输入或写入输出。
 >
 > `Node.js`中很多对象都实现了流，总之它是会冒数据（以 `Buffer` 为单位）
 >
@@ -781,12 +781,12 @@ EventEmitter, Stream, FS, Net和全局对象
 >
 > ```js
 > const server = http.createServer(function (req, res) {
->     const method = req.method; // 获取请求方法
->     if (method === 'GET') { // get 请求
->         const fileName = path.resolve(__dirname, 'data.txt');
->         let stream = fs.createReadStream(fileName);
->         stream.pipe(res); // 将 res 作为 stream 的 dest
->     }
+>        const method = req.method; // 获取请求方法
+>        if (method === 'GET') { // get 请求
+>            const fileName = path.resolve(__dirname, 'data.txt');
+>            let stream = fs.createReadStream(fileName);
+>            stream.pipe(res); // 将 res 作为 stream 的 dest
+>        }
 > });
 > server.listen(8000);
 > ```
@@ -821,66 +821,6 @@ EventEmitter, Stream, FS, Net和全局对象
 #### 打包工具底层操作
 
 > 目前一些比较火的前端打包构建工具，都是通过`node.js`编写的，打包和构建的过程肯定是文件频繁操作的过程，离不来`stream`，如`gulp` 、`webpack`。
-
-## 事件循环机制
-
-### 什么是浏览器事件循环
-
-> **事件循环**是 Node.js 处理非阻塞 I/O 操作的机制(尽管 `JavaScript` 是单线程的）
->
-> 由于目前大多数cpu内核都是多线程的，因此它们可以处理在后台执行的多个操作。 当这些操作之一完成时，内核会告诉 `Node.js`，以便可以将适当的回调添加到轮询队列中以最终执行。
->
-> `javascript`在浏览器中的事件循环机制，其是根据`HTML5`定义的规范来实现
->
-> 而在`NodeJS`中，事件循环是基于`libuv`实现，`libuv`是一个多平台的专注于异步IO的库，如下图最右侧所示：
->
-> 下图`EVENT_QUEUE` 给人看起来只有一个队列，但`EventLoop`存在6个阶段，每个阶段都有对应的一个先进先出的回调队列
-
-> Node.js 在主线程里维护了一个事件队列，当接到请求后，就将该请求作为一个事件放入这个队列中，然后继续接收其他请求。当主线程空闲时(没有请求接入时)，就开始循环事件队列，检查队列中是否有要处理的事件。这时要分两种情况：如果是非 I/O 任务，就亲自处理，并通过回调函数返回到上层调用；如果是 I/O 任务，就从 线程池 中拿出一个线程来处理这个事件，并指定回调函数，然后继续循环队列中的其他事件。当线程中的 I/O 任务完成以后，就执行指定的回调函数，并把这个完成的事件放到事件队列的尾部，等待事件循环，当主线程再次循环到该事件时，就直接处理并返回给上层调用。 这个过程就叫 事件循环 (Event Loop)，其运行原理如下图所示。
->
-> ![image-20220622130256118](node.assets/image-20220622130256118.png)
-
-### 流程
-
-> 事件循环一共可以分成了六个阶段，如下图所示。
->
-> ![image-20220622130356946](node.assets/image-20220622130356946.png)
->
-> - timers阶段：此阶段主要执行timer（setTimeout、setInterval）的回调。
-> - I/O事件回调阶段(I/O callbacks)：执行延迟到下一个循环迭代的 I/O 回调，即上一轮循环中未被执行的一些I/O回调。
-> - 闲置阶段(idle、prepare)：仅系统内部使用。
-> - 轮询阶段(poll)：检索新的 I/O 事件;执行与 I/O 相关的回调（几乎所有情况下，除了关闭的回调函数，那些由计时器和 setImmediate() 调度的之外），其余情况 node 将在适当的时候在此阻塞。
-> - 检查阶段(check)：setImmediate() 回调函数在这里执行
-> - 关闭事件回调阶段(close callback)：一些关闭的回调函数，如：socket.on('close', ...)
->
-> 每个阶段对应一个队列，当事件循环进入某个阶段时, 将会在该阶段内执行回调，直到队列耗尽或者回调的最大数量已执行, 那么将进入下一个处理阶段，如下图所示。
->
-> ![image-20220622130426908](node.assets/image-20220622130426908.png)
->
-> 在`Node`中，同样存在宏任务和微任务，与浏览器中的事件循环相似
->
-> 微任务对应有：
->
-> - next tick queue：process.nextTick
-> - other queue：Promise的then回调、queueMicrotask
->
-> 宏任务对应有：
->
-> - timer queue：setTimeout、setInterval
-> - poll queue：IO事件
-> - check queue：setImmediate
-> - close queue：close事件
->
-> 其执行顺序为：
->
-> - next tick microtask queue
-> - other microtask queue
-> - timer queue
-> - poll queue
-> - check queue
-> - close queue
->
-> https://learnku.com/articles/38802
 
 ## EventEmitter
 
@@ -941,159 +881,353 @@ EventEmitter, Stream, FS, Net和全局对象
 
 ### 实现原理
 
-EventEmitter其实是一个构造函数，内部存在一个包含所有事件的对象。
+> EventEmitter其实是一个构造函数，内部存在一个包含所有事件的对象。
+>
+> ```javascript
+> class EventEmitter {
+>     constructor() {
+>         this.events = {};
+>     }
+> }
+> ```
+>
+> 其中，events存放的监听事件的函数的结构如下：
+>
+> ```js
+> {
+>   "event1": [f1,f2,f3]，
+>   "event2": [f4,f5]，
+>   ...
+> }
+> ```
+>
+> 然后，开始一步步实现实例方法，首先是emit，第一个参数为事件的类型，第二个参数开始为触发事件函数的参数，实现如下：
+>
+> ```js
+> emit(type, ...args) {
+>     this.events[type].forEach((item) => {
+>         Reflect.apply(item, this, args);
+>     });
+> }
+> ```
+>
+> 实现了emit方法之后，然后依次实现on、addListener、prependListener这三个实例方法，它们都是添加事件监听触发函数的。
+>
+> ```js
+> on(type, handler) {
+>     if (!this.events[type]) {
+>         this.events[type] = [];
+>     }
+>     this.events[type].push(handler);
+> }
+> 
+> addListener(type,handler){
+>     this.on(type,handler)
+> }
+> 
+> prependListener(type, handler) {
+>     if (!this.events[type]) {
+>         this.events[type] = [];
+>     }
+>     this.events[type].unshift(handler);
+> }
+> ```
+>
+> 移除事件监听，可以使用方法removeListener/on。
+>
+> ```js
+> removeListener(type, handler) {
+>     if (!this.events[type]) {
+>         return;
+>     }
+>     this.events[type] = this.events[type].filter(item => item !== handler);
+> }
+> 
+> off(type,handler){
+>     this.removeListener(type,handler)
+> }
+> ```
+>
+> 实现once方法， 再传入事件监听处理函数的时候进行封装，利用闭包的特性维护当前状态，通过fired属性值判断事件函数是否执行过。
+>
+> ```js
+> once(type, handler) {
+>     this.on(type, this._onceWrap(type, handler, this));
+>   }
+> 
+>   _onceWrap(type, handler, target) {
+>     const state = { fired: false, handler, type , target};
+>     const wrapFn = this._onceWrapper.bind(state);
+>     state.wrapFn = wrapFn;
+>     return wrapFn;
+>   }
+> 
+>   _onceWrapper(...args) {
+>     if (!this.fired) {
+>       this.fired = true;
+>       Reflect.apply(this.handler, this.target, args);
+>       this.target.off(this.type, this.wrapFn);
+>     }
+>  }
+> ```
+>
+> 下面是完成的测试代码：
+>
+> ```js
+> class EventEmitter {
+>     constructor() {
+>         this.events = {};
+>     }
+> 
+>     on(type, handler) {
+>         if (!this.events[type]) {
+>             this.events[type] = [];
+>         }
+>         this.events[type].push(handler);
+>     }
+> 
+>     addListener(type,handler){
+>         this.on(type,handler)
+>     }
+> 
+>     prependListener(type, handler) {
+>         if (!this.events[type]) {
+>             this.events[type] = [];
+>         }
+>         this.events[type].unshift(handler);
+>     }
+> 
+>     removeListener(type, handler) {
+>         if (!this.events[type]) {
+>             return;
+>         }
+>         this.events[type] = this.events[type].filter(item => item !== handler);
+>     }
+> 
+>     off(type,handler){
+>         this.removeListener(type,handler)
+>     }
+> 
+>     emit(type, ...args) {
+>         this.events[type].forEach((item) => {
+>             Reflect.apply(item, this, args);
+>         });
+>     }
+> 
+>     once(type, handler) {
+>         this.on(type, this._onceWrap(type, handler, this));
+>     }
+> 
+>     _onceWrap(type, handler, target) {
+>         const state = { fired: false, handler, type , target};
+>         const wrapFn = this._onceWrapper.bind(state);
+>         state.wrapFn = wrapFn;
+>         return wrapFn;
+>     }
+> 
+>     _onceWrapper(...args) {
+>         if (!this.fired) {
+>             this.fired = true;
+>             Reflect.apply(this.handler, this.target, args);
+>             this.target.off(this.type, this.wrapFn);
+>         }
+>     }
+> }
+> ```
+>
+> 测试代码
+>
+> ```js
+> const ee = new EventEmitter();
+> 
+> // 注册所有事件
+> ee.once('wakeUp', (name) => { console.log(`${name} 1`); });
+> ee.on('eat', (name) => { console.log(`${name} 2`) });
+> ee.on('eat', (name) => { console.log(`${name} 3`) });
+> const meetingFn = (name) => { console.log(`${name} 4`) };
+> ee.on('work', meetingFn);
+> ee.on('work', (name) => { console.log(`${name} 5`) });
+> 
+> // ee.emit('wakeUp', 'xx');         // 打印：xx 1
+> // ee.emit('wakeUp', 'xx');         // 第二次没有触发，这句不会打印      
+> // ee.emit('eat', 'xx');            // 打印： xx 2    xx 3
+> // ee.emit('work', 'xx');           // 打印 xx 4 xx 5
+> ee.off('work', meetingFn);       // 移除事件
+> ee.emit('work', 'xx');           // 再次工作，打印 xx 5
+> ```
+>
+> 
 
-```javascript
-class EventEmitter {
-    constructor() {
-        this.events = {};
-    }
-}
-```
+## 事件循环机制
 
-其中，events存放的监听事件的函数的结构如下：
+### 什么是浏览器事件循环
 
-```js
-{
-  "event1": [f1,f2,f3]，
-  "event2": [f4,f5]，
-  ...
-}
-```
+> **事件循环**是 Node.js 处理非阻塞 I/O 操作的机制(尽管 `JavaScript` 是单线程的）
+>
+> 由于目前大多数cpu内核都是多线程的，因此它们可以处理在后台执行的多个操作。 当这些操作之一完成时，内核会告诉 `Node.js`，以便可以将适当的回调添加到轮询队列中以最终执行。
+>
+> `javascript`在浏览器中的事件循环机制，其是根据`HTML5`定义的规范来实现
+>
+> 而在`NodeJS`中，事件循环是基于`libuv`实现，`libuv`是一个多平台的专注于异步IO的库，如下图最右侧所示：
+>
+> 下图`EVENT_QUEUE` 给人看起来只有一个队列，但`EventLoop`存在6个阶段，每个阶段都有对应的一个先进先出的回调队列
 
-然后，开始一步步实现实例方法，首先是emit，第一个参数为事件的类型，第二个参数开始为触发事件函数的参数，实现如下：
+> Node.js 在主线程里维护了一个事件队列，当接到请求后，就将该请求作为一个事件放入这个队列中，然后继续接收其他请求。当主线程空闲时(没有请求接入时)，就开始循环事件队列，检查队列中是否有要处理的事件。这时要分两种情况：如果是非 I/O 任务，就亲自处理，并通过回调函数返回到上层调用；如果是 I/O 任务，就从 线程池 中拿出一个线程来处理这个事件，并指定回调函数，然后继续循环队列中的其他事件。当线程中的 I/O 任务完成以后，就执行指定的回调函数，并把这个完成的事件放到事件队列的尾部，等待事件循环，当主线程再次循环到该事件时，就直接处理并返回给上层调用。 这个过程就叫 事件循环 (Event Loop)，其运行原理如下图所示。
+>
+> ![image-20220622130256118](node.assets/image-20220622130256118.png)
 
-```js
-emit(type, ...args) {
-    this.events[type].forEach((item) => {
-        Reflect.apply(item, this, args);
-    });
-}
-```
+### 流程
 
-实现了emit方法之后，然后依次实现on、addListener、prependListener这三个实例方法，它们都是添加事件监听触发函数的。
+> 事件循环一共可以分成了六个阶段，如下图所示。
+>
+> ![image-20220622130356946](node.assets/image-20220622130356946.png)
+>
+> - timers阶段：此阶段主要执行timer（setTimeout、setInterval）的回调。
+> - I/O事件回调阶段(I/O callbacks)：执行延迟到下一个循环迭代的 I/O 回调，即上一轮循环中未被执行的一些I/O回调。
+> - 闲置阶段(idle、prepare)：仅系统内部使用。
+> - 轮询阶段(poll)：检索新的 I/O 事件;执行与 I/O 相关的回调（几乎所有情况下，除了关闭的回调函数，那些由计时器和 setImmediate() 调度的之外），其余情况 node 将在适当的时候在此阻塞。
+> - 检查阶段(check)：setImmediate() 回调函数在这里执行
+> - 关闭事件回调阶段(close callback)：一些关闭的回调函数，如：socket.on('close', ...)
+>
+> 每个阶段对应一个队列，当事件循环进入某个阶段时, 将会在该阶段内执行回调，直到队列耗尽或者回调的最大数量已执行, 那么将进入下一个处理阶段，如下图所示。
+>
+> ![image-20220622130426908](node.assets/image-20220622130426908.png)
+>
+> 在`Node`中，同样存在宏任务和微任务，与浏览器中的事件循环相似
+>
+> 微任务对应有：
+>
+> - next tick queue：process.nextTick
+> - other queue：Promise的then回调、queueMicrotask
+>
+> 宏任务对应有：
+>
+> - timer queue：setTimeout、setInterval
+> - poll queue：IO事件
+> - check queue：setImmediate
+> - close queue：close事件
+>
+> 其执行顺序为：
+>
+> - next tick microtask queue
+> - other microtask queue
+> - timer queue
+> - poll queue
+> - check queue
+> - close queue
+>
+> [参考](https://learnku.com/articles/38802)
 
-```js
-on(type, handler) {
-    if (!this.events[type]) {
-        this.events[type] = [];
-    }
-    this.events[type].push(handler);
-}
+### 题目
 
-addListener(type,handler){
-    this.on(type,handler)
-}
+> * **常规**
+>
+> ```js
+> async function async1() {
+>     console.log('async1 start')
+>     await async2()
+>     console.log('async1 end')
+> }
+> 
+> async function async2() {
+>     console.log('async2')
+> }
+> 
+> console.log('script start')
+> 
+> setTimeout(function () {
+>     console.log('setTimeout0')
+> }, 0)
+> 
+> setTimeout(function () {
+>     console.log('setTimeout2')
+> }, 300)
+> 
+> setImmediate(() => console.log('setImmediate'));
+> 
+> process.nextTick(() => console.log('nextTick1'));
+> 
+> async1();
+> 
+> process.nextTick(() => console.log('nextTick2'));
+> 
+> new Promise(function (resolve) {
+>     console.log('promise1')
+>     resolve();
+>     console.log('promise2')
+> }).then(function () {
+>     console.log('promise3')
+> })
+> 
+> console.log('script end')
+> ```
+>
+> 分析过程：
+>
+> - 先找到同步任务，输出script start
+> - 遇到第一个 setTimeout，将里面的回调函数放到 timer 队列中
+> - 遇到第二个 setTimeout，300ms后将里面的回调函数放到 timer 队列中
+> - 遇到第一个setImmediate，将里面的回调函数放到 check 队列中
+> - 遇到第一个 nextTick，将其里面的回调函数放到本轮同步任务执行完毕后执行
+> - 执行 async1函数，输出 async1 start
+> - 执行 async2 函数，输出 async2，async2 后面的输出 async1 end进入微任务，等待下一轮的事件循环
+> - 遇到第二个 nextTick，将其里面的回调函数放到本轮同步任务执行完毕后执行
+> - 遇到 new Promise，执行里面的立即执行函数，输出 promise1、promise2
+> - then里面的回调函数进入微任务队列
+> - 遇到同步任务，输出 script end
+> - 执行下一轮回到函数，先依次输出 nextTick 的函数，分别是 nextTick1、nextTick2
+> - 然后执行微任务队列，依次输出 async1 end、promise3
+> - 执行timer 队列，依次输出 setTimeout0
+> - 接着执行 check 队列，依次输出 setImmediate
+> - 300ms后，timer 队列存在任务，执行输出 setTimeout2
+>
+> ---
+>
+> * **setTimeout 与 setImmediate的输出顺序**
+>
+> setImmediate 和 setTimeout 相似，但是根据调用时间的不同，它们的行为也不同。
+>
+> setImmediate 设计为在当前轮询 poll 阶段完成后执行脚本。
+> setTimeout 计划在以毫秒为单位的最小阈值过去之后运行脚本。
+>
+> ```js
+> setTimeout(() => {
+>   console.log("setTimeout");
+> }, 0);
+> 
+> setImmediate(() => {
+>   console.log("setImmediate");
+> });
+> ```
+>
+> **说明**：**上面输出顺序不确定**，有阔能先输出 setTimeout，有阔能先输出 setImmediate
+>
+> 计时器的执行顺序将根据调用它们的上下文而有所不同。 如果两者都是主模块 (main module) 中调用的，则时序将受到进程性能的限制。
+>
+> **原因**:在 mainline 部分执行 setTimeout 设置定时器 (没有写入队列)，与 setImmediate 写入 check 队列。mainline 执行完开始事件循环，第一阶段是 timers，这时候 timers 队列可能为空，也可能有回调；如果没有那么执行 check 队列的回调，下一轮循环在检查并执行 timers 队列的回调；如果有就先执行 timers 的回调，再执行 check 阶段的回调。因此这是 timers 的不确定性导致的。
+>
+> **举例说明**：如果我们运行以下不在 `I/O` 回调（即主模块）内的脚本，则两个计时器的执行`顺序是不确定`的，因为它受进程性能的约束，就比如上面的代码，**但是，如果这两个调用在一个 `I/O` 回调中，那么 `immediate` 总是执行第一，代码如下**
+>
+> **因为**：与 setTimeout 相比，使用 setImmediate 的主要优点是，如果在 I/O 周期内 setImmediate 总是比任何 timers 快。这个可以在下方彩色图中找到答案：poll 阶段用 setImmediate 设置下阶段 check 的回调，等到了 check 就开始执行；timers 阶段只能等到下次循环执行！
+>
+> ```js
+> const fs = require('fs');
+> 
+> fs.readFile(__filename, () => {
+>   setTimeout(() => {
+>     console.log('timeout');
+>   }, 0);
+>   setImmediate(() => {
+>     console.log('immediate'); // 它一定是先执行
+>   });
+> });
+> ```
+>
+> 
 
-prependListener(type, handler) {
-    if (!this.events[type]) {
-        this.events[type] = [];
-    }
-    this.events[type].unshift(handler);
-}
-```
 
-移除事件监听，可以使用方法removeListener/on。
 
-```js
-removeListener(type, handler) {
-    if (!this.events[type]) {
-        return;
-    }
-    this.events[type] = this.events[type].filter(item => item !== handler);
-}
 
-off(type,handler){
-    this.removeListener(type,handler)
-}
-```
-
-实现once方法， 再传入事件监听处理函数的时候进行封装，利用闭包的特性维护当前状态，通过fired属性值判断事件函数是否执行过。
-
-```js
-once(type, handler) {
-    this.on(type, this._onceWrap(type, handler, this));
-  }
-
-  _onceWrap(type, handler, target) {
-    const state = { fired: false, handler, type , target};
-    const wrapFn = this._onceWrapper.bind(state);
-    state.wrapFn = wrapFn;
-    return wrapFn;
-  }
-
-  _onceWrapper(...args) {
-    if (!this.fired) {
-      this.fired = true;
-      Reflect.apply(this.handler, this.target, args);
-      this.target.off(this.type, this.wrapFn);
-    }
- }
-```
-
-下面是完成的测试代码：
-
-```js
-class EventEmitter {
-    constructor() {
-        this.events = {};
-    }
-
-    on(type, handler) {
-        if (!this.events[type]) {
-            this.events[type] = [];
-        }
-        this.events[type].push(handler);
-    }
-
-    addListener(type,handler){
-        this.on(type,handler)
-    }
-
-    prependListener(type, handler) {
-        if (!this.events[type]) {
-            this.events[type] = [];
-        }
-        this.events[type].unshift(handler);
-    }
-
-    removeListener(type, handler) {
-        if (!this.events[type]) {
-            return;
-        }
-        this.events[type] = this.events[type].filter(item => item !== handler);
-    }
-
-    off(type,handler){
-        this.removeListener(type,handler)
-    }
-
-    emit(type, ...args) {
-        this.events[type].forEach((item) => {
-            Reflect.apply(item, this, args);
-        });
-    }
-
-    once(type, handler) {
-        this.on(type, this._onceWrap(type, handler, this));
-    }
-
-    _onceWrap(type, handler, target) {
-        const state = { fired: false, handler, type , target};
-        const wrapFn = this._onceWrapper.bind(state);
-        state.wrapFn = wrapFn;
-        return wrapFn;
-    }
-
-    _onceWrapper(...args) {
-        if (!this.fired) {
-            this.fired = true;
-            Reflect.apply(this.handler, this.target, args);
-            this.target.off(this.type, this.wrapFn);
-        }
-    }
-}
-```
 
 ## Node性能优化
 
