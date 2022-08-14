@@ -1058,6 +1058,97 @@ EventEmitter, Stream, FS, Net和全局对象
 >
 > 
 
+## Node文件查找的优先级&require()的查找策略
+
+### 模块规范
+
+> `NodeJS`对`CommonJS`进行了支持和实现，让我们在开发`node`的过程中可以方便的进行模块化开发：
+>
+> - 在Node中每一个js文件都是一个单独的模块
+> - 模块中包括CommonJS规范的核心变量：exports、module.exports、require
+> - 通过上述变量进行模块化开发
+>
+> 而模块化的核心是导出与导入，在`Node`中通过`exports`与`module.exports`负责对模块中的内容进行导出，通过`require`函数导入其他模块（自定义模块、系统模块、第三方库模块）中的内容
+
+### 查找策略
+
+> `require`方法接收一下几种参数的传递：
+>
+> - 原生模块：http、fs、path等
+> - 相对路径的文件模块：./mod或../mod
+> - 绝对路径的文件模块：/pathtomodule/mod
+> - 目录作为模块：./dirname
+> - 非原生模块的文件模块：mod
+>
+> `require`参数较为简单，但是内部的加载却是十分复杂的，其加载优先级也各自不同，如下图：
+>
+> <img src="node.assets/image-20220814222344265.png" alt="image-20220814222344265" style="zoom:50%;" />
+>
+> 从上图可以看见，文件模块存在缓存区，寻找模块路径的时候都会优先从缓存中加载已经存在的模块
+>
+> #### 原生模块
+>
+> 而像原生模块这些，通过`require`方法在解析文件名之后，优先检查模块是否在原生模块列表中，如果在则从原生模块中加载
+>
+> #### 绝对路径、相对路径
+>
+> 如果`require`绝对路径的文件，则直接查找对应的路径，速度最快
+>
+> 相对路径的模块则相对于当前调用`require`的文件去查找
+>
+> 如果按确切的文件名没有找到模块，则 `NodeJs` 会尝试带上 `.js`、`.json`或 `.node`拓展名再加载
+>
+> #### 目录作为模块
+>
+> 默认情况是根据根目录中`package.json`文件的`main`来指定目录模块，如：
+>
+> ```json
+> { "name" : "some-library",
+>   "main" : "main.js" }
+> ```
+>
+> 如果这是在`./some-library node_modules`目录中，则 `require('./some-library')` 会试图加载 `./some-library/main.js`
+>
+> 如果目录里没有 `package.json`文件，或者 `main`入口不存在或无法解析，则会试图加载目录下的 `index.js` 或 `index.node` 文件
+>
+> #### 非原生模块
+>
+> 在每个文件中都存在`module.paths`，表示模块的搜索路径，`require`就是根据其来寻找文件
+>
+> 在`window`下输出如下：
+>
+> ```js
+> [ 'c:\\nodejs\\node_modules',
+> 'c:\\node_modules' ]
+> ```
+>
+> 可以看出`module path`的生成规则为：从当前文件目录开始查找`node_modules`目录；然后依次进入父目录，查找父目录下的`node_modules`目录，依次迭代，直到根目录下的`node_modules`目录
+>
+> 当都找不到的时候，则会从系统`NODE_PATH`环境变量查找
+>
+> #### 举个例子：
+>
+> 如果在`/home/ry/projects/foo.js`文件里调用了 `require('bar.js')`，则 Node.js 会按以下顺序查找：
+>
+> - /home/ry/projects/node_modules/bar.js
+> - /home/ry/node_modules/bar.js
+> - /home/node_modules/bar.js
+> - /node_modules/bar.js
+>
+> 这使得程序本地化它们的依赖，避免它们产生冲突
+
+### 总结
+
+> 通过上面模块的文件查找策略之后，总结下文件查找的优先级：
+>
+> - 缓存的模块优先级最高
+> - 如果是内置模块，则直接返回，优先级仅次缓存的模块
+> - 如果是绝对路径 / 开头，则从根目录找
+> - 如果是相对路径 ./开头，则从当前require文件相对位置找
+> - 如果文件没有携带后缀，先从js、json、node按顺序查找
+> - 如果是目录，则根据 package.json的main属性值决定目录下入口文件，默认情况为 index.js
+> - 如果文件为第三方模块，则会引入 node_modules 文件，如果不在当前仓库文件中，则自动从上级递归查找，直到根目录
+
 ## 事件循环机制
 
 ### 什么是事件循环
@@ -1117,6 +1208,114 @@ EventEmitter, Stream, FS, Net和全局对象
 > - close queue
 >
 > [参考](https://learnku.com/articles/38802)
+
+## Web模块
+
+> ### 什么是 Web 服务器？
+>
+> Web服务器一般指网站服务器，是指驻留于因特网上某种类型计算机的程序，Web服务器的基本功能就是提供Web信息浏览服务。它只需支持HTTP协议、HTML文档格式及URL，与客户端的网络浏览器配合。
+>
+> 大多数 web 服务器都支持服务端的脚本语言（php、python、ruby）等，并通过脚本语言从数据库获取数据，将结果返回给客户端浏览器。
+>
+> 目前最主流的三个Web服务器是Apache、Nginx、IIS。
+>
+> ### http模块
+>
+> Node.js 提供了 http 模块，http 模块主要用于搭建 HTTP 服务端和客户端，使用 HTTP 服务器或客户端功能必须调用 http 模块，代码如下：
+>
+> ```js
+> var http = require('http');
+> ```
+
+## Express框架
+
+> **Express** 是一个简洁而灵活的路由和中间价Web应用框架, 提供了一系列强大特性帮助你创建各种 Web 应用，和丰富的 HTTP 工具。
+>
+> 使用 Express 可以快速地搭建一个完整功能的网站。Express 应用程序基本上是一系列中间件函数调用。
+>
+> Express 框架核心特性：
+>
+> - 可以设置中间件来响应 HTTP 请求。
+> - 定义了路由表用于执行不同的 HTTP 请求动作。
+> - 可以通过向模板传递参数来动态渲染 HTML 页面。
+>
+> **安装**
+>
+> npm install express --save
+>
+> **--save** 的意思是将模块安装到项目目录下，并在package文件的dependencies节点写入依赖。
+>
+> 以下几个重要的模块是需要与 express 框架一起安装的：
+>
+> - **body-parser** - node.js 中间件，用于处理 JSON, Raw, Text 和 URL 编码的数据。
+> - **cookie-parser** - 这就是一个解析Cookie的工具。通过req.cookies可以取到传过来的cookie，并把它们转成对象。
+> - **multer** - node.js 中间件，用于处理 enctype="multipart/form-data"（设置表单的MIME编码）的表单数据。
+
+## Koa框架
+
+> Koa 是一个新的 web 框架，由 Express 幕后的原班人马打造， 致力于成为 web 应用和 API 开发领域中的一个更小、更富有表现力、更健壮的基石。 通过利用 async 函数，Koa 帮你丢弃回调函数，并有力地增强错误处理。 Koa 并没有捆绑任何中间件， 而是提供了一套优雅的方法，帮助您快速而愉快地编写服务端应用程序。
+
+## Koa和Express区别
+
+> 提到 Node.js 开发，不得不提目前炙手可热的两大框架 Express 和 Koa。
+>
+> Express 诞生已有时日， 是一个基于 Node.js 平台的极简、灵活的 web 应用开发框架，主要基于 Connect 中间件，并且自身封装了路由、视图处理等功能，使用人数众多。
+>
+> Koa 相对更为年轻， 是 Express 原班人马基于 ES7 新特性重新开发的框架，框架自身不包含任何中间件，很多功能需要借助第三方中间件解决，但是由于其基于 ES7 async 特性的异步流程控制，解决了 "callback hell"（回调地狱） 和麻烦的错误处理问题，大受开发者欢迎。
+>
+> * **hello world**：两者创建一个基础的 Web 服务都非常简单，写法也基本相同，最大的区别是路由处理 Express 是自身集成的，而 Koa 需要引入中间件。
+>
+>   ```js
+>   // Express
+>   const express = require('express')
+>   const app = express()
+>   
+>   app.get('/', function (req, res) {
+>     res.send('Hello Express')
+>   })
+>   
+>   app.listen(3000)
+>   // Koa
+>   const Koa = require('koa')
+>   const route = require('koa-route')
+>   
+>   const app = new Koa()
+>   
+>   app.use(route.get('/', async (ctx) => {
+>     ctx.body = 'Hello Koa'
+>   }))
+>   
+>   app.listen(3000)
+>   ```
+>
+> * **view**：Express 自身集成了视图功能，提供了 consolidate.js 功能，支持几乎所有 JavaScript 模板引擎，并提供了视图设置的便利方法。Koa 需要引入 koa-views 中间件。
+>
+> * **中间件模型**：Koa 的中间件采用了洋葱圈模型，所有的请求在经过中间件的时候都会执行两次，能够非常方便的执行一些后置处理逻辑。
+>   例如，我们经常需要计算一个请求的响应时间，在 Koa 中， 我们可以在中间件的开始记录初始时间，当响应返回时，代码执行又回到了原来的中间件，此时根据当前时间和初始时间的时间差便得到了响应时间。
+>
+> * **异常处理**：Express 使用 Node 约定的 "error-first 回调" 处理异常，并通过中间件传播。
+>   Koa 通过同步方式编写异步代码，可以通过`try catch`处理异常，非常自然。
+>
+> * **Context**：Koa 新增了一个 Context 对象，用来代替 Express 中的 Request 和 Response，作为请求的上下文对象。
+>   Context 上除了 Request 和 Response 两个对象之外，还有 Node.js 原生提供的 req 、res、socket 等对象。
+
+## 中间件概念的理解
+
+### 概念
+
+> 中间件（Middleware）是介于应用系统和系统软件之间的一类软件，它使用系统软件所提供的基础服务（功能），衔接网络上应用系统的各个部分或不同的应用，能够达到资源共享、功能共享的目的
+>
+> 在`NodeJS`中，中间件主要是指封装`http`请求细节处理的方法
+>
+> 例如在`express`、`koa`等`web`框架中，中间件的本质为一个回调函数，参数包含请求对象、响应对象和执行下一个中间件的函数
+>
+> 在这些中间件函数中，我们可以执行业务逻辑代码，修改请求和响应对象、返回响应数据等操作
+>
+> ![image-20220814215740238](node.assets/image-20220814215740238.png)
+
+## 如何封装中间件
+
+> 
 
 ### 题目
 
@@ -1227,96 +1426,179 @@ EventEmitter, Stream, FS, Net和全局对象
 
 
 
+## Node性能监控
 
+### 衡量指标
+
+> `Node`作为一门服务端语言，性能方面尤为重要，其衡量指标一般有如下：
+>
+> - CPU
+> - 内存
+> - I/O
+> - 网络
+>
+> ### CPU
+>
+> 主要分成了两部分：
+>
+> - CPU负载：在某个时间段内，占用以及等待CPU的进程总数
+> - CPU使用率：CPU时间占用状况，等于 1 - 空闲CPU时间(idle time) / CPU总时间
+>
+> 这两个指标都是用来评估系统当前CPU的繁忙程度的量化指标
+>
+> `Node`应用一般不会消耗很多的`CPU`，如果`CPU`占用率高，则表明应用存在很多同步操作，导致异步任务回调被阻塞
+>
+> ### 内存指标
+>
+> 内存是一个非常容易量化的指标。 内存占用率是评判一个系统的内存瓶颈的常见指标。 对于Node来说，内部内存堆栈的使用状态也是一个可以量化的指标
+>
+> ```js
+> // /app/lib/memory.js
+> const os = require('os');
+> // 获取当前Node内存堆栈情况
+> const { rss, heapUsed, heapTotal } = process.memoryUsage();
+> // 获取系统空闲内存
+> const sysFree = os.freemem();
+> // 获取系统总内存
+> const sysTotal = os.totalmem();
+> 
+> module.exports = {
+>   memory: () => {
+>     return {
+>       sys: 1 - sysFree / sysTotal,  // 系统内存占用率
+>       heap: heapUsed / headTotal,   // Node堆内存占用率
+>       node: rss / sysTotal,         // Node占用系统内存的比例
+>     }
+>   }
+> }
+> ```
+>
+> - rss：表示node进程占用的内存总量。
+> - heapTotal：表示堆内存的总量。
+> - heapUsed：实际堆内存的使用量。
+> - external ：外部程序的内存使用量，包含Node核心的C++程序的内存使用量
+>
+> 在`Node`中，一个进程的最大内存容量为1.5GB。因此我们需要减少内存泄露
+>
+> ### 磁盘 I/O
+>
+> 硬盘的`IO` 开销是非常昂贵的，硬盘 IO 花费的 CPU 时钟周期是内存的 164000 倍
+>
+> 内存 `IO`比磁盘`IO` 快非常多，所以使用内存缓存数据是有效的优化方法。常用的工具如 `redis`、`memcached`等
+>
+> 并不是所有数据都需要缓存，访问频率高，生成代价比较高的才考虑是否缓存，也就是说影响你性能瓶颈的考虑去缓存，并且而且缓存还有缓存雪崩、缓存穿透等问题要解决
+
+### 如何监控
+
+> 关于性能方面的监控，一般情况都需要借助工具来实现
+>
+> 这里采用`Easy-Monitor 2.0`，其是轻量级的 `Node.js` 项目内核性能监控 + 分析工具，在默认模式下，只需要在项目入口文件 `require` 一次，无需改动任何业务代码即可开启内核级别的性能监控分析
+>
+> 使用方法如下：
+>
+> 在你的项目入口文件中按照如下方式引入，当然请传入你的项目名称：
+>
+> ```js
+> const easyMonitor = require('easy-monitor');
+> easyMonitor('你的项目名称');
+> ```
+>
+> 打开你的浏览器，访问 `http://localhost:12333` ，即可看到进程界面
+>
+> 关于定制化开发、通用配置项以及如何动态更新配置项详见官方文档
 
 ## Node性能优化
 
-关于Node的性能优化的方式有如下几个：
-
-- 使用最新版本Node.js
-- 正确使用流 Stream
-- 代码层面优化
-- 内存管理优化
+> 关于Node的性能优化的方式有如下几个：
+>
+> - 使用最新版本Node.js
+> - 正确使用流 Stream
+> - 代码层面优化
+> - 内存管理优化
 
 ### 使用最新版本Node.js
 
-每个版本的性能提升主要来自于两个方面：
-
-- V8 的版本更新
-- Node.js 内部代码的更新优化
+> 每个版本的性能提升主要来自于两个方面：
+>
+> - V8 的版本更新
+> - Node.js 内部代码的更新优化
 
 ### 正确使用流
 
-在Node中，很多对象都实现了流，对于一个大文件可以通过流的形式发送，不需要将其完全读入内存。
-
-```js
-const http = require('http');
-const fs = require('fs');
-
-// 错误方式
-http.createServer(function (req, res) {
-    fs.readFile(__dirname + '/data.txt', function (err, data) {
-        res.end(data);
-    });
-});
-
-// 正确方式
-http.createServer(function (req, res) {
-    const stream = fs.createReadStream(__dirname + '/data.txt');
-    stream.pipe(res);
-});
-```
+> 在Node中，很多对象都实现了流，对于一个大文件可以通过流的形式发送，不需要将其完全读入内存。
+>
+> ```js
+> const http = require('http');
+> const fs = require('fs');
+> 
+> // 错误方式
+> http.createServer(function (req, res) {
+>     fs.readFile(__dirname + '/data.txt', function (err, data) {
+>         res.end(data);
+>     });
+> });
+> 
+> // 正确方式
+> http.createServer(function (req, res) {
+>     const stream = fs.createReadStream(__dirname + '/data.txt');
+>     stream.pipe(res);
+> });
+> ```
+>
+> 
 
 ### 代码层面优化
 
-合并查询，将多次查询合并一次，减少数据库的查询次数。
-
-```js
-// 错误方式
-for user_id in userIds 
-     let account = user_account.findOne(user_id)
-
-// 正确方式
-const user_account_map = {}  
- // 注意这个对象将会消耗大量内存。
-user_account.find(user_id in user_ids).forEach(account){
-    user_account_map[account.user_id] =  account
-}
-for user_id in userIds 
-    var account = user_account_map[user_id]
-```
+> 合并查询，将多次查询合并一次，减少数据库的查询次数。
+>
+> ```js
+> // 错误方式
+> for user_id in userIds 
+>      let account = user_account.findOne(user_id)
+> 
+> // 正确方式
+> const user_account_map = {}  
+>  // 注意这个对象将会消耗大量内存。
+> user_account.find(user_id in user_ids).forEach(account){
+>     user_account_map[account.user_id] =  account
+> }
+> for user_id in userIds 
+>     var account = user_account_map[user_id]
+> ```
+>
+> 
 
 ### 内存管理优化
 
-在 V8 中，主要将内存分为新生代和老生代两代：
-
-- **新生代**：对象的存活时间较短。新生对象或只经过一次垃圾回收的对象。
-- **老生代**：对象存活时间较长。经历过一次或多次垃圾回收的对象。
-
-若新生代内存空间不够，直接分配到老生代。通过减少内存占用，可以提高服务器的性能。如果有内存泄露，也会导致大量的对象存储到老生代中，服务器性能会大大降低，比如下面的例子。
-
-```js
-const buffer = fs.readFileSync(__dirname + '/source/index.htm');
-
-app.use(
-    mount('/', async (ctx) => {
-        ctx.status = 200;
-        ctx.type = 'html';
-        ctx.body = buffer;
-        leak.push(fs.readFileSync(__dirname + '/source/index.htm'));
-    })
-);
-
-const leak = [];
-```
-
-当leak的内存非常大的时候，就有可能造成内存泄露，应当避免这样的操作。
-
-减少内存使用，可以明显的提高服务性能。而节省内存最好的方式是使用池，其将频用、可复用对象存储起来，减少创建和销毁操作。例如有个图片请求接口，每次请求，都需要用到类。若每次都需要重新new这些类，并不是很合适，在大量请求时，频繁创建和销毁这些类，造成内存抖动。而使用对象池的机制，对这种频繁需要创建和销毁的对象保存在一个对象池中，从而避免重读的初始化操作，从而提高框架的性能。
-
-
-
-
+> 在 V8 中，主要将内存分为新生代和老生代两代：
+>
+> - **新生代**：对象的存活时间较短。新生对象或只经过一次垃圾回收的对象。
+> - **老生代**：对象存活时间较长。经历过一次或多次垃圾回收的对象。
+>
+> 若新生代内存空间不够，直接分配到老生代。通过减少内存占用，可以提高服务器的性能。如果有内存泄露，也会导致大量的对象存储到老生代中，服务器性能会大大降低，比如下面的例子。
+>
+> ```js
+> const buffer = fs.readFileSync(__dirname + '/source/index.htm');
+> 
+> app.use(
+>     mount('/', async (ctx) => {
+>         ctx.status = 200;
+>         ctx.type = 'html';
+>         ctx.body = buffer;
+>         leak.push(fs.readFileSync(__dirname + '/source/index.htm'));
+>     })
+> );
+> 
+> const leak = [];
+> ```
+>
+> 当leak的内存非常大的时候，就有可能造成内存泄露，应当避免这样的操作。通过减少内存使用，可以明显的提高服务性能。
+>
+> 而节省内存最好的方式是使用池，其将频用、可复用对象存储起来，减少创建和销毁操作。
+>
+> 例如有个图片请求接口，每次请求，都需要用到类。若每次都需要重新new这些类，并不是很合适，在大量请求时，频繁创建和销毁这些类，造成内存抖动。
+>
+> 而使用对象池的机制，对这种频繁需要创建和销毁的对象保存在一个对象池中，从而避免重读的初始化操作，从而提高框架的性能。
 
 ## **console有哪些常用方法？**
 
@@ -1324,7 +1606,7 @@ console.log/console. info、console.error/console.warning、console.time/console
 
 ## **Node.js有哪些定时功能？**
 
-setTimeout/clearTimeout, setInterval/clearInterval、 setImmediate/clearImmediate、 process. nextTick。
+setTimeout/clearTimeout, setInterval/clearInterval、 setImmediate/clearImmediate、 process.nextTick。
 
 ## 参考链接
 
