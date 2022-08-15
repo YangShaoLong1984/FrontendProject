@@ -1209,114 +1209,6 @@ EventEmitter, Stream, FS, Net和全局对象
 >
 > [参考](https://learnku.com/articles/38802)
 
-## Web模块
-
-> ### 什么是 Web 服务器？
->
-> Web服务器一般指网站服务器，是指驻留于因特网上某种类型计算机的程序，Web服务器的基本功能就是提供Web信息浏览服务。它只需支持HTTP协议、HTML文档格式及URL，与客户端的网络浏览器配合。
->
-> 大多数 web 服务器都支持服务端的脚本语言（php、python、ruby）等，并通过脚本语言从数据库获取数据，将结果返回给客户端浏览器。
->
-> 目前最主流的三个Web服务器是Apache、Nginx、IIS。
->
-> ### http模块
->
-> Node.js 提供了 http 模块，http 模块主要用于搭建 HTTP 服务端和客户端，使用 HTTP 服务器或客户端功能必须调用 http 模块，代码如下：
->
-> ```js
-> var http = require('http');
-> ```
-
-## Express框架
-
-> **Express** 是一个简洁而灵活的路由和中间价Web应用框架, 提供了一系列强大特性帮助你创建各种 Web 应用，和丰富的 HTTP 工具。
->
-> 使用 Express 可以快速地搭建一个完整功能的网站。Express 应用程序基本上是一系列中间件函数调用。
->
-> Express 框架核心特性：
->
-> - 可以设置中间件来响应 HTTP 请求。
-> - 定义了路由表用于执行不同的 HTTP 请求动作。
-> - 可以通过向模板传递参数来动态渲染 HTML 页面。
->
-> **安装**
->
-> npm install express --save
->
-> **--save** 的意思是将模块安装到项目目录下，并在package文件的dependencies节点写入依赖。
->
-> 以下几个重要的模块是需要与 express 框架一起安装的：
->
-> - **body-parser** - node.js 中间件，用于处理 JSON, Raw, Text 和 URL 编码的数据。
-> - **cookie-parser** - 这就是一个解析Cookie的工具。通过req.cookies可以取到传过来的cookie，并把它们转成对象。
-> - **multer** - node.js 中间件，用于处理 enctype="multipart/form-data"（设置表单的MIME编码）的表单数据。
-
-## Koa框架
-
-> Koa 是一个新的 web 框架，由 Express 幕后的原班人马打造， 致力于成为 web 应用和 API 开发领域中的一个更小、更富有表现力、更健壮的基石。 通过利用 async 函数，Koa 帮你丢弃回调函数，并有力地增强错误处理。 Koa 并没有捆绑任何中间件， 而是提供了一套优雅的方法，帮助您快速而愉快地编写服务端应用程序。
-
-## Koa和Express区别
-
-> 提到 Node.js 开发，不得不提目前炙手可热的两大框架 Express 和 Koa。
->
-> Express 诞生已有时日， 是一个基于 Node.js 平台的极简、灵活的 web 应用开发框架，主要基于 Connect 中间件，并且自身封装了路由、视图处理等功能，使用人数众多。
->
-> Koa 相对更为年轻， 是 Express 原班人马基于 ES7 新特性重新开发的框架，框架自身不包含任何中间件，很多功能需要借助第三方中间件解决，但是由于其基于 ES7 async 特性的异步流程控制，解决了 "callback hell"（回调地狱） 和麻烦的错误处理问题，大受开发者欢迎。
->
-> * **hello world**：两者创建一个基础的 Web 服务都非常简单，写法也基本相同，最大的区别是路由处理 Express 是自身集成的，而 Koa 需要引入中间件。
->
->   ```js
->   // Express
->   const express = require('express')
->   const app = express()
->   
->   app.get('/', function (req, res) {
->     res.send('Hello Express')
->   })
->   
->   app.listen(3000)
->   // Koa
->   const Koa = require('koa')
->   const route = require('koa-route')
->   
->   const app = new Koa()
->   
->   app.use(route.get('/', async (ctx) => {
->     ctx.body = 'Hello Koa'
->   }))
->   
->   app.listen(3000)
->   ```
->
-> * **view**：Express 自身集成了视图功能，提供了 consolidate.js 功能，支持几乎所有 JavaScript 模板引擎，并提供了视图设置的便利方法。Koa 需要引入 koa-views 中间件。
->
-> * **中间件模型**：Koa 的中间件采用了洋葱圈模型，所有的请求在经过中间件的时候都会执行两次，能够非常方便的执行一些后置处理逻辑。
->   例如，我们经常需要计算一个请求的响应时间，在 Koa 中， 我们可以在中间件的开始记录初始时间，当响应返回时，代码执行又回到了原来的中间件，此时根据当前时间和初始时间的时间差便得到了响应时间。
->
-> * **异常处理**：Express 使用 Node 约定的 "error-first 回调" 处理异常，并通过中间件传播。
->   Koa 通过同步方式编写异步代码，可以通过`try catch`处理异常，非常自然。
->
-> * **Context**：Koa 新增了一个 Context 对象，用来代替 Express 中的 Request 和 Response，作为请求的上下文对象。
->   Context 上除了 Request 和 Response 两个对象之外，还有 Node.js 原生提供的 req 、res、socket 等对象。
-
-## 中间件概念的理解
-
-### 概念
-
-> 中间件（Middleware）是介于应用系统和系统软件之间的一类软件，它使用系统软件所提供的基础服务（功能），衔接网络上应用系统的各个部分或不同的应用，能够达到资源共享、功能共享的目的
->
-> 在`NodeJS`中，中间件主要是指封装`http`请求细节处理的方法
->
-> 例如在`express`、`koa`等`web`框架中，中间件的本质为一个回调函数，参数包含请求对象、响应对象和执行下一个中间件的函数
->
-> 在这些中间件函数中，我们可以执行业务逻辑代码，修改请求和响应对象、返回响应数据等操作
->
-> ![image-20220814215740238](node.assets/image-20220814215740238.png)
-
-## 如何封装中间件
-
-> 
-
 ### 题目
 
 > * **常规**
@@ -1424,7 +1316,113 @@ EventEmitter, Stream, FS, Net和全局对象
 >
 > 
 
+## Web模块
 
+> ### 什么是 Web 服务器？
+>
+> Web服务器一般指网站服务器，是指驻留于因特网上某种类型计算机的程序，Web服务器的基本功能就是提供Web信息浏览服务。它只需支持HTTP协议、HTML文档格式及URL，与客户端的网络浏览器配合。
+>
+> 大多数 web 服务器都支持服务端的脚本语言（php、python、ruby）等，并通过脚本语言从数据库获取数据，将结果返回给客户端浏览器。
+>
+> 目前最主流的三个Web服务器是Apache、Nginx、IIS。
+>
+> ### http模块
+>
+> Node.js 提供了 http 模块，http 模块主要用于搭建 HTTP 服务端和客户端，使用 HTTP 服务器或客户端功能必须调用 http 模块，代码如下：
+>
+> ```js
+> var http = require('http');
+> ```
+
+## Express框架
+
+> **Express** 是一个简洁而灵活的路由和中间价Web应用框架, 提供了一系列强大特性帮助你创建各种 Web 应用，和丰富的 HTTP 工具。
+>
+> 使用 Express 可以快速地搭建一个完整功能的网站。Express 应用程序基本上是一系列中间件函数调用。
+>
+> Express 框架核心特性：
+>
+> - 可以设置中间件来响应 HTTP 请求。
+> - 定义了路由表用于执行不同的 HTTP 请求动作。
+> - 可以通过向模板传递参数来动态渲染 HTML 页面。
+>
+> **安装**
+>
+> npm install express --save
+>
+> **--save** 的意思是将模块安装到项目目录下，并在package文件的dependencies节点写入依赖。
+>
+> 以下几个重要的模块是需要与 express 框架一起安装的：
+>
+> - **body-parser** - node.js 中间件，用于处理 JSON, Raw, Text 和 URL 编码的数据。
+> - **cookie-parser** - 这就是一个解析Cookie的工具。通过req.cookies可以取到传过来的cookie，并把它们转成对象。
+> - **multer** - node.js 中间件，用于处理 enctype="multipart/form-data"（设置表单的MIME编码）的表单数据。
+
+## Koa框架
+
+> Koa 是一个新的 web 框架，由 Express 幕后的原班人马打造， 致力于成为 web 应用和 API 开发领域中的一个更小、更富有表现力、更健壮的基石。 通过利用 async 函数，Koa 帮你丢弃回调函数，并有力地增强错误处理。 Koa 并没有捆绑任何中间件， 而是提供了一套优雅的方法，帮助您快速而愉快地编写服务端应用程序。
+
+## Koa和Express区别
+
+> 提到 Node.js 开发，不得不提目前炙手可热的两大框架 Express 和 Koa。
+>
+> Express 诞生已有时日， 是一个基于 Node.js 平台的极简、灵活的 web 应用开发框架，主要基于 Connect 中间件，并且自身封装了路由、视图处理等功能，使用人数众多。
+>
+> Koa 相对更为年轻， 是 Express 原班人马基于 ES7 新特性重新开发的框架，框架自身不包含任何中间件，很多功能需要借助第三方中间件解决，但是由于其基于 ES7 async 特性的异步流程控制，解决了 "callback hell"（回调地狱） 和麻烦的错误处理问题，大受开发者欢迎。
+>
+> * **hello world**：两者创建一个基础的 Web 服务都非常简单，写法也基本相同，最大的区别是路由处理 Express 是自身集成的，而 Koa 需要引入中间件。
+>
+>   ```js
+>   // Express
+>   const express = require('express')
+>   const app = express()
+>   
+>   app.get('/', function (req, res) {
+>     res.send('Hello Express')
+>   })
+>   
+>   app.listen(3000)
+>   // Koa
+>   const Koa = require('koa')
+>   const route = require('koa-route')
+>   
+>   const app = new Koa()
+>   
+>   app.use(route.get('/', async (ctx) => {
+>     ctx.body = 'Hello Koa'
+>   }))
+>   
+>   app.listen(3000)
+>   ```
+>
+> * **view**：Express 自身集成了视图功能，提供了 consolidate.js 功能，支持几乎所有 JavaScript 模板引擎，并提供了视图设置的便利方法。Koa 需要引入 koa-views 中间件。
+>
+> * **中间件模型**：Koa 的中间件采用了洋葱圈模型，所有的请求在经过中间件的时候都会执行两次，能够非常方便的执行一些后置处理逻辑。
+>   例如，我们经常需要计算一个请求的响应时间，在 Koa 中， 我们可以在中间件的开始记录初始时间，当响应返回时，代码执行又回到了原来的中间件，此时根据当前时间和初始时间的时间差便得到了响应时间。
+>
+> * **异常处理**：Express 使用 Node 约定的 "error-first 回调" 处理异常，并通过中间件传播。
+>   Koa 通过同步方式编写异步代码，可以通过`try catch`处理异常，非常自然。
+>
+> * **Context**：Koa 新增了一个 Context 对象，用来代替 Express 中的 Request 和 Response，作为请求的上下文对象。
+>   Context 上除了 Request 和 Response 两个对象之外，还有 Node.js 原生提供的 req 、res、socket 等对象。
+
+## 中间件概念的理解
+
+### 概念
+
+> 中间件（Middleware）是介于应用系统和系统软件之间的一类软件，它使用系统软件所提供的基础服务（功能），衔接网络上应用系统的各个部分或不同的应用，能够达到资源共享、功能共享的目的
+>
+> 在`NodeJS`中，中间件主要是指封装`http`请求细节处理的方法
+>
+> 例如在`express`、`koa`等`web`框架中，中间件的本质为一个回调函数，参数包含请求对象、响应对象和执行下一个中间件的函数
+>
+> 在这些中间件函数中，我们可以执行业务逻辑代码，修改请求和响应对象、返回响应数据等操作
+>
+> ![image-20220814215740238](node.assets/image-20220814215740238.png)
+
+## 如何封装中间件
+
+> 
 
 ## Node性能监控
 
