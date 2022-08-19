@@ -17,14 +17,14 @@ class MyPromise {
         // 用箭头函数就可以让this指向当前实例对象，不用显示绑定 普通函数this指向的是window或者undefined
         const resolve = value => {
             // state是不可变的
-            if (this.status !== 'pending') return
+            if (this.status !== 'pending') return;
             // 如果执行resolve，状态变为fulfilled
-            this.status = 'fulfilled'
+            this.status = 'fulfilled';
             // 终值为传进来的值
-            this.result = value
+            this.result = value;
                     // 执行保存的成功回调
             while (this.onFulfilledCallbacks.length) {
-                this.onFulfilledCallbacks.shift()(this.result)
+                this.onFulfilledCallbacks.shift()(this.result);
             }
         }
         const reject = reason => {
