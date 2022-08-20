@@ -66,9 +66,9 @@ class MyPromise {
                         }
                         if (x instanceof MyPromise) {
                             /**
-                             * 如果返回值是 Promise
-                             *  1. 返回值为成功，新 Promise 就是成功
-                             *  2. 返回值为失败，新 Promise 就是失败
+                             * 如果返回值是 MyPromise
+                             *  1. 返回值为成功，新 MyPromise 就是成功
+                             *  2. 返回值为失败，新 MyPromise 就是失败
                              */
                             x.then(resolve, reject);
                         } else {
@@ -107,25 +107,29 @@ class MyPromise {
 
     // 实现 MyPromise.prototype.finally() 方法
     finally(callback) {
+        let P = this.constructor;
         return this.then(
             value => {
-                return Promise.resolve(callback()).then(()=>value)
+                return P.resolve(callback()).then(()=>value)
             },
             reason => {
-                return Promise.resolve(callback()).then(()=>{throw reason})
+                return P.resolve(callback()).then(()=>{throw reason})
           })
     }
 
-    // 实现 Promise.resolve() 方法
+    // 实现 MyPromise.resolve() 方法
     static resolve(value) {
         //返回promise对象
-        return new Promise((resolve, reject) => {
-            if (value instanceof Promise) {
-                value.then(value=>{
-                    resolve(value);
-                }, reason=>{
-                    reject(reason);
-                })
+        return new MyPromise((resolve, reject) => {
+            if (value instanceof MyPromise) {
+                value.then(
+                    value=>{
+                        resolve(value);
+                    }, 
+                    reason=>{
+                        reject(reason);
+                    }
+                )
             } else {
                 //状态设置为成功
                 resolve(value);
@@ -133,9 +137,9 @@ class MyPromise {
         });
     }
 
-    // 实现 Promise.reject 方法
+    // 实现 MyPromise.reject 方法
     static reject(reason) {
-        return new Promise((resolve, reject)=>{
+        return new MyPromise((resolve, reject)=>{
             reject(reason);
         });
     }
@@ -143,41 +147,45 @@ class MyPromise {
     // 实现 MyPromise.all() 方法
     static all(promises) {
         // 返回结果为promise对象
-        return new Promise((resolve, reject) => {
+        return new MyPromise((resolve, reject) => {
             // 声明变量
             let count = 0;
             let arr = [];
             // 遍历
-            for (let i = 0; i < promises.length; i++){
-                promises[i].then(v => {
-                    // 得知对象的状态是成功
-                    // 每个promise对象 都成功
-                    count++;
-                    // 将当前promise对象成功的结果 存入到数组中
-                    arr[i] = v;
-                    // 判断
-                    if(count === promises.length){
-                        // 修改状态
-                        resolve(arr);
+            for (let i = 0; i < promises.length; i++) {
+                promises[i].then(
+                    v => {
+                        // 得知对象的状态是成功
+                        // 每个promise对象 都成功
+                        count++;
+                        // 将当前promise对象成功的结果 存入到数组中
+                        arr[i] = v;
+                        if(count === promises.length){
+                            // 修改状态
+                            resolve(arr);
+                        }
+                    }, 
+                    r => {
+                        reject(r);
                     }
-                }, r => {
-                    reject(r);
-                });
+                );
             }
         });
     }
 
     // 添加 MyPromise.race() 方法
-    static race (promises){
-        return new Promise((resolve, reject) => {
+    static race(promises) {
+        return new MyPromise((resolve, reject) => {
             for (let i = 0; i < promises.length; i++) {
-                promises[i].then(v => {
+                promises[i].then(
                     // 修改返回对象的状态为 『成功』
-                    resolve(v);
-                },r=>{
+                    v => {
+                        resolve(v);
+                    },
+                    r =>{
                     //修改返回对象的状态为 『失败』
-                    reject(r);
-                })
+                        reject(r);
+                    })
             }
         });
     }

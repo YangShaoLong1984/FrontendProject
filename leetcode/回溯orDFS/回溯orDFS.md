@@ -440,37 +440,37 @@ var permute = function(nums) {
 > ```js
 > //主函数，输入一组不重复的数字，返回它们的全排列
 > var permute = function(nums) {
->     let res = [];
->     //记录路径
->     let path = [];
->     //路径中元素会被标记为true，避免重复使用
->     let used = new Array(nums.length).fill(false);
->     backtrack()
->     return res;
+>        let res = [];
+>        //记录路径
+>        let path = [];
+>        //路径中元素会被标记为true，避免重复使用
+>        let used = new Array(nums.length).fill(false);
+>        backtrack()
+>        return res;
 > 
->     function backtrack () {
->         //触发结束条件
->         if (path.length === nums.length) {
->             //从路径中拷贝一份push到res中
->             res.push(path.slice());
->             return;  
->         }
->         for (let i = 0; i < nums.length; i++) {
->             //排除不合法的选择
->             if (used[i]) {
->                 //nums[i]已经在track中，跳过
->                 continue;
->             }
->             //做选择
->             path.push(nums[i]);
->             used[i] = true;
->             //进入下一层决策树
->             backtrack();
->             //取消选择
->             path.pop();
->             used[i] = false;
->         }
->     };  
+>        function backtrack () {
+>            //触发结束条件
+>            if (path.length === nums.length) {
+>                //从路径中拷贝一份push到res中
+>                res.push(path.slice());
+>                return;  
+>            }
+>            for (let i = 0; i < nums.length; i++) {
+>                //排除不合法的选择
+>                if (used[i]) {
+>                    //nums[i]已经在track中，跳过
+>                    continue;
+>                }
+>                //做选择
+>                path.push(nums[i]);
+>                used[i] = true;
+>                //进入下一层决策树
+>                backtrack();
+>                //取消选择
+>                path.pop();
+>                used[i] = false;
+>            }
+>        };  
 > };
 > ```
 

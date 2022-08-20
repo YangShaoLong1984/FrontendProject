@@ -22,6 +22,8 @@ MyPromise.resolve(456).finally(()=>{
     console.log(data,'success')
 }).catch(err=>{
     console.log(err,'error')
+}).finally(() => {
+  console.log('finally');
 })
 
 // 测试 MyPromise.all
