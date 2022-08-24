@@ -154,6 +154,8 @@
 
 #### 6.Web存储
 
+> 相同浏览器下，并且是同源窗口（协议、域名、端口一致），不同页面可以共享localStorage，Cookies值，通过跳转的页面可以共享sessionStorage值。
+>
 > HTML5 提供了两种在客户端存储数据的新方法：
 >
 > - localStorage - 没有时间限制的数据存储
@@ -237,16 +239,16 @@
 
 ### [表单元素中readonly和disabled的区别](https://segmentfault.com/a/1190000019623412)
 
-> #### readonly和disabled**作用元素的范围不同**
->
-> disabled属性可以作用于所有的表单元素。
-> readonly属性只对<input type="text">、<input type="number">、<textarea>和<input type="password">等可以输入的表单元素有效。
->
 > #### readonly和disabled对元素的**作用程度不同**
 >
 > readonly属性只是将元素设置为只读，其他操作正常。
->
-> disabled属性阻止对元素的一切操作，例如获取焦点，点击事件等等。
+> 
+>disabled属性阻止对元素的一切操作，例如获取焦点，点击事件等等。
+> 
+>#### readonly和disabled**作用元素的范围不同**
+> 
+>disabled属性可以作用于所有的表单元素。
+> readonly属性只对`<input type="text">、<input type="number">、<textarea>和<input type="password">`等可以输入的表单元素有效。
 >
 > #### readonly和disabled对**表单提交的作用不同**
 >
@@ -606,9 +608,9 @@
 >
 > 文档的头部描述了文档的各种属性和信息，包括文档的标题、在 Web 中的位置以及和其他文档的关系等。绝大多数文档头部包含的数据都不会真正作为内容显示给读者。
 >
-> 下面这些标签可用在 head 部分：<base>, <link>, <meta>, <script>, <style>, <title>。 
+> 下面这些标签可用在 head 部分：`<base>, <link>, <meta>, <script>, <style>, <title>`。 
 >
-> 其中 <title> 定义文档的标题，它是 head 部分中唯一必需的元素。
+> 其中 `<title>` 定义文档的标题，它是 head 部分中唯一必需的元素。
 
 ### 19. img的srcset属性的作⽤？
 

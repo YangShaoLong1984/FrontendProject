@@ -1,7 +1,3 @@
-
-
-
-
 https://jonny-wei.github.io/blog/css/
 
 ## CSS基础
@@ -234,8 +230,8 @@ https://jonny-wei.github.io/blog/css/
 >
 > - vertical-align：垂直文本对齐
 > - text-decoration：规定添加到文本的装饰
-> - text-shadow：文本阴影效果
-> - white-space：空白符的处理
+> - `text-shadow`：文本阴影效果
+> - `white-space`：空白符的处理
 > - unicode-bidi：设置文本的方向
 >
 > 3. **盒子模型的属性**：width、height、margin、border、padding
@@ -668,14 +664,12 @@ https://jonny-wei.github.io/blog/css/
 >
 > **后处理器，** 如： `postCss`，通常是在完成的样式表中根据`css`规范处理`css`，让其更加有效。目前最常做的是给`css`属性添加浏览器私有前缀，实现跨浏览器兼容性的问题。
 >
-> `css`预处理器为`css`增加一些编程特性，无需考虑浏览器的兼容问题，可以在`CSS`中使用变量，简单的逻辑程序，函数等在编程语言中的一些基本的性能，可以让`css`更加的简洁，增加适应性以及可读性，可维护性等。
->
 > 其它`css`预处理器语言：`Sass（Scss）`, `Less`, `Stylus`, `Turbine`, `Swithch css`, `CSS Cacheer`, `DT Css`。
 >
 > 使用原因：
 >
 > - 结构清晰， 便于扩展
-> - 可以很方便的屏蔽浏览器私有语法的差异
+>- 可以很方便的屏蔽浏览器私有语法的差异
 > - 可以轻松实现多重继承
 > - 完美的兼容了`CSS`代码，可以应用到老项目中
 
@@ -708,7 +702,7 @@ https://jonny-wei.github.io/blog/css/
 
 ### 对媒体查询的理解？
 
-> 媒体指的就是各种设备 (移动设备, PC设备) 查询指的是要检测属于哪种设备 
+> 媒体指的就是各种设备 (移动设备, PC设备)   查询指的是要检测属于哪种设备 
 >
 > **媒体查询: 通过查询当前属于哪种设备, 让网页能够在不同的设备下正常的预览**
 >
