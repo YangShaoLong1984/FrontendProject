@@ -26,6 +26,21 @@ function getRes1(arr) {
 }
 console.log(getRes1(arr1));
 
+// filter + indexof
+
+function unique(a) {
+ 
+    var res = a.filter(function(item, index, array) {
+        return array.indexOf(item) === index;
+    });
+
+    return res;
+}
+// var a = [1, 1, '1', '2', 1];
+// var ans = unique(a);
+// console.log(ans);//[1, '1', '2',]
+  
+
 // 暴力去重 双重遍历
 function getRes2(arr) {
     let newArr = [];
