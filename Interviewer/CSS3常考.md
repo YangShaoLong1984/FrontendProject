@@ -1822,12 +1822,12 @@ https://juejin.cn/post/6844904062224171021#heading-14
 > **（1）三角1**
 >
 > ```css
->div {
->      width: 0;
->      height: 0;
->        border-top: 50px solid red;
->        border-right: 50px solid transparent;
->        border-left: 50px solid transparent;
+>div{
+>        width: 0;
+>        height: 0;
+>        border: 100px solid transparent;
+>        /* border-radius: 50%; */
+>        border-top-color: red;
 >    }
 >    ```
 > 
@@ -1895,12 +1895,26 @@ https://juejin.cn/post/6844904062224171021#heading-14
 > 用CSS实现扇形的思路和三角形基本一致，就是多了一个圆角的样式，实现一个90°的扇形：
 >
 > ```css
+> div {
+>     width: 0;
+>     height: 0;
+>     border: 100px solid transparent;
+>     border-radius: 50%; /* 或者100px，以百分比格式为单位的值的参考对象是：边框+内边距+height/width */
+>     border-top-color: red;
+> }
+> /* 画一个圆形 */
 > div{
->        border: 100px solid transparent;
->        width: 0;
->        height: 0;
->        border-radius: 100px;
->        border-top-color: red;
+>     width: 100px;
+>     height: 100px;
+>     border-radius: 50%;
+>     background: red;
+> }
+> /* 画一个半圆 */
+> div{
+>     width: 100px;
+>     height: 50px;
+>     border-radius: 0 0 50px 50px;
+>     background: red;
 > }
 > ```
 >
@@ -1987,7 +2001,16 @@ https://juejin.cn/post/6844904062224171021#heading-14
 > > - 把小的icon图片转成base64编码
 > > - CSS3动画或者过渡尽量使用transform和opacity来实现动画，不要使用left和top属性
 >
-> 
+
+### google设置小于12px的字体
+
+> 在谷歌下css设置字体大小为12px及以下时，显示都是一样大小，都是默认12px。
+>
+> 解决方法
+>
+> * 使用Webkit的内核的-webkit-text-size-adjust的私有CSS属性来解决，只要加了-webkit-text-size-adjust:none;字体大小就不受限制了。但是chrome更新到27版本之后就不可以用了。所以高版本chrome谷歌浏览器已经不再支持-webkit-text-size-adjust样式，所以要使用时候慎用。
+> * **css3** 中的 **-webkit-transform:scale(num)** 来对文字进行缩小了解决这个问题，其中 **num** 是设置的“**字体大小/12px**”。比如想要显示 **8px** 的文字，则 **num=8/12=0.67**。 注意-webkit-transform:scale(0.75);收缩的是整个元素的大小，这时候，如果是内联元素，必须要将内联元素转换成块元素，可以使用display：block/inline-block/...；
+> * 使用图片：如果是内容固定不变情况下，使用将小于12px文字内容切出做图片，这样不影响兼容也不影响美观。
 
 ### 如何解决 1px 问题？
 
