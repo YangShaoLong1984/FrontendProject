@@ -28,9 +28,11 @@ function debounce(fn, wait, immediate) {
 // 执行 debounce 函数返回新函数
 let debounceTest = debounce(() => {
     console.log('hello');
-}, 2000, true);
+}, 500, true);
 
-// 只打印第一次的调用
-debounceTest(); // 打印 hello
-debounceTest();
-debounceTest();
+let timer = setInterval(() => {
+    debounceTest(); // 2s内，只会打印一次
+}, 200);
+setTimeout(() => {
+    clearInterval(timer);
+}, 2000);
