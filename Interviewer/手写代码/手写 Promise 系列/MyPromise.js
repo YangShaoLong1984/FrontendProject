@@ -148,6 +148,10 @@ class MyPromise {
     static all(promises) {
         // 返回结果为promise对象
         return new MyPromise((resolve, reject) => {
+            if (!Array.isArray(promises)) { //传入的参数是否为数组
+                return reject(new Error('传入的参数不是数组！'))
+            }
+    
             // 声明变量
             let count = 0;
             let arr = [];
