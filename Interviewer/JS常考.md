@@ -1338,9 +1338,17 @@
 >
 > 作用域链的本质上是一个指向变量对象的指针列表。变量对象是一个包含了执行环境中所有变量和函数的对象。作用域链的前端始终都是当前执行上下文的变量对象。全局执行上下文的变量对象（也就是全局对象）始终是作用域链的最后一个对象。
 >
-> 
->
 > 当查找一个变量时，如果当前执行环境中没有找到，可以沿着作用域链向后查找。
+>
+> **原型链和作用域链的区别**
+>
+> 原型链：原型链作用在`构造函数`上，原型链操作的是构造函数的属性：实例属性和原型属性；
+>
+> 作用域链：作用域链作用域`普通函数`上，操作的是全局变量和局部变量。
+>
+> 作用域链是相对于变量而言， 原型是相对于属性而言
+>
+> 作用域最顶层是window ，原型链最顶层是Object
 
 ### 对执行上下文的理解
 
@@ -1427,11 +1435,23 @@ Execution Context stack(ECS)
 
 > this 是执行上下文中的一个属性，它指向最后一次调用这个方法的对象。在实际开发中，this 的指向可以通过四种调用模式来判断。
 >
+> > ps：
+> >
+> > **普通函数中的this**：
+> >
+> > 在标准函数中，this引用的是把函数当成方法调用的上下文对象，这时候通常称其为this值（在网页的全局上下文中调用函数时，this指向window）。
+> >
+> > 这个this值到底引用哪个对象，必须到函数被调用的时候才能确定，因此这个值在代码执行过程中可能会变。
+> >
+> > 箭头函数中的this：
+> >
+> > 在箭头函数中，this引用的是定义箭头函数的上下文，this指针一旦确定，不能改变。也可以说this值取决于该函数外部非箭头函数的this值，且不能通过`call(), apply(), bind()` 方法来改变this值。
+>
 > 执行上下文 3 个重要的属性:变量对象(Variable Object，VO)  作用域链(Scope Chain)  this
 >
 > - 第一种是**函数调用模式**，当一个函数不是一个对象的属性时，直接作为函数来调用时，this 指向全局对象。
 >   - ps:如果使用严格模式，那么全局对象无法使用默认绑定， `this` 绑定至 `undefined` 并抛错
->- 第二种是**方法调用模式**，如果一个函数作为一个对象的方法来调用时，this 指向这个对象。
+> - 第二种是**方法调用模式**，如果一个函数作为一个对象的方法来调用时，this 指向这个对象。
 > - 第三种是**构造器调用模式**，如果一个函数用 new 调用时，函数执行前会新创建一个对象，this 指向这个新创建的对象。
 > - 第四种是 **apply 、 call 和 bind 调用模式**，这三个方法都可以显示的指定调用函数的 this 指向。其中 apply 方法接收两个参数：一个是 this 绑定的对象，一个是参数数组。call 方法接收的参数，第一个是 this 绑定的对象，后面的其余参数是传入函数执行的参数。也就是说，在使用 call() 方法时，传递给函数的参数必须逐个列举出来。bind 方法通过传入一个对象，`返回`一个 this 绑定了传入对象的`新函数`。这个函数的 this 指向除了使用 new 时会被改变，其他情况下都不会改变。
 > - 箭头函数 箭头函数的`this`绑定看的是`this所在函数定义在哪个对象下`，就绑定哪个对象。如果有嵌套的情况，则this绑定到最近的一层对象上。
@@ -2010,7 +2030,37 @@ Execution Context stack(ECS)
 >
 > ##### 4 在async方法中，第一个await之前的代码会同步执行，包括和它并行的，await以下的代码会异步执行
 >
-> 
+> > 1. await右侧的表达式一般为一个promise对象
+> >
+> > 2. 如果修饰的不是promise对象，会返回该值本身
+> >
+> > 3. 如果是promise对象，那么await的返回值是promise对象成功的值
+> >
+> > 4. 如果promise对象失败了，那么await会抛出这个错误的值 **所以await要配合try catch使用** 
+> >
+> >    ```js
+> >    //创建 promise 对象
+> >    const p = new Promise((resolve, reject) => {
+> >        // resolve("用户数据");
+> >        reject("失败啦!");
+> >    })
+> >    
+> >    // await 要放在 async 函数中.
+> >    async function main() {
+> >        try {
+> >            let result = await p;
+> >            console.log(result);
+> >        } catch (e) {
+> >            console.log(e);
+> >        }
+> >    }
+> >    //调用函数
+> >    main();
+> >    ```
+> >
+> > 5. await必须写在async函数中，但是async函数可以没有await
+> >
+> > 6. await会阻塞进程，会暂停当前 async function 的执行，等待 Promise 处理完成。
 
 > async/await其实是`Generator` 的语法糖，它能实现的效果都能用then链来实现，它是`为优化then链而开发出来的`。
 >
@@ -2161,70 +2211,87 @@ Execution Context stack(ECS)
 
 > #### 1 原型链继承
 >
-> - 简单理解就是将父类的实例作为子类的原型
+> - 简单理解就是将父类的实例作为子类的原型：**一个引用类型继承另一个引用类型的属性和方法**。
 >
 > ```js
 > function Parent() {
->    this.isShow = true
->    this.info = {
->        name: "yhd",
->        age: 18,
->    };
+>     this.info = {
+>         name: "js",
+>         age: 18,
+>     };
 > }
 > 
+> Parent.prototype.say = function () { console.log("hello"); }
+> 
+> // 关键代码
 > function Child() {};
 > Child.prototype = new Parent();
+> Child.prototype.constructor = Child;
 > 
-> let Child1 = new Child();
-> Child1.info.gender = "男";
-> Child1.getInfo();  // {name: "yhd", age: 18, gender: "男"}
-> 
-> let child2 = new Child();
-> child2.getInfo();  // {name: "yhd", age: 18, gender: "男"}
-> child2.isShow = false
-> 
-> console.log(child2.isShow); // false
-> ```
-> 
-> - 优点：父类方法可以复用。
-> - 缺点：父类的所有引用属性会被所有子类共享，更改一个子类的引用属性，其他子类也会受影响；子类型实例不能给父类型构造函数传参。
-> 
-> #### 2 借用构造函数
->
-> - 在子类构造函数中调用父类构造函数，可以在子类构造函数中使用call()和apply()方法
-> - 优点:可以在子类构造函数中向父类传参数；父类的引用属性不会被共享。 
->
-> * 缺点：子类不能访问父类原型上定义的方法（即不能访问Parent.prototype上定义的方法），因此所有方法属性都写在构造函数中，每次创建实例都会初始化。
->
-> ```js
-> function Parent() {
->  this.info = {
->     name: "yhd",
->    age: 19,
->   }
-> }
-> 
-> function Child() {
->     Parent.call(this)
-> }
-> 
+> // DEMO
 > let child1 = new Child();
 > child1.info.gender = "男";
-> console.log(child1.info); // {name: "yhd", age: 19, gender: "男"};
+> console.log(child1.info);  // {name: "js", age: 18, gender: "男"}
+> child1.say(); // hello
+> console.log(child1 instanceof Parent); // true，因为是原型链继承
 > 
 > let child2 = new Child();
-> console.log(child2.info); // {name: "yhd", age: 19}
+> console.log(child2.info);  // {name: "js", age: 18, gender: "男"} -- 对子类Child1的更改影响到了Child2
 > ```
+>
+> - 优点：
+>   - 父类新增原型方法/原型属性，子类都能访问到
+>   - 简单，易于实现
+> - 缺点：
+>   - 无法实现多继承
+>   - 父类的所有引用属性会被所有子类共享，更改一个子类的引用属性，其他子类也会受影响；
+>   - 子类型实例不能给父类型构造函数传参。
+>
+> #### 2 构造函数继承
+>
+> - **在子类构造函数中调用父类构造函数，可以在子类构造函数中使用call()和apply()方法，使所有需要继承的`属性`都定义在实例对象上**
+> - 优点:
+>   - 解决了原型链继承中子类实例共享父类引用属性的问题。
+>   - 可以在子类型构造函数中向父类构造函数传递参数。
+>   - 可以实现多继承（call 多个父类对象）。 
+>
+> * 缺点：
+>   * 实例并不是父类的实例，只是子类的实例（通过 instanceof 返回 false可以证明）
+>   * 子类不能访问父类原型上定义的`方法`（即不能访问Parent.prototype上定义的方法），因此所有方法属性都写在构造函数中，每次创建实例都会初始化。
+>   * 无法实现函数复用，每个子类都有父类实例函数的副本，影响性能。
+>
+> ```js
+> function Parent(name) {
+>     this.info = {
+>         name: name || "js",
+>         age: 19,
+>     }
+> }
 > 
+> Parent.prototype.say = function() { console.log("hello"); }
+> 
+> function Child(name) {
+>     Parent.call(this, name);
+> }
+> 
+> let child1 = new Child("ts"); // 在子类构造函数中向父类构造函数传递参数
+> console.log(child1.info); // {name: "ts", age: 19, gender: "男"};
+> child1.say(); // 会报错，因为使用构造函数继承并没有访问到原型链，say 方法不能调用
+> 
+> let child2 = new Child();
+> console.log(child2.info); // {name: , age: 19} -- 解决了原型链继承中子类实例共享父类引用属性的问题
+> console.log(child2 instanceof Parent); // false，因为不是继承
+> ```
+>
 > 通过使用call()或apply()方法，Parent构造函数在为Child的实例创建的新对象的上下文执行了，就相当于新的Child实例对象上运行了Parent()函数中的所有初始化代码，结果就是每个实例都有自己的info属性。
 >  1、传递参数
 > ​ 相比于原型链继承，借用构造函数的一个优点在于可以在子类构造函数中向父类构造函数传递参数。
-> 
->```js
+>
+> ```js
 > function Parent(name) {
 >     this.info = { name: name };
 > }
->function Child(name) {
+> function Child(name) {
 >     //继承自Parent，并传参
 >     Parent.call(this, name);
 > 
@@ -2232,71 +2299,77 @@ Execution Context stack(ECS)
 >     this.age = 18
 > }
 > 
-> let child1 = new Child("yhd");
-> console.log(child1.info.name); // "yhd"
+> let child1 = new Child("js");
+> console.log(child1.info.name); // "js"
 > console.log(child1.age); // 18
 > 
 > let child2 = new Child("wxb");
 > console.log(child2.info.name); // "wxb"
 > console.log(child2.age); // 18
 > ```
-> 
+>
 > ```js
 > 在上面例子中，Parent构造函数接收一个name参数，并将他赋值给一个属性，在Child构造函数中调用Parent构造函数时传入这个参数， 实际上会在Child实例上定义name属性。为确保Parent构造函数不会覆盖Child定义的属性，可以在调用父类构造函数之后再给子类实例添加额外的属性。
 > ```
-> 
->#### 3 组合继承
-> 
-> 组合继承综合了原型链继承和借用构造函数继承(构造函数继承)，将两者的优点结合了起来，基本的思路就是使用`原型链`继承原型上的`属性和方法`，而通过`构造函数`继承`实例属性`，这样既可以把方法定义在原型上以实现重用，又可以让每个实例都有自己的属性。
-> 
->优点：父类的方法可以复用；可以在Child构造函数中向Parent构造函数中传参；父类构造函数中的引用属性不会被共享。
-> 
->缺点：造成了子类型的原型中多了很多不必要的属性
-> 
 >
-> 
->```js
+> #### 3 组合继承
+>
+> 组合继承综合了原型链继承和借用构造函数继承(构造函数继承)，将两者的优点结合了起来，基本的思路就是**使用`原型链`继承原型上的`属性和方法`，而通过`构造函数`继承`实例属性`**，这样既可以把方法定义在原型上以实现重用，又可以让每个实例都有自己的属性。
+>
+> * 优点：
+>   * 可以继承实例属性/方法，也可以继承原型属性/方法。
+>   * 可以在Child构造函数中向Parent构造函数中传参；
+>   * 父类构造函数中的引用属性不会被共享
+>   * 函数可复用
+>
+> * 缺点：
+>   * 调用了两次父类构造函数（耗内存），生成了两份实例。
+>
+> ```js
 > function Parent(name) {
->   this.name = name
->    this.colors = ["red", "blue", "yellow"]
->}
+>     this.name = name
+>     this.colors = ["red", "blue", "yellow"]
+> }
+> 
 > Parent.prototype.sayName = function () {
->    console.log(this.name);
+>     console.log(this.name);
 > }
 > 
 > function Child(name, age) {
->    // 继承父类属性
->    Parent.call(this, name)
->    this.age = age;
+>     // 继承父类属性
+>     Parent.call(this, name)
+>     this.age = age;
 > }
+> 
 > // 继承父类方法
 > Child.prototype = new Parent();
+> Child.prototype.constructor = Child;
 > 
 > Child.prototype.sayAge = function () {
->    console.log(this.age);
+>     console.log(this.age);
 > }
 > 
-> let child1 = new Child("yhd", 19);
+> let child1 = new Child("js", 19);
 > child1.colors.push("pink");
 > console.log(child1.colors); // ["red", "blue", "yellow", "pink"]
-> child1.sayAge(); // 19
-> child1.sayName(); // "yhd"
+> child1.sayAge(); // 19 -- 
+> child1.sayName(); // "js" -- 可以使用父类方法
 > 
-> let child2 = new Child("wxb", 30);
-> console.log(child2.colors);  // ["red", "blue", "yellow"]
+> let child2 = new Child("ts", 30);
+> console.log(child2.colors);  // ["red", "blue", "yellow"] -- 对子类child1的更改不影响child2
 > child2.sayAge(); // 30
-> child2.sayName(); // "wxb"
+> child2.sayName(); // "ts"
 > ```
-> 
+>
 > ```js
 > 上面例子中，Parent构造函数定义了name，colors两个属性，接着又在他的原型上添加了个sayName()方法。Child构造函数内部调用了Parent构造函数，同时传入了name参数，同时Child.prototype也被赋值为Parent实例，然后又在他的原型上添加了个sayAge()方法。这样就可以创建 child1，child2两个实例，让这两个实例都有自己的属性，包括colors，同时还共享了父类的sayName方法。
 > ```
-> 
->#### 4 原型式继承
-> 
+>
+> #### 4 原型式继承
+>
 > - 对参数对象的一种浅复制
 > - 主要思路就是基于已有的对象来创建新的对象，实现的原理是，向函数中传入一个对象，然后返回一个以这个对象为原型的对象。
->- 优点：父类方法可复用。
+> - 优点：父类方法可复用。
 > - 缺点：父类的引用会被所有子类所共享；子类实例不能向父类传参。
 >
 > ```js
@@ -2307,7 +2380,7 @@ Execution Context stack(ECS)
 > }
 > 
 > let person = {
->   name: "yhd",
+>   name: "js",
 >   age: 18,
 >   friends: ["jack", "tom", "rose"],
 >   sayName:function() {
@@ -2327,12 +2400,12 @@ Execution Context stack(ECS)
 > 
 > console.log(person.friends); // ["jack", "tom", "rose", "lily", "kobe"]
 > ```
-> 
+>
 > #### 5 寄生式继承
-> 
+>
 > - 使用原型式继承对一个目标对象进行浅复制，增强这个浅复制的能力。
 > - 思路是创建一个用于封装继承过程的函数，通过传入一个对象，然后复制一个对象的副本，然后对象进行扩展，最后返回这个对象。
->- 优点:对一个简单对象实现继承，如果这个对象不是自定义类型时。
+> - 优点:对一个简单对象实现继承，如果这个对象不是自定义类型时。
 > - 缺点是没有办法实现函数的复用。
 >
 > ```js
@@ -2351,26 +2424,26 @@ Execution Context stack(ECS)
 > }
 > 
 > let person = {
->     name: "yhd",
+>     name: "js",
 >     friends: ["rose", "tom", "jack"]
 > }
 > 
 > let person1 = createAnother(person);
 > person1.friends.push("lily");
 > console.log(person1.friends);
-> person1.getName(); // yhd
+> person1.getName(); // js
 > 
 > let person2 = createAnother(person);
 > console.log(person2.friends); // ["rose", "tom", "jack", "lily"]
 > ```
-> 
+>
 > #### 6 寄生式组合继承
-> 
+>
 > - 优点：只调用一次父类构造函数;Child可以向Parent传参;父类方法可以复用;父类的引用属性不会被共享。
 > - 寄生式组合继承可以算是引用类型继承的最佳模式
 >
 > ```js
->function objectCopy(obj) {
+> function objectCopy(obj) {
 >     function Fun() { };
 >     Fun.prototype = obj;
 >     return new Fun();
@@ -2401,9 +2474,9 @@ Execution Context stack(ECS)
 >     console.log(this.age);
 > }
 > 
-> let child1 = new Child("yhd", 23);
+> let child1 = new Child("js", 23);
 > child1.sayAge(); // 23
-> child1.sayName(); // yhd
+> child1.sayName(); // js
 > child1.friends.push("jack");
 > console.log(child1.friends); // ["rose", "lily", "tom", "jack"]
 > 
@@ -2412,7 +2485,44 @@ Execution Context stack(ECS)
 > child2.sayName(); // yl
 > console.log(child2.friends); // ["rose", "lily", "tom"]
 > ```
+>
 > 
+
+#### ES6中类的继承
+
+> ES6 中引入了 class 关键字， class 可以通过 extends 关键字实现继承，还可以通过 static 关键字定义类的静态方法，这比 ES5 的通过修改原型链实现继承，要清晰和方便很多。 **需要注意的是：class 关键字只是原型的语法糖， JavaScript 继承仍然是基于原型实现的。**
+>
+> ```js
+> class Pet {
+>        constructor(name, age) {
+>            this.name = name;
+>            this.age = age;
+>        }
+>   
+>        showName() {
+>            console.log("调用父类的方法");
+>            console.log(this.name, this.age);
+>        }
+> }
+>   
+> // 定义一个子类
+> class Dog extends Pet {
+>        constructor(name, age, color) {
+>            super(name, age); // 通过 super 调用父类的构造方法
+>            this.color = color;
+>        }
+> 
+>        showName() {
+>            console.log("调用子类的方法");
+>            console.log(this.name, this.age, this.color);
+>        }
+> }
+> 
+> 
+> let d = new Dog('z', 11, 'blue');
+> d.showName();
+> ```
+>
 > 
 
 ## 垃圾回收与内存泄漏
